@@ -1,116 +1,98 @@
 // frontend/app/dashboard/page.tsx
-export default function DashboardHome() {
+import React from "react";
+import Link from "next/link";
+import { 
+  MessageSquare, 
+  Layers, 
+  Settings, 
+  CreditCard,
+  ArrowRight
+} from "lucide-react";
+
+export default function DashboardPage() {
   const tiles = [
-    {
-      title: "Plan",
-      subtitle: "Review or upgrade your Hybrid Business Architect plan.",
-      href: "/dashboard/plan",
+    { 
+      title: "Chat with ACHEEVY", 
+      icon: MessageSquare, 
+      desc: "Direct orchestrator interface.", 
+      status: "Disabled",
+      href: "#" 
     },
-    {
-      title: "aiPlugs",
-      subtitle: "Spin up and manage your Workspace aiPlugs.",
-      href: "/dashboard/ai-plugs",
+    { 
+      title: "LUC Quotes", 
+      icon: CreditCard, 
+      desc: "Resource auditing and budgeting.", 
+      status: "Active",
+      href: "/dashboard/luc" 
     },
-    {
-      title: "BoomerAngs",
-      subtitle: "Configure how ACHEEVY delegates to your agents.",
-      href: "/dashboard/boomerangs",
+    { 
+      title: "aiPlugs", 
+      icon: Layers, 
+      desc: "Deploy capability modules.", 
+      status: "Active",
+      href: "/dashboard/ai-plugs" 
     },
-    {
-      title: "Lab",
-      subtitle: "Experiment with new models and workflows in the Lab.",
-      href: "/dashboard/lab",
-    },
-    {
-      title: "LUC Usage",
-      subtitle: "Track token, compute, and API costs in real time.",
-      href: "/dashboard/luc",
-    },
-    {
-      title: "Circuit Box",
-      subtitle: "Edit ACHEEVY and BoomerAng instructions and routing.",
-      href: "/dashboard/circuit-box",
+    { 
+      title: "Settings", 
+      icon: Settings, 
+      desc: "Workspace and team config.", 
+      status: "Disabled",
+      href: "#" 
     },
   ];
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)]">
-        {/* Primary glass card */}
-        <div className="rounded-3xl border border-amber-50/18 bg-gradient-to-br from-white/6 via-black/80 to-black/95 p-5 text-amber-50 shadow-[0_40px_120px_rgba(0,0,0,0.9)] backdrop-blur-2xl">
-          <p className="text-[0.7rem] uppercase tracking-[0.2em] text-amber-200/70">
-            ACHEEVY Briefing
-          </p>
-          <h1 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
-            Welcome back to your command center.
-          </h1>
-          <p className="mt-2 max-w-xl text-sm text-amber-100/80">
-            From here, you can orchestrate BoomerAngs, deploy aiPlugs, and tune
-            the Lab while LUC keeps an eye on every token you spend.
-          </p>
-
-          <div className="mt-4 flex flex-wrap gap-2 text-xs text-amber-100/80">
-            <span className="rounded-full border border-amber-200/30 bg-black/60 px-3 py-1">
-              • ACHEEVY: orchestrator online
-            </span>
-            <span className="rounded-full border border-amber-200/30 bg-black/60 px-3 py-1">
-              • LUC: live metering
-            </span>
-            <span className="rounded-full border border-amber-200/30 bg-black/60 px-3 py-1">
-              • Circuit Box: config-driven
-            </span>
-          </div>
+    <div className="space-y-8 animate-in fade-in duration-1000">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+           <p className="text-[10px] uppercase tracking-[0.3em] text-amber-200/50 mb-1">Executive Console</p>
+           <h1 className="text-3xl font-bold tracking-tight text-amber-50 font-display">DASHBOARD</h1>
         </div>
-
-        {/* Quick LUC & plan */}
-        <div className="space-y-4">
-          <div className="rounded-3xl border border-amber-50/18 bg-gradient-to-br from-amber-500/10 via-black/85 to-black/95 p-4 text-amber-50 backdrop-blur-2xl">
-            <p className="text-[0.7rem] uppercase tracking-[0.18em] text-amber-200/70">
-              LUC Snapshot
-            </p>
-            <p className="mt-2 text-sm text-amber-100/80">
-              Todays estimated usage
-            </p>
-            <p className="mt-1 text-2xl font-semibold text-amber-200">
-              $0.00
-            </p>
-            <p className="mt-1 text-[0.8rem] text-amber-100/70">
-              Live metering will appear here once your first session runs.
-            </p>
-          </div>
-
-          <div className="rounded-3xl border border-amber-50/15 bg-black/80 p-4 text-amber-50 backdrop-blur-2xl">
-            <p className="text-[0.7rem] uppercase tracking-[0.18em] text-amber-200/70">
-              Plan
-            </p>
-            <p className="mt-2 text-sm text-amber-100/80">
-              Youre on the Hybrid Business Architect starter plan.
-            </p>
-            <button className="mt-3 inline-flex items-center rounded-full bg-gradient-to-r from-amber-400 to-amber-300 px-4 py-1.5 text-xs font-semibold text-black">
-              Manage plan
-            </button>
-          </div>
+        <div className="flex items-center gap-3">
+           <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+           <span className="text-[10px] uppercase font-bold text-emerald-400/80 tracking-widest">ACHEEVY Online</span>
         </div>
-      </section>
+      </header>
 
-      {/* Navigation tiles */}
-      <section className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+      {/* Onboarding Alert / Action Tile */}
+      <div className="group relative overflow-hidden rounded-[32px] border border-amber-300/20 bg-gradient-to-r from-amber-400/10 to-transparent p-1 transition-all hover:border-amber-300/40">
+         <div className="flex flex-col md:flex-row items-center justify-between rounded-[31px] bg-black/80 p-6 md:p-8">
+            <div className="space-y-2 text-center md:text-left">
+               <h2 className="text-lg font-semibold text-amber-100 italic">Continue Onboarding?</h2>
+               <p className="text-sm text-amber-100/60 max-w-sm">You haven't finalized your model selection or initialized ByteRover memory.</p>
+            </div>
+            <Link href="/onboarding/estimate" className="mt-4 md:mt-0 flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 text-sm font-bold text-black shadow-[0_0_20px_rgba(251,191,36,0.3)] transition-all hover:scale-105 active:scale-95">
+               Run Simulation <ArrowRight size={16} />
+            </Link>
+         </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {tiles.map((tile) => (
-          <a
-            key={tile.href}
+          <Link 
+            key={tile.title} 
             href={tile.href}
-            className="group rounded-3xl border border-amber-50/14 bg-black/75 p-4 text-sm text-amber-50 shadow-[0_24px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-colors hover:border-amber-300/60 hover:bg-black/90"
+            className={`group relative overflow-hidden rounded-3xl border border-white/5 bg-black/60 p-6 backdrop-blur-xl transition-all ${
+              tile.status === "Disabled" ? "opacity-50 cursor-not-allowed" : "hover:border-amber-300/30 hover:bg-black/80"
+            }`}
           >
-            <p className="text-[0.7rem] uppercase tracking-[0.18em] text-amber-200/70">
-              {tile.title}
-            </p>
-            <p className="mt-2 text-amber-50">{tile.subtitle}</p>
-            <p className="mt-3 text-[0.8rem] text-amber-100/70 group-hover:text-amber-200">
-              Open {tile.title} →
-            </p>
-          </a>
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-amber-200 group-hover:bg-amber-300 group-hover:text-black transition-colors">
+                <tile.icon size={20} />
+              </div>
+              <h3 className="text-sm font-semibold tracking-wide text-amber-50 font-display uppercase">{tile.title}</h3>
+              <p className="mt-2 text-xs text-amber-100/50 leading-relaxed">{tile.desc}</p>
+              
+              <div className="mt-auto pt-6 flex justify-between items-center">
+                 <span className={`text-[9px] uppercase font-bold tracking-[0.2em] ${tile.status === 'Active' ? 'text-amber-300' : 'text-white/20'}`}>
+                   {tile.status}
+                 </span>
+                 {tile.status === 'Active' && <ArrowRight size={12} className="text-amber-300 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />}
+              </div>
+            </div>
+          </Link>
         ))}
-      </section>
+      </div>
     </div>
   );
 }
