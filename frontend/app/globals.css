@@ -27,3 +27,12 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #D4AF37; 
 }
+
+/* Stitch Nano Banana Pro Auth Glass */
+.auth-glass-card {
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.14) 0%, rgba(10, 10, 10, 0.95) 100%);
+  backdrop-filter: blur(26px);
+  border: 1px solid rgba(212, 175, 55, 0.12); /* 12% Gold */
+  box-shadow: 0 32px 96px rgba(0, 0, 0, 0.9);
+}
+
