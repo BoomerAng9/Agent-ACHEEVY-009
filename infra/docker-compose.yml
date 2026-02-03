@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # Layer 1: Frontend (Next.js 14)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_ACP_ENDPOINT=http://localhost:3000/api/acp
+    depends_on:
+      - uef-gateway
+    networks:
+      - aims-network
+
+  # ---------------------------------------------------------------------------
+  # Layer 2: UEF Gateway (Node/TS Orchestrator)
+  # ---------------------------------------------------------------------------
+  uef-gateway:
+    build:
+      context: ../backend/uef-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    environment:
+      - PORT=3001
+    volumes:
+      - ../backend/uef-gateway/src:/app/src
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - aims-network
+
+  # ---------------------------------------------------------------------------
+  # Layer 3: Agents & Tools (STUBBED FOR BOOTSTRAP)
+  # ---------------------------------------------------------------------------
+  
+  # agent-zero:
+  #   image: agent-zero:latest
+  #   environment:
+  #     - LLM_API_KEY=${LLM_API_KEY}
+  #   networks:
+  #     - aims-network
+
+  # openclaw:
+  #   image: openclaw:latest
+  #   networks:
+  #     - aims-network
+
+  # chicken-hawk:
+  #   image: chicken-hawk-service:latest
+  #   networks:
+  #     - aims-network
+
+  # n8n:
+  #   image: n8nio/n8n
+  #   ports:
+  #     - "5678:5678"
+  #   networks:
+  #     - aims-network
+
+networks:
+  aims-network:
+    driver: bridge
