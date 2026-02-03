@@ -12,8 +12,10 @@ out/
 build/
 dist/
 
-# Misc
+# System
 .DS_Store
+.claude/
+.stitch/
 *.pem
 *.key
 *.log
