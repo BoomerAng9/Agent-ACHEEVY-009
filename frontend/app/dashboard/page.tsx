@@ -11,12 +11,12 @@ import {
 
 export default function DashboardPage() {
   const tiles = [
-    { 
-      title: "Chat with ACHEEVY", 
-      icon: MessageSquare, 
-      desc: "Direct orchestrator interface.", 
-      status: "Disabled",
-      href: "#" 
+    {
+      title: "Chat with ACHEEVY",
+      icon: MessageSquare,
+      desc: "Direct orchestrator interface.",
+      status: "Active",
+      href: "/dashboard/chat"
     },
     { 
       title: "LUC Quotes", 
@@ -32,12 +32,12 @@ export default function DashboardPage() {
       status: "Active",
       href: "/dashboard/ai-plugs" 
     },
-    { 
-      title: "Settings", 
-      icon: Settings, 
-      desc: "Workspace and team config.", 
-      status: "Disabled",
-      href: "#" 
+    {
+      title: "Settings",
+      icon: Settings,
+      desc: "Workspace and team config.",
+      status: "Active",
+      href: "/dashboard/settings"
     },
   ];
 
