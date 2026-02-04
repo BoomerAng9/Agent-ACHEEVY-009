@@ -39,6 +39,23 @@ yarn-error.log*
 .vscode/
 .idea/
 
+# Screenshots
+screenshots/
+
+# Build artifacts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Windows artifacts
+nul
+
+# Brand assets (store in cloud/CDN, not git)
+ui components/
+
+# MCP tool configs (contain API tokens)
+mcp-tools/
+
 # A.I.M.S. Specific
 infra/.env
+backend/uef-gateway/.env
 backend/uef-gateway/dist/

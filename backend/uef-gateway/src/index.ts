@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { v4 as uuidv4 } from 'uuid';
 import { ACPStandardizedRequest, ACPResponse } from './acp/types';
 import { LUCEngine } from './luc';
+import prisma from './lib/db';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +39,17 @@ app.post('/ingress/acp', async (req, res) => {
 
     console.log(`[UEF] Received ACP Request: ${acpReq.reqId} - ${acpReq.intent}`);
 
+    // 2. Persistent Logging (Async)
+    prisma.log.create({
+      data: {
+        id: acpReq.reqId,
+        userId: acpReq.userId,
+        intent: acpReq.intent,
+        message: acpReq.naturalLanguage,
+        status: 'RECEIVED'
+      }
+    }).catch((err: any) => console.error('[DB] Failed to log request:', err.message));
+
     // 2. Routing Logic (SmelterOS Router Stub)
     // If it's a chat/estimate intent, run LUC and return quote.
 
@@ -52,9 +64,9 @@ app.post('/ingress/acp', async (req, res) => {
       quote: quote,
       executionPlan: {
         steps: [
-          'Analyze intent via AVVA NOON',
-          'Check specific patterns pattern in ByteRover',
-          'Generate Plugs via Chicken Hawk'
+          'Analyze intent',
+          'Check context patterns',
+          'Generate output'
         ],
         estimatedDuration: '2 minutes'
       }

@@ -12,7 +12,7 @@ export default function SignUpPage() {
           CREATE YOUR ACCOUNT
         </h1>
         <p className="mt-3 text-sm text-amber-100/80">
-          Join the Hybrid Business Architect platform and start building.
+          Join A.I.M.S. and start building with ACHEEVY.
         </p>
       </header>
 
@@ -88,9 +88,9 @@ export default function SignUpPage() {
 
         <p className="pt-2 text-center text-[0.8rem] text-amber-100/75">
           Already have an account?{" "}
-          <a href="/sign-in" className="text-amber-300 hover:text-amber-200">
+          <Link href="/auth/sign-in" className="text-amber-300 hover:text-amber-200">
             Sign in
-          </a>
+          </Link>
         </p>
       </form>
     </div>

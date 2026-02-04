@@ -15,13 +15,13 @@ export interface LucEstimate {
   }[];
 }
 
-export function getLucEstimateStub(query: string = "default"): LucEstimate {
+export function getLucEstimateStub(): LucEstimate {
   return {
     totalUsd: 12.45,
     totalTokens: 450000,
     breakdown: [
       { label: "ACHEEVY Orchestration", usd: 4.50, tokens: 150000 },
-      { label: "BoomerAng Task Execution", usd: 6.20, tokens: 250000 },
+      { label: "Boomer_Ang Task Execution", usd: 6.20, tokens: 250000 },
       { label: "ByteRover Memory & Storage", usd: 1.75, tokens: 50000 },
     ],
     modelOptions: [

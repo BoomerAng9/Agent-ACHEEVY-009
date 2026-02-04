@@ -1,35 +1,25 @@
+
 import "./globals.css";
 import type { ReactNode } from "react";
-import { LogoWallBackground } from "@/components/LogoWallBackground";
-import { SiteFooter } from "@/components/SiteFooter";
 import type { Metadata } from 'next';
-import { Inter, Doto, Permanent_Marker, Caveat } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
+// We import Doto via Google Fonts in CSS usually, or next/font/google if available. 
+// Assuming standard Next.js next/font usage for optimal loading:
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const doto = Doto({ subsets: ['latin'], variable: '--font-doto' });
-const marker = Permanent_Marker({ 
-  weight: '400',
-  subsets: ['latin'], 
-  variable: '--font-marker' 
-});
-const caveat = Caveat({ 
-  subsets: ['latin'], 
-  variable: '--font-caveat' 
-});
 
 export const metadata: Metadata = {
-  title: 'A.I.M.S. | Hybrid Business Architect',
-  description: 'AI Managed Systems powered by ACHEEVY',
+  title: 'A.I.M.S. | AI Managed Systems',
+  description: 'AI Managed Systems powered by ACHEEVY. No config. Just results.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${doto.variable} ${marker.variable} ${caveat.variable} antialiased min-h-screen bg-obsidian text-slate-200 font-sans`}>
-        <LogoWallBackground mode="hero">
-          {children}
-        </LogoWallBackground>
-        <SiteFooter />
+      <body className={`${inter.variable} antialiased min-h-screen bg-obsidian text-slate-200 font-sans`}>
+        {/* We moved layout wrappers for Nav and Background into specific pages to support different modes (hero vs dashboard vs auth) 
+            properly without hacking global layout state. */}
+        {children}
       </body>
     </html>
   );

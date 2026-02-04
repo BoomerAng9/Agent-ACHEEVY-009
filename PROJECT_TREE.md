@@ -10,7 +10,10 @@
 │   ├── components/
 │   │   └── AcheevyChat.tsx    # Chat UI Component
 │   └── lib/
-│       └── acp-client.ts      # Frontend ACP Client
+│       ├── acp-client.ts      # Frontend ACP Client
+│       └── luc/
+│           ├── luc.stub.ts    # Deterministic stubs
+│           └── luc-client.ts  # Real LUC quote fetcher
 ├── backend/
 │   └── uef-gateway/           # Node/TS Middleware (UEF)
 │       ├── src/

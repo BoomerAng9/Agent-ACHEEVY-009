@@ -4,11 +4,12 @@ import { LogoWallBackground } from "@/components/LogoWallBackground";
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <LogoWallBackground mode="auth">
-      <div className="flex min-h-screen items-center justify-center px-4 py-12">
-        <section className="auth-glass-card w-full max-w-md rounded-[32px] p-8 text-amber-50">
-          {children}
-        </section>
-      </div>
+      {/* 
+        We removed the flex centering wrapper here to allow 
+        each page (sign-in/sign-up) to control its own layout 
+        (e.g., split screen, centered card, etc.)
+      */}
+      {children}
     </LogoWallBackground>
   );
 }

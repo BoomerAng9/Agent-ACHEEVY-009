@@ -68,6 +68,26 @@ services:
   #   networks:
   #     - aims-network
 
+  # ---------------------------------------------------------------------------
+  # Layer 4: Storage
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=${DB_NAME:-aims}
+    ports:
+      - "5432:5432"
+    volumes:
+      - aims-db-data:/var/lib/postgresql/data
+    networks:
+      - aims-network
+
 networks:
   aims-network:
     driver: bridge
+
+volumes:
+  aims-db-data:

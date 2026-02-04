@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Permanent+Marker&family=Caveat:wght@400..700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,6 +7,9 @@
 :root {
   --background: #0A0A0A;
   --foreground: #ededed;
+  --font-doto: 'Doto', monospace;
+  --font-marker: 'Permanent Marker', cursive;
+  --font-caveat: 'Caveat', cursive;
 }
 
 body {

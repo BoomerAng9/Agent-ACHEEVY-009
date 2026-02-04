@@ -1,3 +1,4 @@
+
 // frontend/components/LogoWallBackground.tsx
 import React from "react";
 import clsx from "clsx";
@@ -10,41 +11,33 @@ interface Props {
 }
 
 export function LogoWallBackground({ mode = "hero", children }: Props) {
+  // Define overlay opacity based on mode
   const overlayClass = {
-    hero:    "from-black/30 via-black/60 to-black/80",
-    auth:    "from-black/45 via-black/75 to-black/90",
-    form:    "from-black/70 via-black/85 to-black/95",
-    dashboard: "from-black/55 via-black/75 to-black/90",
+    hero:    "bg-black/80", 
+    auth:    "bg-black/70", 
+    form:    "bg-black/85",
+    dashboard: "bg-black/90", 
   }[mode];
 
   return (
-    <div className="relative min-h-screen bg-[#050507] text-amber-50 overflow-hidden">
-      {/* Logo wall / brick layer */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-center bg-repeat opacity-[0.12] filter grayscale transition-opacity duration-1000"
-        style={{ backgroundImage: "url(/images/logos/logo-wall.png)", backgroundSize: '320px' }}
-        aria-hidden="true"
+    <div className="relative min-h-screen bg-[#050507] text-amber-50 overflow-hidden font-sans">
+      {/* Brick Wall: The Logo Pattern */}
+      <div 
+        className="fixed inset-0 opacity-[0.15] pointer-events-none z-0"
+        style={{
+             backgroundImage: "url('/images/acheevy/logo-abstract.png')",
+             backgroundSize: "400px",
+             filter: "grayscale(100%) brightness(0.7)"
+        }}
       />
-      {/* Gradient to fade logo behind content */}
-      <div
-        className={clsx(
-          "pointer-events-none absolute inset-0 bg-gradient-to-br transition-all duration-700",
-          overlayClass
-        )}
-        aria-hidden="true"
-      />
-      {/* Window layer - implementing the 'Brick and Window' spec (5-10% padding) */}
-      <main className={clsx(
-        "relative z-10 min-h-screen flex flex-col",
-        mode === "hero" || mode === "dashboard" ? "p-4 md:p-8 lg:p-12" : "p-0"
-      )}>
-        <div className={clsx(
-            "flex-1 flex flex-col w-full",
-            (mode === "hero" || mode === "dashboard") && "rounded-[32px] border border-white/5 bg-black/20 backdrop-blur-[2px] shadow-2xl"
-        )}>
-            {children}
-        </div>
-      </main>
+      
+      {/* Overlay: To push the wall back */}
+      <div className={clsx("fixed inset-0 z-0 pointer-events-none transition-all duration-700", overlayClass)} />
+
+      {/* Window: The Content */}
+      <div className="relative z-10 min-h-screen flex flex-col">
+         {children}
+      </div>
     </div>
   );
 }

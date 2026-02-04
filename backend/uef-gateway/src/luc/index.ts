@@ -1,5 +1,5 @@
 /**
- * Locale Usage Calculator (LUC) Engine
+ * LUC (Usage Calculator) Engine
  * Calculates costs for ACP requests.
  */
 
@@ -19,19 +19,19 @@ export class LUCEngine {
       
       const componentEstimates: LUCComponentEstimate[] = [
         {
-          componentName: 'Planning (AVVA NOON)',
+          componentName: 'Planning',
           tokens: complexityBase * 0.2,
           usd: (complexityBase * 0.2 / 1000) * costPer1k,
           model: model
         },
         {
-          componentName: 'Execution (Chicken Hawk)',
+          componentName: 'Execution',
           tokens: complexityBase * 2.0,
           usd: (complexityBase * 2.0 / 1000) * costPer1k,
           model: model
         },
         {
-          componentName: 'Verification (ORACLE)',
+          componentName: 'Verification',
           tokens: complexityBase * 0.5,
           usd: (complexityBase * 0.5 / 1000) * costPer1k,
           model: model

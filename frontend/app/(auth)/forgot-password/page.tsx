@@ -26,17 +26,18 @@ export default function ForgotPasswordPage() {
           />
         </label>
 
-        <Link href="/sign-in"
+        <button
+          type="submit"
           className="mt-2 flex items-center justify-center h-11 w-full rounded-full bg-gradient-to-r from-amber-400 to-amber-300 text-sm font-semibold text-black hover:shadow-[0_0_20px_rgba(251,191,36,0.5)] transition-shadow"
         >
           Send Reset Link
-        </Link>
+        </button>
 
         <p className="pt-2 text-center text-[0.8rem] text-amber-100/75">
           Remember your password?{" "}
-          <a href="/sign-in" className="text-amber-300 hover:text-amber-200">
+          <Link href="/auth/sign-in" className="text-amber-300 hover:text-amber-200">
             Back to Sign In
-          </a>
+          </Link>
         </p>
       </form>
     </div>
