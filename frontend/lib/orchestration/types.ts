@@ -192,9 +192,12 @@ export interface OrchestrationState {
   events: HandoffEvent[];
   dialogues: AgentDialogue[];
 
-  // Blocking
+  // Blocking / Change Orders
   isBlocked: boolean;
   blockingQuestion?: string;
+  blockingAgent?: string;        // Which Boomer_Ang is requesting input
+  blockingDepartment?: string;   // Which department
+  changeOrderId?: string;        // Active change order ID
 
   // UI preferences
   overlayMode: 'hidden' | 'minimal' | 'expanded';

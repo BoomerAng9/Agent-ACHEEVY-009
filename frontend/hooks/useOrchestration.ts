@@ -50,7 +50,7 @@ interface UseOrchestrationReturn {
   startTask: (prompt: string) => void;
   updatePhase: (phase: OrchestrationPhase) => void;
   completeTask: () => void;
-  blockForUser: (question: string) => void;
+  blockForUser: (question: string, requestingAngId?: string, changeOrderId?: string) => void;
   unblock: () => void;
 
   // Agent management
@@ -305,26 +305,43 @@ export function useOrchestration(options: UseOrchestrationOptions): UseOrchestra
     }));
   }, []);
 
-  // Block for user input
-  const blockForUser = useCallback((question: string) => {
-    setState(prev => ({
-      ...prev,
-      phase: 'blocked',
-      isBlocked: true,
-      blockingQuestion: question,
-      lastActivity: new Date(),
-    }));
+  // Block for user input (creates a Change Order)
+  const blockForUser = useCallback((
+    question: string,
+    requestingAngId?: string,
+    changeOrderId?: string
+  ) => {
+    setState(prev => {
+      // Find the requesting agent
+      const requestingAng = requestingAngId
+        ? prev.activeAngs.find(a => a.id === requestingAngId)
+        : prev.activeAngs[0];
+
+      return {
+        ...prev,
+        phase: 'blocked',
+        isBlocked: true,
+        blockingQuestion: question,
+        blockingAgent: requestingAng?.name,
+        blockingDepartment: requestingAng?.department || prev.activeManager?.department,
+        changeOrderId,
+        lastActivity: new Date(),
+      };
+    });
 
     onBlockingQuestion?.(question);
   }, [onBlockingQuestion]);
 
-  // Unblock
-  const unblock = useCallback(() => {
+  // Unblock (after Change Order is submitted)
+  const unblock = useCallback((changeOrderId?: string) => {
     setState(prev => ({
       ...prev,
       phase: 'execute',
       isBlocked: false,
       blockingQuestion: undefined,
+      blockingAgent: undefined,
+      blockingDepartment: undefined,
+      changeOrderId: undefined,
       lastActivity: new Date(),
     }));
   }, []);

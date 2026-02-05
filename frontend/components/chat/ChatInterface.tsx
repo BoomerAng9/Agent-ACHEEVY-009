@@ -16,9 +16,13 @@ import { useStreamingChat } from '@/hooks/useStreamingChat';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useVoiceOutput } from '@/hooks/useVoiceOutput';
 import { useOrchestration } from '@/hooks/useOrchestration';
+import { useChangeOrder } from '@/hooks/useChangeOrder';
 import { OperationsOverlay, OperationsPulse } from '@/components/orchestration/OperationsOverlay';
 import { DepartmentBoard } from '@/components/orchestration/DepartmentBoard';
+import { UserInputModal } from '@/components/change-order/UserInputModal';
 import type { ChatMessage } from '@/lib/chat/types';
+import type { ChangeOrder } from '@/lib/change-order/types';
+import { formatCurrency } from '@/lib/change-order/types';
 
 // ─────────────────────────────────────────────────────────────
 // Icons (inline SVG for simplicity)
@@ -283,6 +287,7 @@ export function ChatInterface({
 }: ChatInterfaceProps) {
   const [inputValue, setInputValue] = useState('');
   const [showBoard, setShowBoard] = useState(false);
+  const [showInputModal, setShowInputModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -292,6 +297,27 @@ export function ChatInterface({
     userName,
     projectTitle,
     projectObjective,
+    onBlockingQuestion: () => {
+      // Automatically show input modal when blocked
+      setShowInputModal(true);
+    },
+  });
+
+  // Change Order management
+  const changeOrder = useChangeOrder({
+    sessionId: sessionId || 'default-session',
+    userId,
+    onChangeOrderSubmitted: (order) => {
+      // Resume orchestration after change order submitted
+      orchestration.unblock();
+      orchestration.addEvent(
+        'user_input_received',
+        `{userName} submitted change order with ${order.inputs.length} input(s)`
+      );
+    },
+    onCostUpdated: (totalCost, tokenUsage) => {
+      console.log(`[Change Order] Total cost: ${formatCurrency(totalCost)}, Tokens: ${tokenUsage}`);
+    },
   });
 
   // Streaming chat
@@ -637,6 +663,37 @@ export function ChatInterface({
         isOpen={showBoard}
         onClose={() => setShowBoard(false)}
       />
+
+      {/* Change Order Input Modal */}
+      <UserInputModal
+        isOpen={showInputModal && orchestration.state.isBlocked}
+        onClose={() => setShowInputModal(false)}
+        onSubmit={(orderData) => {
+          // Create and submit the change order
+          if (orderData.inputs && orderData.inputs.length > 0) {
+            const order = changeOrder.createChangeOrder({
+              triggerQuestion: orchestration.state.blockingQuestion || 'Input required',
+              requestingAgent: orchestration.state.blockingAgent || 'ACHEEVY',
+              department: orchestration.state.blockingDepartment || 'development',
+            });
+            changeOrder.submitChangeOrder(orderData.inputs);
+          }
+          setShowInputModal(false);
+        }}
+        triggerQuestion={orchestration.state.blockingQuestion || 'Additional information needed'}
+        requestingAgent={orchestration.state.blockingAgent || 'ACHEEVY'}
+        department={orchestration.state.blockingDepartment || 'Development'}
+      />
+
+      {/* Change Order Cost Tracker (bottom-left) */}
+      {changeOrder.totalCost > 0 && (
+        <div className="fixed bottom-4 left-4 px-3 py-2 bg-black/80 border border-white/10 rounded-lg text-xs z-40">
+          <p className="text-amber-100/50">Change Orders</p>
+          <p className="text-amber-300 font-medium">
+            {formatCurrency(changeOrder.totalCost)} ({changeOrder.totalTokensUsed.toLocaleString()} tokens)
+          </p>
+        </div>
+      )}
     </div>
   );
 }
