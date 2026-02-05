@@ -1,18 +1,31 @@
-import { HeroAcheevy } from "@/components/HeroAcheevy";
-import Link from 'next/link';
+/**
+ * A.I.M.S. Landing Page
+ *
+ * Main entry point showcasing real production apps built with A.I.M.S.
+ * Instead of conversation starters, we show actual working applications.
+ */
+
+import { Hero, FeatureSection } from '@/components/landing/Hero';
+import { AppShowcase, BuildPrompts } from '@/components/landing/AppShowcase';
+import Footer from '@/components/landing/Footer';
 
 export default function HomePage() {
   return (
-    <>
-      <HeroAcheevy />
-      <div className="flex justify-center mt-8 gap-4">
-        <Link href="/dashboard" className="text-amber-200/50 hover:text-amber-200 uppercase tracking-widest text-xs">
-          [ Enter Dashboard Mockup ]
-        </Link>
-        <Link href="/api/auth/signin" className="text-amber-200/50 hover:text-amber-200 uppercase tracking-widest text-xs">
-          [ Sign In Flow ]
-        </Link>
-      </div>
-    </>
+    <main className="min-h-screen bg-[#0a0f1a]">
+      {/* Hero Section */}
+      <Hero />
+
+      {/* Real Apps Showcase */}
+      <AppShowcase />
+
+      {/* Build Prompts (Instead of Conversation Starters) */}
+      <BuildPrompts />
+
+      {/* Feature Section */}
+      <FeatureSection />
+
+      {/* Footer */}
+      <Footer />
+    </main>
   );
 }
