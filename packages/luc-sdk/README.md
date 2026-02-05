@@ -389,7 +389,7 @@ Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md).
 ## Support
 
 - **Documentation**: [docs.plugmein.cloud/luc](https://docs.plugmein.cloud/luc)
-- **Issues**: [GitHub Issues](https://github.com/plugmein/luc-sdk/issues)
+- **Issues**: [GitHub Issues](https://github.com/BoomerAng9/LUC-Locale-Universal-Calculator/issues)
 - **Discord**: [PlugMeIn Community](https://discord.gg/plugmein)
 
 ---

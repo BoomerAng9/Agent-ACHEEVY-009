@@ -54,11 +54,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/plugmein/luc-sdk.git"
+    "url": "https://github.com/BoomerAng9/LUC-Locale-Universal-Calculator.git"
   },
   "homepage": "https://luc.plugmein.cloud",
   "bugs": {
-    "url": "https://github.com/plugmein/luc-sdk/issues"
+    "url": "https://github.com/BoomerAng9/LUC-Locale-Universal-Calculator/issues"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
