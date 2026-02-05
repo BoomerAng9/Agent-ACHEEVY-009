@@ -30,7 +30,7 @@ export default function CircuitBoxPage() {
               <select className="w-full rounded-xl border border-white/5 bg-black/80 p-2.5 text-sm text-amber-50 outline-none focus:border-amber-300">
                 <option>Kimi K2.5 (Primary)</option>
                 <option>Gemini 3 Flash Thinking (Fallback)</option>
-                <option>Claude Opus 4.5</option>
+                <option>Claude Opus 4.6</option>
               </select>
             </div>
             <div className="space-y-2">

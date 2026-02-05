@@ -27,7 +27,7 @@ export function getLucEstimateStub(query: string = "default"): LucEstimate {
     modelOptions: [
       { name: "Gemini 3 Flash Thinking", description: "Default, fast, efficient", costMultiplier: 1 },
       { name: "Kimi K2.5", description: "Complex business reasoning", costMultiplier: 1.5 },
-      { name: "Claude Opus 4.5", description: "High-precision strategy", costMultiplier: 3 },
+      { name: "Claude Opus 4.6", description: "Elite agents, 1M context, adaptive thinking", costMultiplier: 3 },
     ]
   };
 }
