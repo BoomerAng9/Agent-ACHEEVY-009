@@ -3,17 +3,20 @@
 /**
  * LUC Workspace - Usage Calculator & Quota Management
  *
- * Standalone calculator page where users can:
+ * Production-ready calculator page where users can:
  * - View quota usage across all service buckets
  * - Estimate impact of planned operations
  * - See warnings at threshold levels (80%)
  * - Manage plan and billing
+ * - Select industry presets
+ * - Import/Export data
+ * - View usage history
  *
  * LUC = Live Usage Calculator
  * A.I.M.S. core execution service for quota gating and cost tracking.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CircuitBoardPattern, AIMS_CIRCUIT_COLORS } from '@/components/ui/CircuitBoard';
 import {
@@ -23,6 +26,29 @@ import {
   LUCSummary,
   LUCQuote,
 } from '@/lib/luc/luc-engine';
+import { INDUSTRY_PRESETS, IndustryPreset, PresetCategory } from '@/lib/luc/luc-presets';
+
+// ─────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────
+
+interface UsageHistoryEntry {
+  id: string;
+  userId: string;
+  service: string;
+  amount: number;
+  type: 'debit' | 'credit';
+  cost: number;
+  timestamp: string;
+  description?: string;
+}
+
+interface AccountStats {
+  totalUsage: number;
+  totalCost: number;
+  topServices: Array<{ service: string; usage: number; cost: number }>;
+  usageByDay: Array<{ date: string; usage: number; cost: number }>;
+}
 
 // ─────────────────────────────────────────────────────────────
 // Icons
@@ -48,13 +74,6 @@ const AlertTriangleIcon = ({ className }: { className?: string }) => (
     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
     <line x1="12" y1="9" x2="12" y2="13" />
     <line x1="12" y1="17" x2="12.01" y2="17" />
-  </svg>
-);
-
-const TrendingUpIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-    <polyline points="17 6 23 6 23 12" />
   </svg>
 );
 
@@ -86,6 +105,46 @@ const WalletIcon = ({ className }: { className?: string }) => (
     <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
     <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
     <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
+  </svg>
+);
+
+const DownloadIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
+  </svg>
+);
+
+const UploadIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="17 8 12 3 7 8" />
+    <line x1="12" y1="3" x2="12" y2="15" />
+  </svg>
+);
+
+const HistoryIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+const GridIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="7" height="7" />
+    <rect x="14" y="3" width="7" height="7" />
+    <rect x="14" y="14" width="7" height="7" />
+    <rect x="3" y="14" width="7" height="7" />
+  </svg>
+);
+
+const ChartIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="20" x2="18" y2="10" />
+    <line x1="12" y1="20" x2="12" y2="4" />
+    <line x1="6" y1="20" x2="6" y2="14" />
   </svg>
 );
 
@@ -345,6 +404,384 @@ function QuoteCalculator({
   );
 }
 
+function IndustryPresetSelector({
+  onSelect,
+  onClose,
+}: {
+  onSelect: (presetId: string) => void;
+  onClose: () => void;
+}) {
+  const [selectedCategory, setSelectedCategory] = useState<PresetCategory | 'all'>('all');
+
+  const categories: { id: PresetCategory | 'all'; label: string }[] = [
+    { id: 'all', label: 'All' },
+    { id: 'technology', label: 'Technology' },
+    { id: 'content', label: 'Content' },
+    { id: 'ecommerce', label: 'E-Commerce' },
+    { id: 'professional', label: 'Professional' },
+  ];
+
+  const filteredPresets = selectedCategory === 'all'
+    ? INDUSTRY_PRESETS
+    : INDUSTRY_PRESETS.filter(p => p.category === selectedCategory);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="w-full max-w-4xl max-h-[80vh] rounded-2xl p-6 overflow-hidden flex flex-col"
+        style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-white">Industry Presets</h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Select a preset to configure LUC for your industry
+            </p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-white">
+            <XCircleIcon className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                selectedCategory === cat.id
+                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                  : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:bg-gray-700/50'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Presets Grid */}
+        <div className="overflow-y-auto flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredPresets.map((preset) => (
+              <motion.button
+                key={preset.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-xl text-left transition-all hover:ring-2 hover:ring-amber-500/50"
+                style={{ backgroundColor: '#0f172a', border: '1px solid #2d3a4d' }}
+                onClick={() => onSelect(preset.id)}
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-3xl">{preset.icon}</span>
+                  <div className="flex-1">
+                    <h3 className="text-white font-medium">{preset.name}</h3>
+                    <p className="text-xs text-gray-400 mt-1">{preset.description}</p>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {preset.useCases.slice(0, 3).map((useCase, i) => (
+                        <span
+                          key={i}
+                          className="px-2 py-0.5 rounded text-xs bg-gray-700/50 text-gray-300"
+                        >
+                          {useCase}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-xs text-gray-500">Recommended:</span>
+                      <span className="text-xs font-medium" style={{ color: AIMS_CIRCUIT_COLORS.accent }}>
+                        {LUC_PLANS[preset.recommendedPlan]?.name || preset.recommendedPlan}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function UsageHistoryPanel({
+  history,
+  onClose,
+}: {
+  history: UsageHistoryEntry[];
+  onClose: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="w-full max-w-3xl max-h-[80vh] rounded-2xl p-6 overflow-hidden flex flex-col"
+        style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <HistoryIcon className="w-6 h-6 text-amber-400" />
+            <h2 className="text-xl font-bold text-white">Usage History</h2>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-white">
+            <XCircleIcon className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto flex-1">
+          {history.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
+              No usage history yet. Start using services to see your history.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {history.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="p-3 rounded-lg flex items-center justify-between"
+                  style={{ backgroundColor: '#0f172a', border: '1px solid #2d3a4d' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        entry.type === 'debit' ? 'bg-red-500' : 'bg-green-500'
+                      }`}
+                    />
+                    <div>
+                      <div className="text-white text-sm font-medium">
+                        {entry.service.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {entry.description || `${entry.type === 'debit' ? 'Used' : 'Credited'} ${entry.amount}`}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-sm font-mono ${entry.type === 'debit' ? 'text-red-400' : 'text-green-400'}`}>
+                      {entry.type === 'debit' ? '-' : '+'}${entry.cost.toFixed(4)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(entry.timestamp).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function ImportExportPanel({
+  onClose,
+  onRefresh,
+}: {
+  onClose: () => void;
+  onRefresh: () => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = async (format: 'json' | 'csv') => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/luc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'export',
+          userId: 'default-user',
+          format,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Download the file
+        const blob = new Blob([data.data], { type: format === 'json' ? 'application/json' : 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = data.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        setMessage({ type: 'success', text: `Exported as ${format.toUpperCase()}` });
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Export failed' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Export failed' });
+    }
+    setLoading(false);
+  };
+
+  const handleImport = async (file: File) => {
+    setLoading(true);
+    try {
+      const content = await file.text();
+      const res = await fetch('/api/luc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'import',
+          userId: 'default-user',
+          data: content,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Data imported successfully' });
+        onRefresh();
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Import failed' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Import failed - invalid format' });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="w-full max-w-md rounded-2xl p-6"
+        style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-white">Import / Export</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-white">
+            <XCircleIcon className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {/* Export */}
+          <div
+            className="p-4 rounded-lg"
+            style={{ backgroundColor: '#0f172a', border: '1px solid #2d3a4d' }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <DownloadIcon className="w-5 h-5 text-amber-400" />
+              <h3 className="text-white font-medium">Export Data</h3>
+            </div>
+            <p className="text-xs text-gray-400 mb-3">
+              Download your account data and usage history
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleExport('json')}
+                disabled={loading}
+                className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                style={{
+                  backgroundColor: AIMS_CIRCUIT_COLORS.primary + '20',
+                  color: AIMS_CIRCUIT_COLORS.accent,
+                  border: `1px solid ${AIMS_CIRCUIT_COLORS.primary}40`,
+                }}
+              >
+                Export JSON
+              </button>
+              <button
+                onClick={() => handleExport('csv')}
+                disabled={loading}
+                className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                style={{
+                  backgroundColor: AIMS_CIRCUIT_COLORS.primary + '20',
+                  color: AIMS_CIRCUIT_COLORS.accent,
+                  border: `1px solid ${AIMS_CIRCUIT_COLORS.primary}40`,
+                }}
+              >
+                Export CSV
+              </button>
+            </div>
+          </div>
+
+          {/* Import */}
+          <div
+            className="p-4 rounded-lg"
+            style={{ backgroundColor: '#0f172a', border: '1px solid #2d3a4d' }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <UploadIcon className="w-5 h-5 text-amber-400" />
+              <h3 className="text-white font-medium">Import Data</h3>
+            </div>
+            <p className="text-xs text-gray-400 mb-3">
+              Restore from a previous JSON export
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImport(file);
+              }}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading}
+              className="w-full py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              style={{
+                backgroundColor: '#374151',
+                color: '#fff',
+                border: '1px solid #4b5563',
+              }}
+            >
+              Select JSON File
+            </button>
+          </div>
+
+          {/* Message */}
+          {message && (
+            <div
+              className={`p-3 rounded-lg text-sm ${
+                message.type === 'success'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
+                  : 'bg-red-500/20 text-red-400 border border-red-500/40'
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────
@@ -353,14 +790,21 @@ export default function LUCWorkspacePage() {
   const [summary, setSummary] = useState<LUCSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedService, setSelectedService] = useState<LUCServiceKey | null>(null);
+  const [showPresets, setShowPresets] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showImportExport, setShowImportExport] = useState(false);
+  const [usageHistory, setUsageHistory] = useState<UsageHistoryEntry[]>([]);
+  const [stats, setStats] = useState<AccountStats | null>(null);
 
   const fetchSummary = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/luc?userId=default-user');
+      const res = await fetch('/api/luc?userId=default-user&includeHistory=true&includeStats=true');
       const data = await res.json();
       if (data.success) {
         setSummary(data.summary);
+        if (data.usageHistory) setUsageHistory(data.usageHistory);
+        if (data.stats) setStats(data.stats);
       }
     } catch (error) {
       console.error('Failed to fetch LUC summary:', error);
@@ -389,6 +833,24 @@ export default function LUCWorkspacePage() {
     }
   };
 
+  const handlePresetSelect = async (presetId: string) => {
+    try {
+      await fetch('/api/luc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'apply-preset',
+          userId: 'default-user',
+          presetId,
+        }),
+      });
+      setShowPresets(false);
+      fetchSummary();
+    } catch (error) {
+      console.error('Failed to apply preset:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#0a0f1a' }}>
       <CircuitBoardPattern density="sparse" animated={false} glowIntensity={0.1} />
@@ -396,7 +858,7 @@ export default function LUCWorkspacePage() {
       <div className="relative max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <header className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -417,7 +879,7 @@ export default function LUCWorkspacePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 flex-wrap">
               {/* Wallet Balance */}
               <div
                 className="flex items-center gap-2 px-4 py-2 rounded-lg"
@@ -433,6 +895,46 @@ export default function LUCWorkspacePage() {
                 </span>
               </div>
 
+              {/* Action Buttons */}
+              <button
+                onClick={() => setShowPresets(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: '#1a2234',
+                  border: '1px solid #2d3a4d',
+                  color: '#fff',
+                }}
+              >
+                <GridIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Presets</span>
+              </button>
+
+              <button
+                onClick={() => setShowHistory(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: '#1a2234',
+                  border: '1px solid #2d3a4d',
+                  color: '#fff',
+                }}
+              >
+                <HistoryIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">History</span>
+              </button>
+
+              <button
+                onClick={() => setShowImportExport(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: '#1a2234',
+                  border: '1px solid #2d3a4d',
+                  color: '#fff',
+                }}
+              >
+                <DownloadIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Export</span>
+              </button>
+
               <button
                 onClick={fetchSummary}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
@@ -443,7 +945,7 @@ export default function LUCWorkspacePage() {
                 }}
               >
                 <RefreshIcon className="w-4 h-4" />
-                Refresh
+                <span className="hidden sm:inline">Refresh</span>
               </button>
             </div>
           </div>
@@ -502,6 +1004,41 @@ export default function LUCWorkspacePage() {
                 </div>
               </div>
             </div>
+
+            {/* Stats Summary (if available) */}
+            {stats && stats.totalUsage > 0 && (
+              <div
+                className="p-4 rounded-xl mb-8"
+                style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <ChartIcon className="w-5 h-5 text-amber-400" />
+                  <h3 className="text-white font-medium">Usage Statistics</h3>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <div className="text-xs text-gray-400">Total Operations</div>
+                    <div className="text-lg font-bold text-white">{stats.totalUsage.toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400">Total Cost</div>
+                    <div className="text-lg font-bold text-amber-400">${stats.totalCost.toFixed(2)}</div>
+                  </div>
+                  {stats.topServices.length > 0 && (
+                    <div className="col-span-2">
+                      <div className="text-xs text-gray-400 mb-1">Top Services</div>
+                      <div className="flex flex-wrap gap-2">
+                        {stats.topServices.map((svc, i) => (
+                          <span key={i} className="px-2 py-1 rounded text-xs bg-gray-700/50 text-gray-300">
+                            {svc.service.replace(/_/g, ' ')} (${svc.cost.toFixed(2)})
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Warnings */}
             {summary.warnings.length > 0 && (
@@ -594,12 +1131,30 @@ export default function LUCWorkspacePage() {
         )}
       </div>
 
-      {/* Quote Calculator Modal */}
+      {/* Modals */}
       <AnimatePresence>
         {selectedService && (
           <QuoteCalculator
             selectedService={selectedService}
             onClose={() => setSelectedService(null)}
+          />
+        )}
+        {showPresets && (
+          <IndustryPresetSelector
+            onSelect={handlePresetSelect}
+            onClose={() => setShowPresets(false)}
+          />
+        )}
+        {showHistory && (
+          <UsageHistoryPanel
+            history={usageHistory}
+            onClose={() => setShowHistory(false)}
+          />
+        )}
+        {showImportExport && (
+          <ImportExportPanel
+            onClose={() => setShowImportExport(false)}
+            onRefresh={fetchSummary}
           />
         )}
       </AnimatePresence>

@@ -3,37 +3,30 @@
  *
  * REST endpoints for LUC Engine operations.
  * Used by both the UI calculator and Boomer_Ang orchestration.
+ *
+ * PRODUCTION-READY: Uses file-based persistent storage.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  LUCEngine,
-  createLUCAccount,
   createLUCEngine,
   serializeLUCAccount,
-  deserializeLUCAccount,
   LUCServiceKey,
-  LUCAccountRecord,
   SERVICE_BUCKETS,
   LUC_PLANS,
 } from '@/lib/luc/luc-engine';
+import {
+  getServerStorage,
+  getLUCServerManager,
+} from '@/lib/luc/server-storage';
+import { INDUSTRY_PRESETS, getPreset, getPresetsByCategory } from '@/lib/luc/luc-presets';
 
 // ─────────────────────────────────────────────────────────────
-// In-memory store (replace with Firestore in production)
+// Initialize Storage (File-based persistence)
 // ─────────────────────────────────────────────────────────────
 
-const accountStore = new Map<string, LUCAccountRecord>();
-
-function getOrCreateAccount(userId: string): LUCAccountRecord {
-  if (!accountStore.has(userId)) {
-    accountStore.set(userId, createLUCAccount(userId, 'starter'));
-  }
-  return accountStore.get(userId)!;
-}
-
-function saveAccount(account: LUCAccountRecord): void {
-  accountStore.set(account.userId, account);
-}
+const storage = getServerStorage();
+const accountManager = getLUCServerManager();
 
 // ─────────────────────────────────────────────────────────────
 // GET /api/luc - Get LUC summary
@@ -43,16 +36,30 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId') || 'default-user';
+    const includeHistory = searchParams.get('includeHistory') === 'true';
+    const includeStats = searchParams.get('includeStats') === 'true';
 
-    const account = getOrCreateAccount(userId);
+    const account = await storage.getOrCreateAccount(userId);
     const engine = createLUCEngine(account);
     const summary = engine.getSummary();
 
-    return NextResponse.json({
+    const response: any = {
       success: true,
       summary,
       account: serializeLUCAccount(account),
-    });
+    };
+
+    // Include usage history if requested
+    if (includeHistory) {
+      response.usageHistory = await accountManager.getUsageHistory(userId, 50);
+    }
+
+    // Include account statistics if requested
+    if (includeStats) {
+      response.stats = await accountManager.getAccountStats(userId);
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('[LUC API] Error getting summary:', error);
     return NextResponse.json(
@@ -69,9 +76,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, userId = 'default-user', service, amount, planId } = body;
+    const { action, userId = 'default-user', service, amount, planId, format, data, presetId } = body;
 
-    const account = getOrCreateAccount(userId);
+    const account = await storage.getOrCreateAccount(userId);
     const engine = createLUCEngine(account);
 
     switch (action) {
@@ -117,9 +124,25 @@ export async function POST(request: NextRequest) {
         }
 
         const result = engine.debit(service as LUCServiceKey, amount);
-        saveAccount(engine.getAccount());
+        const updatedAccount = engine.getAccount();
 
-        return NextResponse.json({ success: true, result });
+        // Persist account changes
+        await storage.saveAccount(updatedAccount);
+
+        // Record in usage history
+        await accountManager.recordDebit(
+          userId,
+          service as LUCServiceKey,
+          amount,
+          result.cost,
+          body.description || `${service} usage`
+        );
+
+        return NextResponse.json({
+          success: true,
+          result,
+          account: serializeLUCAccount(updatedAccount),
+        });
       }
 
       // ─────────────────────────────────────────────────────
@@ -134,9 +157,24 @@ export async function POST(request: NextRequest) {
         }
 
         const result = engine.credit(service as LUCServiceKey, amount);
-        saveAccount(engine.getAccount());
+        const updatedAccount = engine.getAccount();
 
-        return NextResponse.json({ success: true, result });
+        // Persist account changes
+        await storage.saveAccount(updatedAccount);
+
+        // Record in usage history
+        await accountManager.recordCredit(
+          userId,
+          service as LUCServiceKey,
+          amount,
+          body.description || `${service} credit/refund`
+        );
+
+        return NextResponse.json({
+          success: true,
+          result,
+          account: serializeLUCAccount(updatedAccount),
+        });
       }
 
       // ─────────────────────────────────────────────────────
@@ -150,13 +188,14 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        engine.updatePlan(planId);
-        saveAccount(engine.getAccount());
+        const updatedAccount = await accountManager.changePlan(userId, planId);
+        const newEngine = createLUCEngine(updatedAccount);
 
         return NextResponse.json({
           success: true,
           message: `Plan updated to ${planId}`,
-          summary: engine.getSummary(),
+          summary: newEngine.getSummary(),
+          account: serializeLUCAccount(updatedAccount),
         });
       }
 
@@ -164,13 +203,14 @@ export async function POST(request: NextRequest) {
       // Reset Billing Cycle
       // ─────────────────────────────────────────────────────
       case 'reset-cycle': {
-        engine.resetBillingCycle();
-        saveAccount(engine.getAccount());
+        const updatedAccount = await accountManager.resetBillingCycle(userId);
+        const newEngine = createLUCEngine(updatedAccount);
 
         return NextResponse.json({
           success: true,
           message: 'Billing cycle reset',
-          summary: engine.getSummary(),
+          summary: newEngine.getSummary(),
+          account: serializeLUCAccount(updatedAccount),
         });
       }
 
@@ -182,6 +222,114 @@ export async function POST(request: NextRequest) {
           success: true,
           services: SERVICE_BUCKETS,
           plans: LUC_PLANS,
+        });
+      }
+
+      // ─────────────────────────────────────────────────────
+      // Get Usage History
+      // ─────────────────────────────────────────────────────
+      case 'get-history': {
+        const limit = body.limit || 100;
+        const history = await accountManager.getUsageHistory(userId, limit);
+
+        return NextResponse.json({
+          success: true,
+          history,
+          count: history.length,
+        });
+      }
+
+      // ─────────────────────────────────────────────────────
+      // Get Account Statistics
+      // ─────────────────────────────────────────────────────
+      case 'get-stats': {
+        const stats = await accountManager.getAccountStats(userId);
+
+        return NextResponse.json({
+          success: true,
+          stats,
+        });
+      }
+
+      // ─────────────────────────────────────────────────────
+      // Export Data
+      // ─────────────────────────────────────────────────────
+      case 'export': {
+        const exportFormat = format || 'json';
+        const exportData = await accountManager.exportData(userId, exportFormat);
+
+        return NextResponse.json({
+          success: true,
+          format: exportFormat,
+          data: exportData,
+          filename: `luc-export-${userId}-${new Date().toISOString().split('T')[0]}.${exportFormat}`,
+        });
+      }
+
+      // ─────────────────────────────────────────────────────
+      // Import Data
+      // ─────────────────────────────────────────────────────
+      case 'import': {
+        if (!data) {
+          return NextResponse.json(
+            { success: false, error: 'Missing import data' },
+            { status: 400 }
+          );
+        }
+
+        await accountManager.importData(userId, data);
+        const updatedAccount = await storage.getOrCreateAccount(userId);
+
+        return NextResponse.json({
+          success: true,
+          message: 'Data imported successfully',
+          account: serializeLUCAccount(updatedAccount),
+        });
+      }
+
+      // ─────────────────────────────────────────────────────
+      // Get Industry Presets
+      // ─────────────────────────────────────────────────────
+      case 'get-presets': {
+        const category = body.category;
+        const presets = category ? getPresetsByCategory(category) : INDUSTRY_PRESETS;
+
+        return NextResponse.json({
+          success: true,
+          presets,
+          count: presets.length,
+        });
+      }
+
+      // ─────────────────────────────────────────────────────
+      // Apply Industry Preset
+      // ─────────────────────────────────────────────────────
+      case 'apply-preset': {
+        if (!presetId) {
+          return NextResponse.json(
+            { success: false, error: 'Missing presetId' },
+            { status: 400 }
+          );
+        }
+
+        const preset = getPreset(presetId);
+        if (!preset) {
+          return NextResponse.json(
+            { success: false, error: `Preset not found: ${presetId}` },
+            { status: 404 }
+          );
+        }
+
+        // Change to recommended plan
+        const updatedAccount = await accountManager.changePlan(userId, preset.recommendedPlan);
+        const newEngine = createLUCEngine(updatedAccount);
+
+        return NextResponse.json({
+          success: true,
+          message: `Applied preset: ${preset.name}`,
+          preset,
+          summary: newEngine.getSummary(),
+          account: serializeLUCAccount(updatedAccount),
         });
       }
 
