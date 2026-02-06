@@ -5,8 +5,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'A.I.M.S. | Hybrid Business Architect',
-  description: 'AI Managed Systems powered by ACHEEVY',
+  title: 'A.I.M.S. | AI Managed Solutions',
+  description: 'AI Managed Solutions powered by ACHEEVY',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

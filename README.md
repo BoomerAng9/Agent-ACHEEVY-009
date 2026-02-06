@@ -1,5 +1,5 @@
 # A.I.M.S. - AI Managed Solutions
-### The Hybrid Business Architect Platform
+### AI Managed Solutions Platform
 
 **PlugMeIn.com | ACHEEVY | AVVA NOON | Chicken Hawk**
 

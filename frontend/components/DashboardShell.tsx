@@ -17,7 +17,7 @@ export function DashboardShell({ children }: Props) {
         <aside className="hidden w-64 border-r border-amber-50/8 bg-black/40/60 px-3 py-4 backdrop-blur-xl lg:block">
           <div className="mb-6 px-2">
             <p className="text-[0.7rem] uppercase tracking-[0.22em] text-amber-200/70">
-              The Hybrid Business Architect
+              AI Managed Solutions
             </p>
             <p className="mt-1 text-xs text-amber-100/65">
               ACHEEVY command center

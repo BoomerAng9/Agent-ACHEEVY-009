@@ -12,7 +12,7 @@ export default function SignUpPage() {
           CREATE YOUR ACCOUNT
         </h1>
         <p className="mt-3 text-sm text-amber-100/80">
-          Join the Hybrid Business Architect platform and start building.
+          Join the AI Managed Solutions platform and start building.
         </p>
       </header>
 

@@ -9,7 +9,7 @@ export default function SignInPage() {
           Welcome back
         </p>
         <h1 className="mt-1 text-[1.3rem] font-semibold tracking-[0.3em] text-amber-50 font-display">
-          THE HYBRID BUSINESS ARCHITECT
+          AI MANAGED SOLUTIONS
         </h1>
         <p className="mt-3 text-sm text-amber-100/80">
           Sign in to orchestrate ACHEEVY and your Boomer_Ang teams.
