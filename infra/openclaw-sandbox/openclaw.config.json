@@ -207,7 +207,24 @@
     "terminology": {
       "singular": "Boomer_Ang",
       "plural": "Boomer_Angs",
-      "description": "A.I.M.S. AI-powered autonomous agents"
+      "description": "A.I.M.S. AI-powered autonomous agents for the Garage to Global seller journey"
+    },
+    "personas": {
+      "enabled": true,
+      "configPath": "/app/registry/personas.json",
+      "available": [
+        "Researcher_Ang",
+        "Optimizer_Ang",
+        "Syncer_Ang",
+        "Responder_Ang",
+        "Advertiser_Ang",
+        "Creator_Ang",
+        "Analyst_Ang",
+        "Expander_Ang",
+        "Builder_Ang",
+        "Orchestrator_Ang"
+      ],
+      "defaultPersona": "Orchestrator_Ang"
     },
     "defaults": {
       "namePrefix": "Boomer_Ang_",
@@ -228,6 +245,7 @@
     },
     "registry": {
       "path": "/home/node/.openclaw/boomerangs",
+      "personasPath": "/app/registry/personas.json",
       "autoDiscovery": true
     }
   },
