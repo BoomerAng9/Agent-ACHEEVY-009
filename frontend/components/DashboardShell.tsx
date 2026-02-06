@@ -4,6 +4,8 @@
 import type { ReactNode } from "react";
 import { DashboardNav } from "./DashboardNav";
 import { LogoWallBackground } from "./LogoWallBackground";
+import { DynamicTagline } from "./DynamicTagline";
+import { MottoBar } from "./MottoBar";
 
 type Props = {
   children: ReactNode;
@@ -41,6 +43,11 @@ export function DashboardShell({ children }: Props) {
               .
             </p>
           </div>
+
+          {/* Dynamic tagline — soft billboard */}
+          <div className="mt-6">
+            <DynamicTagline compact />
+          </div>
         </aside>
 
         {/* Main column */}
@@ -52,7 +59,7 @@ export function DashboardShell({ children }: Props) {
                 Dashboard
               </span>
               <span className="text-sm text-amber-50">
-                Think it. Speak it. ACHEEVY builds it.
+                Think it. Prompt it. Let ACHEEVY manage it.
               </span>
             </div>
             <div className="flex items-center gap-4">
@@ -78,6 +85,9 @@ export function DashboardShell({ children }: Props) {
           </main>
         </div>
       </div>
+
+      {/* Doctrine — ambient reinforcement */}
+      <MottoBar position="fixed" />
     </LogoWallBackground>
   );
 }

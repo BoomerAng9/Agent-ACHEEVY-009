@@ -7,7 +7,7 @@ export function HeroAcheevy() {
           AI MANAGED SOLUTIONS
         </p>
         <h1 className="text-4xl font-semibold tracking-tight text-amber-50 md:text-5xl font-display leading-[1.1]">
-          Think it. Speak it.<br/><span className="text-amber-300">ACHEEVY</span> builds it.
+          Think it. Prompt it.<br/>Let <span className="text-amber-300">ACHEEVY</span> build it.
         </h1>
         <p className="max-w-xl text-sm leading-relaxed text-amber-100/80">
           Orchestrate Boomer_Ang agents, aiPlugs, and A.I.M.S. workflows from a
