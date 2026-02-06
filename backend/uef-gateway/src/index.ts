@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { v4 as uuidv4 } from 'uuid';
 import { ACPStandardizedRequest, ACPResponse } from './acp/types';
 import { LUCEngine } from './luc';
@@ -20,12 +22,36 @@ import logger from './logger';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// --------------------------------------------------------------------------
+// Security Middleware
+// --------------------------------------------------------------------------
+app.use(helmet({ contentSecurityPolicy: false }));
+
 const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
 app.use(cors({
   origin: corsOrigin.split(',').map(o => o.trim()),
   methods: ['GET', 'POST'],
 }));
 app.use(express.json());
+
+// Global rate limit: 100 req / 15 min per IP
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Rate limit exceeded. Activity breeds Activity — but pace yourself.' },
+});
+app.use(globalLimiter);
+
+// Stricter limiter for ACP ingress: 30 req / min per IP
+const acpLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 30,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'ACP rate limit exceeded. Please wait before sending more requests.' },
+});
 
 // --------------------------------------------------------------------------
 // Health Check
@@ -221,7 +247,7 @@ function buildResponseMessage(intent: string, oraclePassed: boolean, agentExecut
 // --------------------------------------------------------------------------
 // ACP Ingress (Layer 1)
 // --------------------------------------------------------------------------
-app.post('/ingress/acp', async (req, res) => {
+app.post('/ingress/acp', acpLimiter, async (req, res) => {
   try {
     const rawBody = req.body;
 
