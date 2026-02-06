@@ -277,13 +277,13 @@ export class GrowthOrchestrator {
       activeMissions: [],
       completedMissions: [],
       metrics: {
-        startingRevenue: profile.metrics.monthlyRevenue,
-        currentRevenue: profile.metrics.monthlyRevenue,
+        startingRevenue: profile.metrics.revenue.month,
+        currentRevenue: profile.metrics.revenue.month,
         revenueGrowth: 0,
-        startingProducts: profile.metrics.totalProducts,
-        currentProducts: profile.metrics.totalProducts,
-        startingMarketplaces: profile.metrics.marketplaces.length,
-        currentMarketplaces: profile.metrics.marketplaces.length,
+        startingProducts: profile.totalProducts,
+        currentProducts: profile.totalProducts,
+        startingMarketplaces: profile.marketplaces.length,
+        currentMarketplaces: profile.marketplaces.length,
         missionsCompleted: 0,
         milestonesAchieved: 0,
         daysInPlan: 0,
@@ -342,7 +342,7 @@ export class GrowthOrchestrator {
         if (!req.completed) allComplete = false;
       }
 
-      if (allComplete && milestone.status !== 'completed') {
+      if (allComplete) {
         milestone.status = 'completed';
         milestone.completedDate = new Date();
         plan.metrics.milestonesAchieved++;
@@ -387,16 +387,13 @@ export class GrowthOrchestrator {
         id: uuidv4(),
         sellerId: plan.sellerId,
         type: template.type,
-        status: 'pending',
-        priority: template.priority,
+        status: 'planning',
         title: template.title,
         description: template.description,
-        objectives: template.objectives,
-        deliverables: template.deliverables,
-        estimatedHours: template.estimatedHours,
-        assignedAgents: [],
+        scope: template.scope || {},
+        config: template.config || {},
+        teams: template.teams || [],
         createdAt: new Date(),
-        updatedAt: new Date(),
       };
 
       this.missions.set(mission.id, mission);
@@ -414,12 +411,11 @@ export class GrowthOrchestrator {
     const mission = this.missions.get(missionId);
     if (!mission) throw new Error(`Mission ${missionId} not found`);
 
-    mission.status = 'in_progress';
-    mission.startedAt = new Date();
-    mission.updatedAt = new Date();
+    mission.status = 'active';
 
     // Assign virtual agents based on mission type
-    mission.assignedAgents = this.assignAgentsToMission(mission);
+    const agents = this.assignAgentsToMission(mission);
+    mission.config = { ...mission.config, assignedAgents: agents };
 
     await this.emitEvent('mission_started', mission.id, { mission });
 
@@ -436,13 +432,23 @@ export class GrowthOrchestrator {
     const mission = this.missions.get(missionId);
     if (!mission) throw new Error(`Mission ${missionId} not found`);
 
-    mission.status = results.success ? 'completed' : 'failed';
+    mission.status = results.success ? 'complete' : 'failed';
     mission.completedAt = new Date();
-    mission.results = results;
-    mission.updatedAt = new Date();
+    mission.results = {
+      summary: results.notes || `Mission ${results.success ? 'completed successfully' : 'failed'}`,
+      metrics: {},
+      actions: results.deliverables.map((d, i) => ({
+        id: `${missionId}-action-${i}`,
+        type: 'deliverable',
+        description: d,
+        timestamp: new Date(),
+        success: results.success,
+      })),
+      insights: [],
+    };
 
     // Update plan
-    for (const plan of this.plans.values()) {
+    for (const plan of Array.from(this.plans.values())) {
       const index = plan.activeMissions.findIndex((m) => m.id === missionId);
       if (index !== -1) {
         plan.activeMissions.splice(index, 1);
@@ -474,10 +480,19 @@ export class GrowthOrchestrator {
     const stageRecs = this.sellerAgent.getStageRecommendations(profile.stage);
     recommendations.push(...stageRecs);
 
-    // Product-specific recommendations
-    for (const product of profile.products.slice(0, 5)) {
-      const productRecs = this.getProductRecommendations(product, profile.stage);
-      recommendations.push(...productRecs);
+    // Product-specific recommendations would require product data
+    // For now, generate general recommendations based on product count
+    if (profile.totalProducts > 0) {
+      // Add general product improvement recommendations
+      recommendations.push({
+        id: `product-improve-${Date.now()}`,
+        type: 'listing',
+        priority: 'medium',
+        title: 'Optimize Product Listings',
+        description: `Review and optimize your ${profile.totalProducts} products for better visibility`,
+        impact: { metric: 'conversion_rate', estimated: 0.1, confidence: 0.7 },
+        actions: ['Review product titles', 'Improve descriptions', 'Optimize images'],
+      });
     }
 
     // Marketplace expansion recommendations
@@ -524,7 +539,7 @@ export class GrowthOrchestrator {
     return {
       stages: relevantStages,
       totalEstimatedTime: this.calculateTotalTimeline(relevantStages),
-      keyMilestones: [...new Set(keyMilestones)],
+      keyMilestones: Array.from(new Set(keyMilestones)),
       criticalSuccessFactors: [
         'Consistent product quality and customer satisfaction',
         'Profitable unit economics from day one',
@@ -550,14 +565,11 @@ export class GrowthOrchestrator {
 
     // From active missions
     for (const mission of plan.activeMissions.slice(0, 3)) {
-      if (mission.status === 'pending') {
+      if (mission.status === 'planning') {
         immediate.push(`Start mission: ${mission.title}`);
-      } else if (mission.status === 'in_progress') {
-        for (const obj of mission.objectives.slice(0, 2)) {
-          if (!obj.completed) {
-            thisWeek.push(obj.description);
-          }
-        }
+      } else if (mission.status === 'active') {
+        // Mission is in progress
+        thisWeek.push(`Continue working on: ${mission.title}`);
       }
     }
 
@@ -642,9 +654,9 @@ export class GrowthOrchestrator {
             type: 'reviews',
             metric: 'Total Reviews',
             target: stageReqs.minReviews,
-            current: currentMetrics.totalReviews || 0,
+            current: 0, // Reviews not tracked in SellerMetrics
             unit: 'reviews',
-            completed: (currentMetrics.totalReviews || 0) >= stageReqs.minReviews,
+            completed: false,
           },
         ],
         rewards: [
@@ -666,15 +678,15 @@ export class GrowthOrchestrator {
 
   private getMissionTemplatesForStage(
     stage: SellerStage
-  ): Omit<SellerMission, 'id' | 'sellerId' | 'createdAt' | 'updatedAt' | 'assignedAgents'>[] {
+  ): any[] {
     const templates: Record<
       SellerStage,
-      Omit<SellerMission, 'id' | 'sellerId' | 'createdAt' | 'updatedAt' | 'assignedAgents'>[]
+      any[]
     > = {
       garage: [
         {
           type: 'listing_optimization',
-          status: 'pending',
+          status: 'planning',
           priority: 'high',
           title: 'Optimize First Product Listing',
           description: 'Ensure your first product listing follows marketplace best practices',
@@ -689,7 +701,7 @@ export class GrowthOrchestrator {
         },
         {
           type: 'market_research',
-          status: 'pending',
+          status: 'planning',
           priority: 'high',
           title: 'Competitive Analysis',
           description: 'Research top competitors and identify opportunities',
@@ -705,7 +717,7 @@ export class GrowthOrchestrator {
       workshop: [
         {
           type: 'product_expansion',
-          status: 'pending',
+          status: 'planning',
           priority: 'high',
           title: 'Product Line Expansion',
           description: 'Identify and launch complementary products',
@@ -720,7 +732,7 @@ export class GrowthOrchestrator {
         },
         {
           type: 'advertising_setup',
-          status: 'pending',
+          status: 'planning',
           priority: 'high',
           title: 'Launch PPC Campaigns',
           description: 'Set up and optimize advertising campaigns',
@@ -737,7 +749,7 @@ export class GrowthOrchestrator {
       warehouse: [
         {
           type: 'channel_expansion',
-          status: 'pending',
+          status: 'planning',
           priority: 'high',
           title: 'Multi-Channel Expansion',
           description: 'Expand to additional sales channels',
@@ -752,7 +764,7 @@ export class GrowthOrchestrator {
         },
         {
           type: 'operations_optimization',
-          status: 'pending',
+          status: 'planning',
           priority: 'medium',
           title: 'Streamline Operations',
           description: 'Implement systems for scalable operations',
@@ -769,7 +781,7 @@ export class GrowthOrchestrator {
       enterprise: [
         {
           type: 'brand_building',
-          status: 'pending',
+          status: 'planning',
           priority: 'high',
           title: 'Brand Development',
           description: 'Build brand equity and recognition',
@@ -784,7 +796,7 @@ export class GrowthOrchestrator {
         },
         {
           type: 'team_building',
-          status: 'pending',
+          status: 'planning',
           priority: 'medium',
           title: 'Team Expansion',
           description: 'Build team to support growth',
@@ -801,7 +813,7 @@ export class GrowthOrchestrator {
       global: [
         {
           type: 'international_expansion',
-          status: 'pending',
+          status: 'planning',
           priority: 'high',
           title: 'International Expansion',
           description: 'Launch in international markets',
@@ -816,7 +828,7 @@ export class GrowthOrchestrator {
         },
         {
           type: 'exit_preparation',
-          status: 'pending',
+          status: 'planning',
           priority: 'medium',
           title: 'Exit Preparation',
           description: 'Prepare business for potential acquisition',
@@ -841,12 +853,21 @@ export class GrowthOrchestrator {
       market_research: ['research-agent-001', 'data-agent-001'],
       listing_optimization: ['seo-agent-001', 'content-agent-001'],
       price_optimization: ['pricing-agent-001', 'analytics-agent-001'],
+      inventory_sync: ['sync-agent-001', 'inventory-agent-001'],
       inventory_management: ['inventory-agent-001'],
+      review_management: ['review-agent-001', 'customer-agent-001'],
+      customer_service: ['support-agent-001', 'response-agent-001'],
+      expansion: ['growth-agent-001', 'marketplace-agent-001'],
+      marketplace_expansion: ['marketplace-agent-001', 'integration-agent-001'],
+      competitor_analysis: ['research-agent-001', 'analytics-agent-001'],
+      advertising: ['ppc-agent-001', 'marketing-agent-001'],
       advertising_setup: ['ppc-agent-001', 'analytics-agent-001'],
       advertising_optimization: ['ppc-agent-001', 'optimization-agent-001'],
       product_expansion: ['research-agent-001', 'sourcing-agent-001'],
-      channel_expansion: ['marketplace-agent-001', 'integration-agent-001'],
+      content_creation: ['content-agent-001', 'creative-agent-001'],
       brand_building: ['brand-agent-001', 'content-agent-001'],
+      analytics_setup: ['analytics-agent-001', 'data-agent-001'],
+      channel_expansion: ['marketplace-agent-001', 'integration-agent-001'],
       customer_acquisition: ['marketing-agent-001', 'ads-agent-001'],
       operations_optimization: ['ops-agent-001', 'automation-agent-001'],
       international_expansion: ['intl-agent-001', 'localization-agent-001'],
@@ -926,7 +947,7 @@ export class GrowthOrchestrator {
     if (product.images.length < 5) {
       recommendations.push({
         id: uuidv4(),
-        type: 'optimization',
+        type: 'listing',
         priority: 'high',
         title: `Add More Images: ${product.name}`,
         description: `Product has only ${product.images.length} images. 5-7 images significantly increase conversion.`,

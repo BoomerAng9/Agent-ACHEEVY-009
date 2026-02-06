@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CountrySelect, StateSelect, CityInput, PostalCodeInput } from '@/components/form/RegionSelect';
-import type { Country, AdminArea } from '@/lib/region/types';
+import type { Country } from '@/lib/region/types';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function SignUpPage() {
 
   // Region details
   const [country, setCountry] = useState<Country | null>(null);
-  const [state, setState] = useState<AdminArea | null>(null);
+  const [state, setState] = useState<string | null>(null);
   const [city, setCity] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
@@ -258,7 +258,7 @@ export default function SignUpPage() {
         <form onSubmit={handleRegionSubmit} className="space-y-4">
           <div className="space-y-4">
             <CountrySelect
-              value={country}
+              value={country?.code}
               onChange={(c) => {
                 setCountry(c);
                 setState(null); // Reset state when country changes
@@ -270,7 +270,7 @@ export default function SignUpPage() {
             {country && (country.code === 'US' || country.code === 'CA' || country.code === 'AU' || country.code === 'MX') && (
               <StateSelect
                 countryCode={country.code}
-                value={state}
+                value={state ?? undefined}
                 onChange={setState}
                 label={country.code === 'CA' ? 'Province' : 'State'}
                 placeholder={`Select ${country.code === 'CA' ? 'province' : 'state'}...`}

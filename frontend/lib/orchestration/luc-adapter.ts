@@ -497,6 +497,6 @@ export function createLUCGatedExecutor(userId: string) {
 // Export Types
 // ─────────────────────────────────────────────────────────────
 
-export type { ToolUsageEstimate, CanExecuteResult, DebitResult, CreditResult, LUCSummary, LUCQuote };
+export type { CanExecuteResult, DebitResult, CreditResult, LUCSummary, LUCQuote };
 
 export default LUCAdapter;

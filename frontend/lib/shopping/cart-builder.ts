@@ -97,13 +97,8 @@ export class CartBuilder {
       missionId,
       status: 'draft',
       items: option.items,
-      subtotal: option.subtotal,
-      shipping: option.estimatedShipping,
-      tax: option.estimatedTax,
-      total: option.total,
+      summary: option.summary,
       retailerBreakdown: this.calculateRetailerBreakdown(option.items),
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     this.carts.set(cart.id, cart);
@@ -119,13 +114,19 @@ export class CartBuilder {
       missionId,
       status: 'draft',
       items: [],
-      subtotal: 0,
-      shipping: 0,
-      tax: 0,
-      total: 0,
+      summary: {
+        subtotal: 0,
+        shippingTotal: 0,
+        taxEstimate: 0,
+        totalSavings: 0,
+        grandTotal: 0,
+        itemCount: 0,
+        estimatedDelivery: {
+          earliest: new Date(),
+          latest: new Date(),
+        },
+      },
       retailerBreakdown: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     this.carts.set(cart.id, cart);
@@ -151,11 +152,26 @@ export class CartBuilder {
     const cart = this.carts.get(cartId);
     if (!cart) throw new Error(`Cart ${cartId} not found`);
 
+    const qty = quantity || item.quantity;
     const cartItem: CartItem = {
+      id: uuidv4(),
       itemId: item.id,
-      finding,
-      quantity: quantity || item.quantity,
-      lineTotal: finding.price * (quantity || item.quantity),
+      productId: finding.product.id,
+      productName: finding.product.name,
+      productUrl: finding.product.url,
+      productImage: finding.product.image,
+      retailer: finding.product.retailer,
+      retailerProductId: finding.product.id,
+      pricePerUnit: finding.product.price,
+      quantity: qty,
+      totalPrice: finding.product.price * qty,
+      originalPrice: finding.product.originalPrice,
+      savings: finding.product.originalPrice ? (finding.product.originalPrice - finding.product.price) * qty : undefined,
+      availability: (finding.product.availability as 'in_stock' | 'limited' | 'backorder' | 'out_of_stock') || 'in_stock',
+      shippingCost: 0, // To be calculated
+      shippingEstimate: 'Standard shipping',
+      rating: finding.product.rating,
+      reviewCount: finding.product.reviewCount,
     };
 
     cart.items.push(cartItem);
@@ -192,7 +208,7 @@ export class CartBuilder {
     }
 
     item.quantity = quantity;
-    item.lineTotal = item.finding.price * quantity;
+    item.totalPrice = item.pricePerUnit * quantity;
     this.recalculateTotals(cart);
 
     return cart;
@@ -212,8 +228,19 @@ export class CartBuilder {
     const item = cart.items.find((i) => i.itemId === itemId);
     if (!item) throw new Error(`Item ${itemId} not found in cart`);
 
-    item.finding = newFinding;
-    item.lineTotal = newFinding.price * item.quantity;
+    // Update item with new product details
+    item.productId = newFinding.product.id;
+    item.productName = newFinding.product.name;
+    item.productUrl = newFinding.product.url;
+    item.productImage = newFinding.product.image;
+    item.retailer = newFinding.product.retailer;
+    item.retailerProductId = newFinding.product.id;
+    item.pricePerUnit = newFinding.product.price;
+    item.totalPrice = newFinding.product.price * item.quantity;
+    item.originalPrice = newFinding.product.originalPrice;
+    item.rating = newFinding.product.rating;
+    item.reviewCount = newFinding.product.reviewCount;
+    item.availability = (newFinding.product.availability as 'in_stock' | 'limited' | 'backorder' | 'out_of_stock') || 'in_stock';
     this.recalculateTotals(cart);
 
     return cart;
@@ -237,7 +264,7 @@ export class CartBuilder {
             const item = cart.items.find((i) => i.itemId === mod.itemId);
             if (item) {
               item.quantity = mod.data.quantity;
-              item.lineTotal = item.finding.price * mod.data.quantity;
+              item.totalPrice = item.pricePerUnit * mod.data.quantity;
             }
           }
           break;
@@ -246,19 +273,38 @@ export class CartBuilder {
           if (mod.data?.finding) {
             const item = cart.items.find((i) => i.itemId === mod.itemId);
             if (item) {
-              item.finding = mod.data.finding;
-              item.lineTotal = mod.data.finding.price * item.quantity;
+              const f = mod.data.finding;
+              item.productId = f.product.id;
+              item.productName = f.product.name;
+              item.productUrl = f.product.url;
+              item.productImage = f.product.image;
+              item.retailer = f.product.retailer;
+              item.retailerProductId = f.product.id;
+              item.pricePerUnit = f.product.price;
+              item.totalPrice = f.product.price * item.quantity;
             }
           }
           break;
 
         case 'add':
           if (mod.data?.finding) {
+            const f = mod.data.finding;
+            const qty = mod.data.quantity || 1;
             cart.items.push({
+              id: uuidv4(),
               itemId: mod.itemId,
-              finding: mod.data.finding,
-              quantity: mod.data.quantity || 1,
-              lineTotal: mod.data.finding.price * (mod.data.quantity || 1),
+              productId: f.product.id,
+              productName: f.product.name,
+              productUrl: f.product.url,
+              productImage: f.product.image,
+              retailer: f.product.retailer,
+              retailerProductId: f.product.id,
+              pricePerUnit: f.product.price,
+              quantity: qty,
+              totalPrice: f.product.price * qty,
+              availability: (f.product.availability as 'in_stock' | 'limited' | 'backorder' | 'out_of_stock') || 'in_stock',
+              shippingCost: 0,
+              shippingEstimate: 'Standard shipping',
             });
           }
           break;
@@ -291,62 +337,63 @@ export class CartBuilder {
     // Check each item
     for (const item of cart.items) {
       // Stock check
-      if (!item.finding.inStock) {
+      if (item.availability === 'out_of_stock') {
         errors.push({
           type: 'out_of_stock',
           itemId: item.itemId,
-          message: `"${item.finding.productName}" is out of stock`,
+          message: `"${item.productName}" is out of stock`,
         });
       } else if (
-        item.finding.stockQuantity !== undefined &&
-        item.finding.stockQuantity < item.quantity
+        item.stockCount !== undefined &&
+        item.stockCount < item.quantity
       ) {
-        if (item.finding.stockQuantity === 0) {
+        if (item.stockCount === 0) {
           errors.push({
             type: 'out_of_stock',
             itemId: item.itemId,
-            message: `"${item.finding.productName}" is out of stock`,
+            message: `"${item.productName}" is out of stock`,
           });
         } else {
           warnings.push({
             type: 'low_stock',
             itemId: item.itemId,
-            message: `Only ${item.finding.stockQuantity} units available for "${item.finding.productName}"`,
+            message: `Only ${item.stockCount} units available for "${item.productName}"`,
           });
         }
       }
 
-      // Shipping delay warning
-      if (item.finding.deliveryDays && item.finding.deliveryDays > 7) {
+      // Shipping delay warning - shippingEstimate is a string, not days
+      if (item.shippingEstimate && item.shippingEstimate.includes('week')) {
         warnings.push({
           type: 'slow_shipping',
           itemId: item.itemId,
-          message: `"${item.finding.productName}" has ${item.finding.deliveryDays}-day delivery`,
+          message: `"${item.productName}" has extended delivery time`,
         });
       }
     }
 
     // Budget validation
     if (constraints) {
-      if (cart.total > constraints.totalBudget) {
+      const total = cart.summary.grandTotal;
+      if (total > constraints.totalLimit) {
         errors.push({
           type: 'budget_exceeded',
-          message: `Cart total $${cart.total.toFixed(2)} exceeds budget of $${constraints.totalBudget}`,
+          message: `Cart total $${total.toFixed(2)} exceeds budget of $${constraints.totalLimit}`,
         });
-      } else if (cart.total > constraints.totalBudget * 0.9) {
+      } else if (total > constraints.totalLimit * 0.9) {
         warnings.push({
           type: 'near_budget',
-          message: `Cart total $${cart.total.toFixed(2)} is near budget limit of $${constraints.totalBudget}`,
+          message: `Cart total $${total.toFixed(2)} is near budget limit of $${constraints.totalLimit}`,
         });
       }
 
-      if (constraints.maxPerItem) {
+      if (constraints.perItemLimit) {
         for (const item of cart.items) {
-          if (item.lineTotal > constraints.maxPerItem) {
+          if (item.totalPrice > constraints.perItemLimit) {
             errors.push({
               type: 'budget_exceeded',
               itemId: item.itemId,
-              message: `"${item.finding.productName}" at $${item.lineTotal.toFixed(2)} exceeds per-item limit of $${constraints.maxPerItem}`,
+              message: `"${item.productName}" at $${item.totalPrice.toFixed(2)} exceeds per-item limit of $${constraints.perItemLimit}`,
             });
           }
         }
@@ -370,27 +417,32 @@ export class CartBuilder {
     const cart = this.carts.get(cartId);
     if (!cart) throw new Error(`Cart ${cartId} not found`);
 
-    const originalTotal = cart.total;
+    const originalTotal = cart.summary.grandTotal;
     const changes: OptimizationChange[] = [];
 
     // Try to swap items for cheaper alternatives
     for (const item of cart.items) {
       const alternatives = alternateFindings.get(item.itemId) || [];
       const cheaper = alternatives
-        .filter((f) => f.price < item.finding.price && f.inStock)
-        .sort((a, b) => a.price - b.price)[0];
+        .filter((f) => f.product.price < item.pricePerUnit && f.product.availability === 'in_stock')
+        .sort((a, b) => a.product.price - b.product.price)[0];
 
       if (cheaper) {
-        const savings = (item.finding.price - cheaper.price) * item.quantity;
+        const savings = (item.pricePerUnit - cheaper.product.price) * item.quantity;
         if (savings > 0.5) {
           // Only suggest if savings > $0.50
-          item.finding = cheaper;
-          item.lineTotal = cheaper.price * item.quantity;
+          item.productId = cheaper.product.id;
+          item.productName = cheaper.product.name;
+          item.productUrl = cheaper.product.url;
+          item.productImage = cheaper.product.image;
+          item.retailer = cheaper.product.retailer;
+          item.pricePerUnit = cheaper.product.price;
+          item.totalPrice = cheaper.product.price * item.quantity;
 
           changes.push({
             itemId: item.itemId,
             type: 'swapped',
-            description: `Swapped to cheaper option from ${cheaper.retailer}`,
+            description: `Swapped to cheaper option from ${cheaper.product.retailer}`,
             savings,
           });
         }
@@ -414,8 +466,8 @@ export class CartBuilder {
 
     return {
       originalTotal,
-      optimizedTotal: cart.total,
-      savings: originalTotal - cart.total,
+      optimizedTotal: cart.summary.grandTotal,
+      savings: originalTotal - cart.summary.grandTotal,
       changes,
     };
   }
@@ -423,20 +475,16 @@ export class CartBuilder {
   /**
    * Get cart summary for display
    */
-  getCartSummary(cartId: string): CartSummary {
+  getCartSummary(cartId: string): CartSummary & { cartId: string; missionId: string; totalQuantity: number; retailers: string[]; status: string } {
     const cart = this.carts.get(cartId);
     if (!cart) throw new Error(`Cart ${cartId} not found`);
 
     return {
+      ...cart.summary,
       cartId: cart.id,
       missionId: cart.missionId,
-      itemCount: cart.items.length,
       totalQuantity: cart.items.reduce((sum, i) => sum + i.quantity, 0),
-      subtotal: cart.subtotal,
-      shipping: cart.shipping,
-      tax: cart.tax,
-      total: cart.total,
-      retailers: [...new Set(cart.items.map((i) => i.finding.retailer))],
+      retailers: Array.from(new Set(cart.items.map((i) => i.retailer))),
       status: cart.status,
     };
   }
@@ -448,9 +496,7 @@ export class CartBuilder {
     const cart = this.carts.get(cartId);
     if (!cart) throw new Error(`Cart ${cartId} not found`);
 
-    cart.status = 'pending_approval';
-    cart.updatedAt = new Date();
-
+    // Cart remains in draft until approved
     return cart;
   }
 
@@ -464,7 +510,6 @@ export class CartBuilder {
     cart.status = 'approved';
     cart.approvedBy = approvedBy;
     cart.approvedAt = new Date();
-    cart.updatedAt = new Date();
 
     return cart;
   }
@@ -473,14 +518,11 @@ export class CartBuilder {
    * Finalize cart after successful payment
    * Called by ACHEEVY after payment processing
    */
-  finalize(cartId: string, orderIds: Record<string, string>): AggregatedCart {
+  finalize(cartId: string, _orderIds: Record<string, string>): AggregatedCart {
     const cart = this.carts.get(cartId);
     if (!cart) throw new Error(`Cart ${cartId} not found`);
 
-    cart.status = 'completed';
-    cart.finalizedAt = new Date();
-    cart.orderIds = orderIds;
-    cart.updatedAt = new Date();
+    cart.status = 'purchased';
 
     return cart;
   }
@@ -490,12 +532,24 @@ export class CartBuilder {
   // ─────────────────────────────────────────────────────────────
 
   private recalculateTotals(cart: AggregatedCart): void {
-    cart.subtotal = cart.items.reduce((sum, i) => sum + i.lineTotal, 0);
-    cart.shipping = this.calculateShipping(cart.items);
-    cart.tax = cart.subtotal * this.config.defaultTaxRate;
-    cart.total = cart.subtotal + cart.shipping + cart.tax;
+    const subtotal = cart.items.reduce((sum, i) => sum + i.totalPrice, 0);
+    const shippingTotal = this.calculateShipping(cart.items);
+    const taxEstimate = subtotal * this.config.defaultTaxRate;
+    const totalSavings = cart.items.reduce((sum, i) => sum + (i.savings || 0), 0);
+
+    cart.summary = {
+      subtotal,
+      shippingTotal,
+      taxEstimate,
+      totalSavings,
+      grandTotal: subtotal + shippingTotal + taxEstimate,
+      itemCount: cart.items.length,
+      estimatedDelivery: {
+        earliest: new Date(),
+        latest: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      },
+    };
     cart.retailerBreakdown = this.calculateRetailerBreakdown(cart.items);
-    cart.updatedAt = new Date();
   }
 
   private calculateShipping(items: CartItem[]): number {
@@ -503,22 +557,22 @@ export class CartBuilder {
       // Group by retailer and take max shipping per retailer
       const byRetailer = new Map<string, number>();
       for (const item of items) {
-        const retailer = item.finding.retailer;
-        const shipping = item.finding.shippingEstimate || 0;
+        const retailer = item.retailer;
+        const shipping = item.shippingCost || 0;
         const current = byRetailer.get(retailer) || 0;
         byRetailer.set(retailer, Math.max(current, shipping));
       }
       return Array.from(byRetailer.values()).reduce((sum, s) => sum + s, 0);
     } else {
       // Sum all shipping
-      return items.reduce((sum, i) => sum + (i.finding.shippingEstimate || 0), 0);
+      return items.reduce((sum, i) => sum + (i.shippingCost || 0), 0);
     }
   }
 
   private optimizeShipping(cart: AggregatedCart): number {
-    const oldShipping = cart.shipping;
+    const oldShipping = cart.summary.shippingTotal;
     const newShipping = this.calculateShipping(cart.items);
-    cart.shipping = newShipping;
+    cart.summary.shippingTotal = newShipping;
     return oldShipping - newShipping;
   }
 
@@ -527,19 +581,19 @@ export class CartBuilder {
   ): AggregatedCart['retailerBreakdown'] {
     const byRetailer = new Map<
       string,
-      { subtotal: number; shipping: number; itemCount: number }
+      { subtotal: number; shippingCost: number; itemCount: number }
     >();
 
     for (const item of items) {
-      const retailer = item.finding.retailer;
+      const retailer = item.retailer;
       const current = byRetailer.get(retailer) || {
         subtotal: 0,
-        shipping: 0,
+        shippingCost: 0,
         itemCount: 0,
       };
 
-      current.subtotal += item.lineTotal;
-      current.shipping = Math.max(current.shipping, item.finding.shippingEstimate || 0);
+      current.subtotal += item.totalPrice;
+      current.shippingCost = Math.max(current.shippingCost, item.shippingCost || 0);
       current.itemCount += item.quantity;
 
       byRetailer.set(retailer, current);
@@ -547,7 +601,10 @@ export class CartBuilder {
 
     return Array.from(byRetailer.entries()).map(([retailer, data]) => ({
       retailer,
-      ...data,
+      itemCount: data.itemCount,
+      subtotal: data.subtotal,
+      shippingCost: data.shippingCost,
+      freeShippingEligible: data.subtotal >= 50, // Example threshold
     }));
   }
 
@@ -569,11 +626,11 @@ export class CartBuilder {
     // Deduplicate by combining quantities for same products
     const itemMap = new Map<string, CartItem>();
     for (const item of allItems) {
-      const key = `${item.finding.productId}:${item.finding.retailer}`;
+      const key = `${item.productId}:${item.retailer}`;
       const existing = itemMap.get(key);
       if (existing) {
         existing.quantity += item.quantity;
-        existing.lineTotal = existing.finding.price * existing.quantity;
+        existing.totalPrice = existing.pricePerUnit * existing.quantity;
       } else {
         itemMap.set(key, { ...item });
       }
@@ -584,13 +641,19 @@ export class CartBuilder {
       missionId,
       status: 'draft',
       items: Array.from(itemMap.values()),
-      subtotal: 0,
-      shipping: 0,
-      tax: 0,
-      total: 0,
+      summary: {
+        subtotal: 0,
+        shippingTotal: 0,
+        taxEstimate: 0,
+        totalSavings: 0,
+        grandTotal: 0,
+        itemCount: 0,
+        estimatedDelivery: {
+          earliest: new Date(),
+          latest: new Date(),
+        },
+      },
       retailerBreakdown: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     this.recalculateTotals(merged);
@@ -607,17 +670,12 @@ export class CartBuilder {
     if (!original) throw new Error(`Cart ${cartId} not found`);
 
     const clone: AggregatedCart = {
-      ...original,
       id: uuidv4(),
+      missionId: original.missionId,
       status: 'draft',
-      items: original.items.map((i) => ({ ...i, finding: { ...i.finding } })),
+      items: original.items.map((i) => ({ ...i, id: uuidv4() })),
+      summary: { ...original.summary },
       retailerBreakdown: [...original.retailerBreakdown],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      approvedBy: undefined,
-      approvedAt: undefined,
-      finalizedAt: undefined,
-      orderIds: undefined,
     };
 
     this.carts.set(clone.id, clone);

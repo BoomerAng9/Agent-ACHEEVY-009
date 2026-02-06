@@ -15,6 +15,7 @@ export {
   createLUCEngine,
   serializeLUCAccount,
   deserializeLUCAccount,
+  LUCEngine,
   type LUCServiceKey,
   type ServiceBucket,
   type LUCPlan,
@@ -22,8 +23,6 @@ export {
   type LUCAccountRecord,
   type LUCQuote,
   type LUCSummary,
-  type ServiceStatus,
-  type LUCEngine,
 } from './luc-engine';
 
 // Industry Presets
@@ -60,7 +59,7 @@ export {
 } from './server-storage';
 
 // LUC Client (API wrapper)
-export { LUCClient, createLUCClient, type LUCClientConfig } from './luc-client';
+export { getLucEstimateLive } from './luc-client';
 
 // Default export - main engine creator
 export { createLUCEngine as default } from './luc-engine';

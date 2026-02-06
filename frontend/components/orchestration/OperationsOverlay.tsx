@@ -266,9 +266,10 @@ interface OperationsOverlayProps {
   state: OrchestrationState;
   onClose?: () => void;
   onExpand?: () => void;
+  onMinimize?: () => void;
 }
 
-export function OperationsOverlay({ state, onClose, onExpand }: OperationsOverlayProps) {
+export function OperationsOverlay({ state, onClose, onExpand, onMinimize }: OperationsOverlayProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 

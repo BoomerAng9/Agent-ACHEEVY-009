@@ -157,8 +157,8 @@ export async function POST(request: NextRequest) {
           userId,
           service as LUCServiceKey,
           amount,
-          result.cost,
-          body.description || `${service} usage`
+          result.overageCost,
+          (validation.data as any).description || `${service} usage`
         );
 
         return NextResponse.json({
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
           userId,
           service as LUCServiceKey,
           amount,
-          body.description || `${service} credit/refund`
+          (validation.data as any).description || `${service} credit/refund`
         );
 
         return NextResponse.json({
@@ -252,7 +252,7 @@ export async function POST(request: NextRequest) {
       // Get Usage History
       // ─────────────────────────────────────────────────────
       case 'get-history': {
-        const limit = body.limit || 100;
+        const limit = (validation.data as any).limit || 100;
         const history = await accountManager.getUsageHistory(userId, limit);
 
         return NextResponse.json({
@@ -278,7 +278,7 @@ export async function POST(request: NextRequest) {
       // Export Data
       // ─────────────────────────────────────────────────────
       case 'export': {
-        const exportFormat = format || 'json';
+        const exportFormat = (format || 'json') as 'json' | 'csv';
         const exportData = await accountManager.exportData(userId, exportFormat);
 
         return NextResponse.json({
@@ -300,7 +300,7 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        await accountManager.importData(userId, data);
+        await accountManager.importData(userId, data as string);
         const updatedAccount = await storage.getOrCreateAccount(userId);
 
         return NextResponse.json({
@@ -314,7 +314,7 @@ export async function POST(request: NextRequest) {
       // Get Industry Presets
       // ─────────────────────────────────────────────────────
       case 'get-presets': {
-        const category = body.category;
+        const category = (validation.data as any).category;
         const presets = category ? getPresetsByCategory(category) : INDUSTRY_PRESETS;
 
         return NextResponse.json({
@@ -335,7 +335,7 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const preset = getPreset(presetId);
+        const preset = getPreset(presetId as string);
         if (!preset) {
           return NextResponse.json(
             { success: false, error: `Preset not found: ${presetId}` },

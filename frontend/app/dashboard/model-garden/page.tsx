@@ -515,8 +515,8 @@ const CONSUMPTION_MODELS: ConsumptionModel[] = [
 // Icons
 // ─────────────────────────────────────────────────────────────
 
-const SparkleIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+const SparkleIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5L12 2z" />
   </svg>
 );
@@ -757,8 +757,8 @@ function ConsumptionCard({ model }: { model: ConsumptionModel }) {
       style={{
         backgroundColor: '#1a2234',
         border: '1px solid #2d3a4d',
-        ringColor: model.recommended ? AIMS_CIRCUIT_COLORS.accent : undefined,
-      }}
+        '--tw-ring-color': model.recommended ? AIMS_CIRCUIT_COLORS.accent : undefined,
+      } as React.CSSProperties}
     >
       {model.recommended && (
         <div
@@ -838,8 +838,8 @@ export default function ModelGardenPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const modelCategories: string[] = ['all', ...new Set(AI_MODELS.map((m) => m.category))];
-  const toolCategories: string[] = ['all', ...new Set(TOOLS.map((t) => t.category))];
+  const modelCategories: string[] = ['all', ...Array.from(new Set(AI_MODELS.map((m) => m.category)))];
+  const toolCategories: string[] = ['all', ...Array.from(new Set(TOOLS.map((t) => t.category)))];
 
   // Helper to get friendly category label
   const getCategoryLabel = (cat: string) => {

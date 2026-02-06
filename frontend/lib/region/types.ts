@@ -13,6 +13,11 @@ export interface Country {
   flag: string;        // Emoji flag
 }
 
+export interface AdminArea {
+  code: string;
+  name: string;
+}
+
 export interface Region {
   countryCode: string;
   countryName: string;

@@ -652,7 +652,7 @@ export function ChatInterface({
         orchestration.state.phase !== 'idle' &&
         !orchestration.shouldShowOverlay && (
           <OperationsPulse
-            isActive={orchestration.state.phase !== 'idle'}
+            phase={orchestration.state.phase}
             onClick={() => orchestration.setOverlayMode('minimal')}
           />
         )}

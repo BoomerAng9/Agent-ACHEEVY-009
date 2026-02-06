@@ -44,7 +44,7 @@ const rateLimitStore = new Map<string, RateLimitState>();
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now();
-    for (const [key, state] of rateLimitStore.entries()) {
+    for (const [key, state] of Array.from(rateLimitStore.entries())) {
       if (state.resetAt < now) {
         rateLimitStore.delete(key);
       }
@@ -154,7 +154,7 @@ export function checkSuspiciousRequest(request: NextRequest): SecurityCheckResul
 
   // Check query parameters
   const searchParams = request.nextUrl.searchParams;
-  for (const [key, value] of searchParams.entries()) {
+  for (const [key, value] of Array.from(searchParams.entries())) {
     for (const pattern of BOT_DETECTION.suspiciousPatterns) {
       if (pattern.test(key) || pattern.test(value)) {
         logSecurityEvent('suspicious_request', { param: key, value, pattern: pattern.toString() });

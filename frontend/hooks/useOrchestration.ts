@@ -152,7 +152,8 @@ function calculateComplexity(prompt: string): TaskComplexity {
   score += estimatedSteps * 2; // 0-40
   score += departmentsInvolved * 10; // 0-50
   score += riskLevel === 'high' ? 20 : riskLevel === 'medium' ? 10 : 0; // 0-20
-  score += timeHorizon === 'long' ? 15 : timeHorizon === 'medium' ? 10 : timeHorizon === 'short' ? 5 : 0; // 0-15
+  const th = timeHorizon as 'instant' | 'short' | 'medium' | 'long';
+  score += th === 'long' ? 15 : th === 'medium' ? 10 : th === 'short' ? 5 : 0; // 0-15
 
   score = Math.min(100, score);
 

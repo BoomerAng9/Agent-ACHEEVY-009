@@ -72,6 +72,7 @@ export type MarketplaceType =
   | 'alibaba'
   | 'mercadolibre'
   | 'rakuten'
+  | 'kdp'
   | 'custom';
 
 export interface MarketplaceSettings {
@@ -193,16 +194,29 @@ export interface MarketplaceListing {
 // ─────────────────────────────────────────────────────────────
 
 export type SellerMissionType =
-  | 'market_research'      // Research demand, competition
-  | 'listing_optimization' // Improve listings
-  | 'price_optimization'   // Optimize pricing
-  | 'inventory_sync'       // Sync across marketplaces
-  | 'review_management'    // Handle reviews/feedback
-  | 'customer_service'     // Answer questions
-  | 'expansion'            // Expand to new marketplaces
-  | 'competitor_analysis'  // Monitor competitors
-  | 'advertising'          // Manage ads
-  | 'content_creation';    // Create descriptions, images
+  | 'market_research'        // Research demand, competition
+  | 'listing_optimization'   // Improve listings
+  | 'price_optimization'     // Optimize pricing
+  | 'inventory_sync'         // Sync across marketplaces
+  | 'inventory_management'   // Manage inventory
+  | 'review_management'      // Handle reviews/feedback
+  | 'customer_service'       // Answer questions
+  | 'expansion'              // Expand to new marketplaces
+  | 'marketplace_expansion'  // Expand to new marketplaces
+  | 'competitor_analysis'    // Monitor competitors
+  | 'advertising'            // Manage ads
+  | 'advertising_setup'      // Set up advertising
+  | 'advertising_optimization' // Optimize ads
+  | 'product_expansion'      // Expand product line
+  | 'content_creation'       // Create descriptions, images
+  | 'brand_building'         // Build brand presence
+  | 'analytics_setup'        // Set up analytics
+  | 'channel_expansion'      // Expand sales channels
+  | 'customer_acquisition'   // Acquire new customers
+  | 'operations_optimization' // Optimize operations
+  | 'international_expansion' // Expand internationally
+  | 'team_building'          // Build team
+  | 'exit_preparation';      // Prepare for exit
 
 export interface SellerMission {
   id: string;
@@ -487,6 +501,13 @@ export interface SellerMetrics {
     issues: HealthIssue[];
     lastUpdated: Date;
   };
+
+  // Legacy/convenience accessors (optional - for backward compatibility)
+  monthlyRevenue?: number;
+  totalProducts?: number;
+  marketplaces?: { length: number }[];
+  totalReviews?: number;
+  profitMargin?: number;
 }
 
 export interface HealthIssue {

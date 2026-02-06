@@ -111,7 +111,7 @@ export async function streamChat(options: StreamChatOptions) {
   const modelId = MODELS[model as ModelId] || model;
 
   const result = await streamText({
-    model: openrouter(modelId),
+    model: openrouter(modelId) as any,
     messages: systemPrompt
       ? [{ role: 'system', content: systemPrompt }, ...messages]
       : messages,
@@ -147,7 +147,7 @@ export async function generate(options: GenerateOptions) {
   const modelId = MODELS[model as ModelId] || model;
 
   const result = await generateText({
-    model: openrouter(modelId),
+    model: openrouter(modelId) as any,
     prompt,
     system: systemPrompt,
     temperature,
@@ -176,7 +176,7 @@ export async function generateStructured<T>(
   const modelId = MODELS[model as ModelId] || model;
 
   const result = await generateObject({
-    model: openrouter(modelId),
+    model: openrouter(modelId) as any,
     prompt,
     system: systemPrompt,
     schema,
@@ -220,7 +220,7 @@ export async function analyzeImage(options: VisionOptions) {
   });
 
   const result = await generateText({
-    model: openrouter(modelId),
+    model: openrouter(modelId) as any,
     messages: [
       ...(systemPrompt ? [{ role: 'system' as const, content: systemPrompt }] : []),
       {

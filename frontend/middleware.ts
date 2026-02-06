@@ -22,7 +22,16 @@ const ALLOWED_ORIGINS = IS_PRODUCTION
       'https://api.aims.plugmein.cloud',
       'https://luc.plugmein.cloud',
     ]
-  : ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000'];
+  : [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
+      'http://localhost:8080',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+      'http://127.0.0.1:3002',
+      'http://127.0.0.1:8080',
+    ];
 
 // Extended list of attack tools and malicious bots
 const BLOCKED_USER_AGENTS = [
@@ -231,14 +240,14 @@ export function middleware(request: NextRequest) {
     return createErrorResponse('Not Found', 404);
   }
 
-  // 2. Bot detection
-  if (isBlockedBot(userAgent)) {
+  // 2. Bot detection (only in production)
+  if (IS_PRODUCTION && isBlockedBot(userAgent)) {
     console.warn(`[SECURITY] Blocked bot: ${ip} - ${userAgent.slice(0, 100)}`);
     return createErrorResponse('Access denied', 403);
   }
 
-  // 3. Empty user agent check (likely a bot/script)
-  if (!userAgent || userAgent.length < 10) {
+  // 3. Empty user agent check (only in production - dev tools may have short/empty agents)
+  if (IS_PRODUCTION && (!userAgent || userAgent.length < 10)) {
     console.warn(`[SECURITY] Empty user agent: ${ip}`);
     return createErrorResponse('Access denied', 403);
   }
@@ -257,14 +266,15 @@ export function middleware(request: NextRequest) {
   }
 
   // 6. Rate limiting for API routes (tiered by endpoint sensitivity)
+  // In development, use much higher limits to allow rapid testing
   if (pathname.startsWith('/api')) {
-    let limit = 100;
+    let limit = IS_PRODUCTION ? 100 : 1000;
     if (pathname.includes('/chat') || pathname.includes('/acheevy')) {
-      limit = 30; // Stricter for AI endpoints
+      limit = IS_PRODUCTION ? 30 : 500; // Stricter for AI endpoints in prod
     } else if (pathname.includes('/luc')) {
-      limit = 60; // Medium for billing
+      limit = IS_PRODUCTION ? 60 : 600; // Medium for billing
     } else if (pathname.includes('/transcribe') || pathname.includes('/tts')) {
-      limit = 20; // Strictest for media processing
+      limit = IS_PRODUCTION ? 20 : 200; // Strictest for media processing
     }
     const windowMs = 60 * 1000; // 1 minute
 

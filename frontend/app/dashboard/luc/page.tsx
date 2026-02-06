@@ -1076,8 +1076,8 @@ export default function LUCWorkspacePage() {
                     style={{
                       backgroundColor: '#1a2234',
                       border: '1px solid #2d3a4d',
-                      ringColor: summary.planName === plan.name ? AIMS_CIRCUIT_COLORS.accent : undefined,
-                    }}
+                      '--tw-ring-color': summary.planName === plan.name ? AIMS_CIRCUIT_COLORS.accent : undefined,
+                    } as React.CSSProperties}
                   >
                     <div className="text-white font-medium">{plan.name}</div>
                     <div className="text-2xl font-bold mt-1" style={{ color: AIMS_CIRCUIT_COLORS.accent }}>
