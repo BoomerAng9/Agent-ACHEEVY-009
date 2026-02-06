@@ -5,134 +5,64 @@ import React from "react";
 /*  PMO Office Data                                                    */
 /* ------------------------------------------------------------------ */
 
-interface TeamMember {
-  name: string;
-  title: string;
-  role: string;
-}
-
 interface PMOOffice {
   id: string;
   code: string;
   fullName: string;
   mission: string;
   director: { name: string; title: string; scope: string };
-  team: TeamMember[];
+  departmentalAgent: { name: string; role: string };
   kpis: string[];
   status: "ACTIVE" | "STANDBY";
 }
 
 const PMO_OFFICES: PMOOffice[] = [
   {
-    id: "dt-pmo",
-    code: "DT-PMO",
-    fullName: "Digital Transformation PMO",
-    mission:
-      "Drive end-to-end digital transformation across architecture, technology, and financial governance.",
-    director: {
-      name: "CDTO_Ang",
-      title: "Chief Digital Transformation Officer",
-      scope: "Strategy, architecture, final authority",
-    },
-    team: [
-      { name: "CTO_Ang", title: "Chief Technology Officer", role: "Agent design, stack alignment" },
-      { name: "CFO_Ang", title: "Chief Financial Officer", role: "Token efficiency, LUC alignment" },
-      { name: "QA_Ang", title: "Quality Assurance", role: "Output verification readiness" },
-    ],
-    kpis: ["Deployment frequency", "System uptime", "Architecture compliance", "Tech debt ratio"],
+    id: "tech-office", code: "TECH OFFICE", fullName: "Chief Technology Office",
+    mission: "Architect platform infrastructure, agent design, and technology standards.",
+    director: { name: "Boomer_CTO", title: "Chief Technology Officer", scope: "Architecture, stack alignment, infrastructure" },
+    departmentalAgent: { name: "DevOps Agent", role: "CI/CD, containers, deployment automation" },
+    kpis: ["Deployment frequency", "System uptime", "Build success rate", "Infra cost"],
     status: "ACTIVE",
   },
   {
-    id: "strat-pmo",
-    code: "STRAT-PMO",
-    fullName: "Strategy PMO",
-    mission:
-      "Align portfolio initiatives with business strategy through prioritization and ROI modeling.",
-    director: {
-      name: "CSO_Ang",
-      title: "Chief Strategy Officer",
-      scope: "Portfolio management, business alignment, prioritization",
-    },
-    team: [
-      { name: "Portfolio Analyst", title: "Portfolio Analyst", role: "Initiative tracking, ROI modeling" },
-      { name: "Market Strategist", title: "Market Strategist", role: "Competitive intelligence, opportunity mapping" },
-    ],
-    kpis: ["Strategic alignment", "Portfolio ROI", "Initiative completion", "Resource utilization"],
+    id: "finance-office", code: "FINANCE OFFICE", fullName: "Chief Financial Office",
+    mission: "Manage budgets, cost tracking, token efficiency, and LUC alignment.",
+    director: { name: "Boomer_CFO", title: "Chief Financial Officer", scope: "Token efficiency, LUC governance, budget allocation" },
+    departmentalAgent: { name: "Value Agent", role: "Cost analysis, ROI modeling, pricing optimization" },
+    kpis: ["Cost per task", "Token efficiency", "Budget utilization", "Revenue growth"],
     status: "ACTIVE",
   },
   {
-    id: "ops-pmo",
-    code: "OPS-PMO",
-    fullName: "Operations PMO",
-    mission:
-      "Ensure runtime health, maximize throughput, and enforce SLA compliance across all pipelines.",
-    director: {
-      name: "COO_Ang",
-      title: "Chief Operating Officer",
-      scope: "Runtime health, throughput, SLAs, execution efficiency",
-    },
-    team: [
-      { name: "Operations Monitor", title: "Operations Monitor", role: "Pipeline health, incident response" },
-      { name: "Capacity Planner", title: "Capacity Planner", role: "Load balancing, scaling" },
-      { name: "SLA Manager", title: "SLA Manager", role: "Service level tracking" },
-    ],
+    id: "ops-office", code: "OPS OFFICE", fullName: "Chief Operations Office",
+    mission: "Ensure operational excellence, throughput, and SLA compliance across all pipelines.",
+    director: { name: "Boomer_COO", title: "Chief Operating Officer", scope: "Runtime health, throughput, SLAs" },
+    departmentalAgent: { name: "Flow Boss Agent", role: "Workflow orchestration, load balancing, queue management" },
     kpis: ["Pipeline throughput", "SLA compliance", "Mean time to resolution", "Agent utilization"],
     status: "ACTIVE",
   },
   {
-    id: "innov-pmo",
-    code: "INNOV-PMO",
-    fullName: "Innovation PMO",
-    mission:
-      "Incubate emerging technologies and accelerate prototype-to-production pipelines.",
-    director: {
-      name: "CIO_Ang",
-      title: "Chief Innovation Officer",
-      scope: "R&D pipeline, emerging tech, prototype incubation",
-    },
-    team: [
-      { name: "Research Lead", title: "Research Lead", role: "Tech scouting, proof-of-concept" },
-      { name: "Prototype Engineer", title: "Prototype Engineer", role: "Rapid prototyping, MVP builds" },
-    ],
-    kpis: ["Experiments launched", "Prototype-to-production rate", "Innovation adoption", "Time to prototype"],
+    id: "marketing-office", code: "MARKETING OFFICE", fullName: "Chief Marketing Office",
+    mission: "Drive user acquisition, brand strategy, content creation, and campaign management.",
+    director: { name: "Boomer_CMO", title: "Chief Marketing Officer", scope: "Brand strategy, campaigns, content marketing" },
+    departmentalAgent: { name: "Social Campaign Agent", role: "Social media campaigns, ad copy, conversion funnels" },
+    kpis: ["User acquisition rate", "Campaign ROI", "Conversion rate", "Brand awareness"],
     status: "ACTIVE",
   },
   {
-    id: "comply-pmo",
-    code: "COMPLY-PMO",
-    fullName: "Compliance PMO",
-    mission:
-      "Enforce KYB policies, manage audit trails, and maintain security boundaries across all agents.",
-    director: {
-      name: "CISO_Ang",
-      title: "Chief Information Security Officer",
-      scope: "KYB enforcement, permissions, sandbox boundaries, audit trails",
-    },
-    team: [
-      { name: "Audit Analyst", title: "Audit Analyst", role: "Compliance auditing, regulatory tracking" },
-      { name: "Risk Assessor", title: "Risk Assessor", role: "Threat modeling, mitigation" },
-      { name: "Data Guardian", title: "Data Guardian", role: "PII protection, data governance" },
-    ],
-    kpis: ["Compliance score", "Audit pass rate", "Risk mitigation coverage", "Security incident rate"],
+    id: "design-office", code: "DESIGN OFFICE", fullName: "Chief Design Office",
+    mission: "Own visual identity, UI/UX design, multimedia production, and creative direction.",
+    director: { name: "Boomer_CDO", title: "Chief Design Officer", scope: "Visual identity, UI/UX, multimedia production" },
+    departmentalAgent: { name: "Video Editing Agent", role: "Video production, motion graphics, visual assets" },
+    kpis: ["Design consistency", "Asset production rate", "Visual quality", "Brand compliance"],
     status: "ACTIVE",
   },
   {
-    id: "growth-pmo",
-    code: "GROWTH-PMO",
-    fullName: "Growth PMO",
-    mission:
-      "Accelerate revenue growth, user acquisition, and strategic partnerships.",
-    director: {
-      name: "CGO_Ang",
-      title: "Chief Growth Officer",
-      scope: "Revenue growth, user acquisition, partnerships",
-    },
-    team: [
-      { name: "Growth Hacker", title: "Growth Hacker", role: "Acquisition funnels, conversion optimization" },
-      { name: "Partnership Manager", title: "Partnership Manager", role: "Strategic partnerships, co-marketing" },
-      { name: "Customer Success Lead", title: "Customer Success Lead", role: "Retention, onboarding, NPS" },
-    ],
-    kpis: ["User acquisition rate", "Revenue growth", "Customer retention", "NPS score"],
+    id: "publishing-office", code: "PUBLISHING OFFICE", fullName: "Chief Publication Office",
+    mission: "Manage content publishing, editorial standards, and audience engagement.",
+    director: { name: "Boomer_CPO", title: "Chief Publication Officer", scope: "Content publishing, distribution, audience engagement" },
+    departmentalAgent: { name: "Social Agent", role: "Content scheduling, community management, cross-platform publishing" },
+    kpis: ["Publishing cadence", "Engagement rate", "Audience growth", "Content quality"],
     status: "ACTIVE",
   },
 ];
@@ -163,11 +93,12 @@ export default function ProjectManagementPage() {
           <p className="text-[10px] uppercase tracking-[0.3em] text-amber-200/50 mb-1">
             Governance &middot; Strategy &middot; Execution
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight text-amber-50 font-display">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-amber-50 font-display">
             PROJECT MANAGEMENT
           </h1>
-          <p className="text-sm text-amber-100/70 mt-1">
-            PMO Offices &mdash; Governance, Strategy, and Execution
+          <p className="text-sm text-amber-100/60 mt-2 max-w-lg">
+            PMO Offices &mdash; 6 C-Suite Boomer_Ang directors governing all operations.
+            Every request flows through the command chain before reaching execution.
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-full border border-white/5 bg-black/60 px-4 py-2">
@@ -224,30 +155,20 @@ export default function ProjectManagementPage() {
               </p>
             </div>
 
-            {/* Team */}
+            {/* Departmental Agent */}
             <div className="mt-3">
               <p className="text-[10px] uppercase tracking-widest text-amber-200/90 font-semibold mb-2">
-                Team
+                Departmental Agent
               </p>
-              <div className="space-y-1.5">
-                {office.team.map((member) => (
-                  <div
-                    key={member.name}
-                    className="flex items-center justify-between rounded-lg border border-white/5 bg-black/40 px-3 py-2"
-                  >
-                    <div>
-                      <p className="text-xs font-medium text-amber-50 font-mono">
-                        {member.name}
-                      </p>
-                      <p className="text-[10px] text-amber-100/40">
-                        {member.title}
-                      </p>
-                    </div>
-                    <p className="text-[9px] text-amber-100/30 max-w-[120px] text-right">
-                      {member.role}
-                    </p>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between rounded-lg border border-white/5 bg-black/40 px-3 py-2">
+                <div>
+                  <p className="text-xs font-medium text-amber-50 font-mono">
+                    {office.departmentalAgent.name}
+                  </p>
+                </div>
+                <p className="text-[9px] text-amber-100/30 max-w-[160px] text-right">
+                  {office.departmentalAgent.role}
+                </p>
               </div>
             </div>
 

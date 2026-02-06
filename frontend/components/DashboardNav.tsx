@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 const navItems = [
+  { href: "/dashboard/your-space", label: "Your Space" },
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/chat", label: "ACHEEVY Chat" },
   { href: "/dashboard/plan", label: "Plan" },

@@ -1,49 +1,45 @@
 /**
  * PMO Offices — Project Management Governance Layer
  *
- * Six PMO offices govern all work across A.I.M.S.
- * Directors are supervisory Boomer_Angs — they govern, NOT execute.
- * Teams are execution-level Boomer_Angs assigned to each office.
+ * Six C-Suite Boomer_Ang executives govern all work across A.I.M.S.
+ * Each has a departmental agent underneath.
+ *
+ * Command chain:
+ *   Human (Final Approver) → ACHEEVY → Boomer_[ROLE] → Departmental Agent → Execution
  *
  * Doctrine: "Activity breeds Activity — shipped beats perfect."
  */
 
 export type PmoId =
-  | 'dt-pmo'      // Digital Transformation
-  | 'strat-pmo'   // Strategy
-  | 'ops-pmo'     // Operations
-  | 'innov-pmo'   // Innovation
-  | 'comply-pmo'  // Compliance
-  | 'growth-pmo'; // Growth
+  | 'tech-office'       // Boomer_CTO → DevOps Agent
+  | 'finance-office'    // Boomer_CFO → Value Agent
+  | 'ops-office'        // Boomer_COO → Flow Boss Agent
+  | 'marketing-office'  // Boomer_CMO → Social Campaign Agent
+  | 'design-office'     // Boomer_CDO → Video Editing Agent
+  | 'publishing-office'; // Boomer_CPO → Social Agent
 
 export type DirectorId =
-  | 'CDTO_Ang'  // Chief Digital Transformation Officer
-  | 'CSO_Ang'   // Chief Strategy Officer
-  | 'COO_Ang'   // Chief Operating Officer
-  | 'CIO_Ang'   // Chief Innovation Officer
-  | 'CISO_Ang'  // Chief Information Security Officer
-  | 'CGO_Ang';  // Chief Growth Officer
-
-// Additional supervisory roles that exist on teams
-export type SupervisoryId = DirectorId
-  | 'CTO_Ang'   // Chief Technology Officer (DT team)
-  | 'CFO_Ang'   // Chief Financial Officer (DT team)
-  | 'QA_Ang';   // Quality Assurance (DT team)
+  | 'Boomer_CTO'   // Chief Technology Officer
+  | 'Boomer_CFO'   // Chief Financial Officer
+  | 'Boomer_COO'   // Chief Operating Officer
+  | 'Boomer_CMO'   // Chief Marketing Officer
+  | 'Boomer_CDO'   // Chief Design Officer
+  | 'Boomer_CPO';  // Chief Publication Officer
 
 export interface PmoDirector {
   id: DirectorId;
   title: string;
-  fullName: string;          // e.g., "CDTO_Ang"
-  scope: string;             // what they govern
-  authority: string;         // what decisions they can make
-  reportsTo: 'ACHEEVY';     // all directors report to ACHEEVY
+  fullName: string;
+  scope: string;
+  authority: string;
+  reportsTo: 'ACHEEVY';
 }
 
-export interface PmoTeamMember {
-  id: SupervisoryId | string;  // can be supervisory or execution agent
-  title: string;
+export interface DepartmentalAgent {
+  id: string;
+  name: string;
   role: string;
-  department: PmoId;
+  reportsTo: DirectorId;
 }
 
 export interface PmoOffice {
@@ -52,8 +48,8 @@ export interface PmoOffice {
   fullName: string;
   mission: string;
   director: PmoDirector;
-  team: PmoTeamMember[];
-  kpis: string[];          // key performance indicators
+  departmentalAgent: DepartmentalAgent;
+  kpis: string[];
   status: 'ACTIVE' | 'STANDBY' | 'PROVISIONING';
 }
 
@@ -62,5 +58,5 @@ export interface HouseOfAngConfig {
   activePmos: number;
   deployedAngs: number;
   standbyAngs: number;
-  spawnCapacity: number;   // how many more Angs can be created
+  spawnCapacity: number;
 }

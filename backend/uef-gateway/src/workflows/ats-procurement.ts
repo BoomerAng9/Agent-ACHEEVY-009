@@ -12,7 +12,7 @@
  * optimization pipelines.
  *
  * Command chain:
- *   User → ACHEEVY → PREP_SQUAD_ALPHA → OPS-PMO (COO_Ang)
+ *   User → ACHEEVY → PREP_SQUAD_ALPHA → OPS OFFICE (Boomer_COO)
  *     → Chicken Hawk → EngineerAng + AnalystAng
  *
  * "Activity breeds Activity."
@@ -239,7 +239,7 @@ export async function runProcurementPipeline(
     bids,
     projections,
     totalProjectedSavings,
-    governedBy: 'COO_Ang',
+    governedBy: 'Boomer_COO',
     executedBy: ['analyst-ang', 'engineer-ang', 'marketer-ang', 'quality-ang'],
     createdAt: new Date().toISOString(),
   };

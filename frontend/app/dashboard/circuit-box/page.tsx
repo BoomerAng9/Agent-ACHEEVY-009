@@ -1,13 +1,13 @@
 // frontend/app/dashboard/circuit-box/page.tsx
 import React from "react";
 
-const DT_PMO_ANGS = [
-  { role: "CDTO_Ang", title: "Chief Digital Transformation Officer", status: "Active", scope: "Strategy, final authority" },
-  { role: "COO_Ang", title: "Chief Operating Officer", status: "Active", scope: "Runtime health, throughput, SLAs" },
-  { role: "CTO_Ang", title: "Chief Technology Officer", status: "Active", scope: "Agent design, schemas, stack alignment" },
-  { role: "CISO_Ang", title: "Chief Information Security Officer", status: "Active", scope: "KYB, permissions, sandbox boundaries" },
-  { role: "CFO_Ang", title: "Chief Financial Officer", status: "Active", scope: "Token efficiency, LUC alignment" },
-  { role: "QA_Ang", title: "Quality Assurance", status: "Active", scope: "Output verification readiness" },
+const CSUITE_BOOMERS = [
+  { role: "Boomer_CTO", title: "Chief Technology Officer", status: "Active", scope: "Architecture, stack alignment", agent: "DevOps Agent" },
+  { role: "Boomer_CFO", title: "Chief Financial Officer", status: "Active", scope: "Token efficiency, LUC governance", agent: "Value Agent" },
+  { role: "Boomer_COO", title: "Chief Operating Officer", status: "Active", scope: "Runtime health, SLAs", agent: "Flow Boss Agent" },
+  { role: "Boomer_CMO", title: "Chief Marketing Officer", status: "Active", scope: "Brand strategy, campaigns", agent: "Social Campaign Agent" },
+  { role: "Boomer_CDO", title: "Chief Design Officer", status: "Active", scope: "Visual identity, multimedia", agent: "Video Editing Agent" },
+  { role: "Boomer_CPO", title: "Chief Publication Officer", status: "Active", scope: "Content publishing, distribution", agent: "Social Agent" },
 ];
 
 const EXEC_BOOMERANGS = [
@@ -38,20 +38,43 @@ const LIL_HAWK_SQUADS = [
 
 export default function CircuitBoxPage() {
   return (
-    <div className="space-y-6">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-amber-50 font-display">
-            CIRCUIT BOX
-          </h1>
-          <p className="text-sm text-amber-100/70">
-            Configure ACHEEVY orchestrator, DT-PMO governance, Boomer_Ang routing, and Lil_Hawk squads.
-          </p>
+    <div className="space-y-6 animate-in fade-in duration-700">
+      {/* ---- Hero Section: ACHEEVY in the Office ---- */}
+      <section className="relative overflow-hidden rounded-3xl border border-amber-300/20 shadow-[0_0_60px_rgba(251,191,36,0.15)]">
+        <div className="relative min-h-[260px] md:min-h-[340px]">
+          {/* Hero Background Image */}
+          <div className="absolute inset-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/brand/acheevy-office.png"
+              alt="ACHEEVY in the office with Boomer_Angs on shelves"
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+          </div>
+
+          {/* Hero Content */}
+          <div className="relative z-10 flex h-full min-h-[260px] md:min-h-[340px] flex-col justify-between p-8 md:p-10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-amber-200/60 mb-1">
+                  ACHEEVY Orchestration Layer
+                </p>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-amber-50 font-display">
+                  CIRCUIT BOX
+                </h1>
+              </div>
+              <button className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold text-black shadow-[0_0_15px_rgba(251,191,36,0.4)] hover:scale-105 active:scale-95 transition-transform">
+                Save Configuration
+              </button>
+            </div>
+            <p className="text-sm text-amber-100/50 max-w-lg">
+              Configure ACHEEVY orchestrator, C-Suite governance, Boomer_Ang routing, and Lil_Hawk squads.
+            </p>
+          </div>
         </div>
-        <button className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold text-black shadow-[0_0_15px_rgba(251,191,36,0.4)]">
-          Save Configuration
-        </button>
-      </header>
+      </section>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* The Park — Model Selection */}
@@ -80,18 +103,23 @@ export default function CircuitBoxPage() {
           </div>
         </section>
 
-        {/* DT-PMO Supervisory Layer */}
+        {/* C-Suite Boomer_Angs */}
         <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
-            DT-PMO Governance
+            C-Suite Boomer_Angs
           </h2>
-          <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">Digital Transformation PMO — supervisory layer</p>
+          <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">PMO directors &amp; departmental agents</p>
           <div className="mt-4 space-y-2">
-            {DT_PMO_ANGS.map((ang) => (
+            {CSUITE_BOOMERS.map((ang) => (
               <div key={ang.role} className="flex items-center justify-between rounded-xl border border-white/5 bg-black/40 p-3">
                 <div>
                   <p className="text-xs font-medium text-amber-50">{ang.role}</p>
-                  <p className="text-[10px] text-amber-100/40">{ang.scope}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <p className="text-[10px] text-amber-100/40">{ang.scope}</p>
+                    <span className="rounded-full bg-amber-400/10 border border-amber-300/20 px-2 py-0.5 text-[9px] font-mono text-amber-300">
+                      {ang.agent}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />

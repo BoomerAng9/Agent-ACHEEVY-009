@@ -1,262 +1,160 @@
 /**
- * PMO Registry — All 6 Project Management Offices
+ * PMO Registry — 6 C-Suite Boomer_Ang Offices
  *
- * Command chain: User -> ACHEEVY -> PMO Director -> Team -> Execution
+ * Command chain: Human → ACHEEVY → Boomer_[ROLE] → Departmental Agent → Execution
  */
 
-import { PmoOffice, PmoId, PmoDirector, HouseOfAngConfig } from './types';
+import { PmoOffice, PmoId, HouseOfAngConfig } from './types';
 import logger from '../logger';
 
 const PMO_OFFICES: PmoOffice[] = [
-  // 1. DT-PMO — Digital Transformation
+  // 1. Boomer_CTO — Technology Office
   {
-    id: 'dt-pmo',
-    name: 'DT-PMO',
-    fullName: 'Digital Transformation PMO',
+    id: 'tech-office',
+    name: 'TECH OFFICE',
+    fullName: 'Chief Technology Office',
     mission:
-      'Drive end-to-end digital transformation across all platform capabilities. Owns architecture decisions, tech stack alignment, and deployment standards.',
+      'Architect platform infrastructure, agent design, schemas, and technology standards. Owns the full stack.',
     director: {
-      id: 'CDTO_Ang',
-      title: 'Chief Digital Transformation Officer',
-      fullName: 'CDTO_Ang',
-      scope: 'Strategy, architecture, final authority on digital transformation initiatives',
-      authority: 'Approve/reject architecture changes, tech stack decisions, deployment gates',
+      id: 'Boomer_CTO',
+      title: 'Chief Technology Officer',
+      fullName: 'Boomer_CTO',
+      scope: 'Platform architecture, agent design, stack alignment, infrastructure',
+      authority: 'Approve architecture changes, tech stack decisions, deployment pipelines',
       reportsTo: 'ACHEEVY',
     },
-    team: [
-      {
-        id: 'CTO_Ang',
-        title: 'Chief Technology Officer',
-        role: 'Agent design, schemas, stack alignment',
-        department: 'dt-pmo',
-      },
-      {
-        id: 'CFO_Ang',
-        title: 'Chief Financial Officer',
-        role: 'Token efficiency, LUC alignment, cost governance',
-        department: 'dt-pmo',
-      },
-      {
-        id: 'QA_Ang',
-        title: 'Quality Assurance Lead',
-        role: 'Output verification, ORACLE gate readiness',
-        department: 'dt-pmo',
-      },
-    ],
-    kpis: [
-      'Deployment frequency',
-      'System uptime',
-      'Architecture compliance score',
-      'Technical debt ratio',
-    ],
+    departmentalAgent: {
+      id: 'devops-agent',
+      name: 'DevOps Agent',
+      role: 'CI/CD pipelines, container orchestration, deployment automation, infrastructure-as-code',
+      reportsTo: 'Boomer_CTO',
+    },
+    kpis: ['Deployment frequency', 'System uptime', 'Build success rate', 'Infrastructure cost'],
     status: 'ACTIVE',
   },
 
-  // 2. STRAT-PMO — Strategy
+  // 2. Boomer_CFO — Finance Office
   {
-    id: 'strat-pmo',
-    name: 'STRAT-PMO',
-    fullName: 'Strategy PMO',
+    id: 'finance-office',
+    name: 'FINANCE OFFICE',
+    fullName: 'Chief Financial Office',
     mission:
-      'Manage strategic portfolio, align initiatives to business objectives, and ensure resource allocation matches priority.',
+      'Manage budgets, cost tracking, token efficiency, and LUC alignment. Governs all financial operations.',
     director: {
-      id: 'CSO_Ang',
-      title: 'Chief Strategy Officer',
-      fullName: 'CSO_Ang',
-      scope: 'Portfolio management, business alignment, initiative prioritization',
-      authority: 'Prioritize/deprioritize initiatives, allocate budgets, approve strategic pivots',
+      id: 'Boomer_CFO',
+      title: 'Chief Financial Officer',
+      fullName: 'Boomer_CFO',
+      scope: 'Token efficiency, LUC cost governance, budget allocation, financial reporting',
+      authority: 'Approve spend thresholds, cost optimization, settlement policies',
       reportsTo: 'ACHEEVY',
     },
-    team: [
-      {
-        id: 'portfolio-analyst',
-        title: 'Portfolio Analyst',
-        role: 'Initiative tracking, ROI modeling, resource utilization',
-        department: 'strat-pmo',
-      },
-      {
-        id: 'market-strategist',
-        title: 'Market Strategist',
-        role: 'Market positioning, competitive intelligence, opportunity mapping',
-        department: 'strat-pmo',
-      },
-    ],
-    kpis: [
-      'Strategic alignment score',
-      'Portfolio ROI',
-      'Initiative completion rate',
-      'Resource utilization',
-    ],
+    departmentalAgent: {
+      id: 'value-agent',
+      name: 'Value Agent',
+      role: 'Cost analysis, ROI modeling, pricing optimization, financial projections',
+      reportsTo: 'Boomer_CFO',
+    },
+    kpis: ['Cost per task', 'Token efficiency ratio', 'Budget utilization', 'Revenue growth'],
     status: 'ACTIVE',
   },
 
-  // 3. OPS-PMO — Operations
+  // 3. Boomer_COO — Operations Office
   {
-    id: 'ops-pmo',
-    name: 'OPS-PMO',
-    fullName: 'Operations PMO',
+    id: 'ops-office',
+    name: 'OPS OFFICE',
+    fullName: 'Chief Operations Office',
     mission:
       'Ensure operational excellence across all agent execution. Owns throughput, SLA management, and runtime health.',
     director: {
-      id: 'COO_Ang',
+      id: 'Boomer_COO',
       title: 'Chief Operating Officer',
-      fullName: 'COO_Ang',
-      scope: 'Runtime health, throughput, SLAs, execution efficiency',
+      fullName: 'Boomer_COO',
+      scope: 'Runtime health, throughput, SLAs, execution efficiency, pipeline orchestration',
       authority: 'Scale agent capacity, enforce SLAs, pause degraded pipelines',
       reportsTo: 'ACHEEVY',
     },
-    team: [
-      {
-        id: 'ops-monitor',
-        title: 'Operations Monitor',
-        role: 'Real-time pipeline health, alert triage, incident response',
-        department: 'ops-pmo',
-      },
-      {
-        id: 'capacity-planner',
-        title: 'Capacity Planner',
-        role: 'Agent load balancing, scaling thresholds, performance tuning',
-        department: 'ops-pmo',
-      },
-      {
-        id: 'sla-manager',
-        title: 'SLA Manager',
-        role: 'Service level tracking, breach prevention, client SLA reporting',
-        department: 'ops-pmo',
-      },
-    ],
-    kpis: [
-      'Pipeline throughput',
-      'SLA compliance rate',
-      'Mean time to resolution',
-      'Agent utilization',
-    ],
+    departmentalAgent: {
+      id: 'flow-boss-agent',
+      name: 'Flow Boss Agent',
+      role: 'Workflow orchestration, pipeline scheduling, load balancing, queue management',
+      reportsTo: 'Boomer_COO',
+    },
+    kpis: ['Pipeline throughput', 'SLA compliance rate', 'Mean time to resolution', 'Agent utilization'],
     status: 'ACTIVE',
   },
 
-  // 4. INNOV-PMO — Innovation
+  // 4. Boomer_CMO — Marketing Office
   {
-    id: 'innov-pmo',
-    name: 'INNOV-PMO',
-    fullName: 'Innovation PMO',
+    id: 'marketing-office',
+    name: 'MARKETING OFFICE',
+    fullName: 'Chief Marketing Office',
     mission:
-      'Drive R&D initiatives, evaluate emerging technologies, and incubate new platform capabilities before production rollout.',
+      'Drive user acquisition, brand strategy, content creation, and campaign management across all channels.',
     director: {
-      id: 'CIO_Ang',
-      title: 'Chief Innovation Officer',
-      fullName: 'CIO_Ang',
-      scope: 'R&D pipeline, emerging tech evaluation, prototype incubation',
-      authority: 'Approve R&D experiments, allocate innovation budget, promote prototypes to production',
+      id: 'Boomer_CMO',
+      title: 'Chief Marketing Officer',
+      fullName: 'Boomer_CMO',
+      scope: 'Brand strategy, user acquisition, campaign management, content marketing',
+      authority: 'Approve campaigns, allocate marketing budget, brand guidelines enforcement',
       reportsTo: 'ACHEEVY',
     },
-    team: [
-      {
-        id: 'research-lead',
-        title: 'Research Lead',
-        role: 'Emerging tech scouting, proof-of-concept development',
-        department: 'innov-pmo',
-      },
-      {
-        id: 'prototype-eng',
-        title: 'Prototype Engineer',
-        role: 'Rapid prototyping, MVP builds, experimentation',
-        department: 'innov-pmo',
-      },
-    ],
-    kpis: [
-      'Experiments launched',
-      'Prototype-to-production rate',
-      'Innovation adoption rate',
-      'Time to prototype',
-    ],
+    departmentalAgent: {
+      id: 'social-campaign-agent',
+      name: 'Social Campaign Agent',
+      role: 'Social media campaigns, ad copy, A/B testing, conversion funnels, audience targeting',
+      reportsTo: 'Boomer_CMO',
+    },
+    kpis: ['User acquisition rate', 'Campaign ROI', 'Conversion rate', 'Brand awareness score'],
     status: 'ACTIVE',
   },
 
-  // 5. COMPLY-PMO — Compliance
+  // 5. Boomer_CDO — Design Office
   {
-    id: 'comply-pmo',
-    name: 'COMPLY-PMO',
-    fullName: 'Compliance PMO',
+    id: 'design-office',
+    name: 'DESIGN OFFICE',
+    fullName: 'Chief Design Office',
     mission:
-      'Enforce regulatory compliance, security standards, audit readiness, and risk management across all operations.',
+      'Own visual identity, UI/UX design, multimedia production, and creative direction across all platform surfaces.',
     director: {
-      id: 'CISO_Ang',
-      title: 'Chief Information Security Officer',
-      fullName: 'CISO_Ang',
-      scope: 'KYB enforcement, permissions, sandbox boundaries, audit trails',
-      authority: 'Block non-compliant operations, mandate security reviews, enforce data governance',
+      id: 'Boomer_CDO',
+      title: 'Chief Design Officer',
+      fullName: 'Boomer_CDO',
+      scope: 'Visual identity, UI/UX design, multimedia production, creative direction',
+      authority: 'Approve design systems, visual standards, multimedia assets',
       reportsTo: 'ACHEEVY',
     },
-    team: [
-      {
-        id: 'audit-analyst',
-        title: 'Audit Analyst',
-        role: 'Compliance auditing, regulatory tracking, documentation',
-        department: 'comply-pmo',
-      },
-      {
-        id: 'risk-assessor',
-        title: 'Risk Assessor',
-        role: 'Risk classification, threat modeling, mitigation planning',
-        department: 'comply-pmo',
-      },
-      {
-        id: 'data-guardian',
-        title: 'Data Guardian',
-        role: 'Data governance, PII protection, retention policies',
-        department: 'comply-pmo',
-      },
-    ],
-    kpis: [
-      'Compliance score',
-      'Audit pass rate',
-      'Risk mitigation coverage',
-      'Security incident rate',
-    ],
+    departmentalAgent: {
+      id: 'video-editing-agent',
+      name: 'Video Editing Agent',
+      role: 'Video production, motion graphics, thumbnail generation, visual asset creation',
+      reportsTo: 'Boomer_CDO',
+    },
+    kpis: ['Design consistency score', 'Asset production rate', 'Visual quality rating', 'Brand compliance'],
     status: 'ACTIVE',
   },
 
-  // 6. GROWTH-PMO — Growth
+  // 6. Boomer_CPO — Publishing Office
   {
-    id: 'growth-pmo',
-    name: 'GROWTH-PMO',
-    fullName: 'Growth PMO',
+    id: 'publishing-office',
+    name: 'PUBLISHING OFFICE',
+    fullName: 'Chief Publication Office',
     mission:
-      'Accelerate user acquisition, retention, and revenue growth. Owns marketing strategy, partnerships, and customer success.',
+      'Manage content publishing, editorial standards, distribution channels, and audience engagement.',
     director: {
-      id: 'CGO_Ang',
-      title: 'Chief Growth Officer',
-      fullName: 'CGO_Ang',
-      scope: 'Revenue growth, user acquisition, partnerships, customer success',
-      authority: 'Approve campaigns, allocate marketing budget, establish partnership terms',
+      id: 'Boomer_CPO',
+      title: 'Chief Publication Officer',
+      fullName: 'Boomer_CPO',
+      scope: 'Content publishing, editorial standards, distribution, audience engagement',
+      authority: 'Approve publication schedules, editorial guidelines, distribution strategy',
       reportsTo: 'ACHEEVY',
     },
-    team: [
-      {
-        id: 'growth-hacker',
-        title: 'Growth Hacker',
-        role: 'Acquisition funnels, A/B testing, conversion optimization',
-        department: 'growth-pmo',
-      },
-      {
-        id: 'partnership-mgr',
-        title: 'Partnership Manager',
-        role: 'Strategic partnerships, co-marketing, channel development',
-        department: 'growth-pmo',
-      },
-      {
-        id: 'success-lead',
-        title: 'Customer Success Lead',
-        role: 'Retention strategy, onboarding flows, NPS management',
-        department: 'growth-pmo',
-      },
-    ],
-    kpis: [
-      'User acquisition rate',
-      'Revenue growth',
-      'Customer retention',
-      'NPS score',
-    ],
+    departmentalAgent: {
+      id: 'social-agent',
+      name: 'Social Agent',
+      role: 'Content scheduling, community management, engagement tracking, cross-platform publishing',
+      reportsTo: 'Boomer_CPO',
+    },
+    kpis: ['Publishing cadence', 'Engagement rate', 'Audience growth', 'Content quality score'],
     status: 'ACTIVE',
   },
 ];
@@ -274,12 +172,10 @@ class PmoRegistry {
     );
   }
 
-  /** Return all PMO offices. */
   list(): PmoOffice[] {
     return Array.from(this.offices.values());
   }
 
-  /** Look up a single PMO office by id. */
   get(id: PmoId): PmoOffice | undefined {
     const office = this.offices.get(id);
     if (!office) {
@@ -288,38 +184,30 @@ class PmoRegistry {
     return office;
   }
 
-  /** Return every director across all offices. */
   getDirectors(): PmoOffice['director'][] {
     return this.list().map(o => o.director);
   }
 
-  /** Compute House-of-Ang statistics from the current registry. */
+  getDepartmentalAgents(): PmoOffice['departmentalAgent'][] {
+    return this.list().map(o => o.departmentalAgent);
+  }
+
   getHouseConfig(): HouseOfAngConfig {
     const offices = this.list();
     const activeOffices = offices.filter(o => o.status === 'ACTIVE');
-
-    // Each office has 1 director + N team members
-    const deployedAngs = offices.reduce(
-      (sum, o) => sum + 1 + o.team.length,
-      0
-    );
-    const standbyAngs = offices
-      .filter(o => o.status === 'STANDBY')
-      .reduce((sum, o) => sum + 1 + o.team.length, 0);
-
-    const MAX_SPAWN_CAPACITY = 100;
+    // Each office: 1 director + 1 departmental agent = 2 per office
+    const deployedAngs = activeOffices.length * 2;
+    const standbyAngs = offices.filter(o => o.status === 'STANDBY').length * 2;
     const totalAngs = deployedAngs + standbyAngs;
+    const MAX_SPAWN_CAPACITY = 100;
 
-    const config: HouseOfAngConfig = {
+    return {
       totalAngs,
       activePmos: activeOffices.length,
       deployedAngs,
       standbyAngs,
       spawnCapacity: Math.max(0, MAX_SPAWN_CAPACITY - totalAngs),
     };
-
-    logger.debug({ houseConfig: config }, 'House-of-Ang config computed');
-    return config;
   }
 }
 

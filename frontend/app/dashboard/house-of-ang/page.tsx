@@ -28,15 +28,18 @@ interface SupervisoryAng {
 }
 
 const SUPERVISORY_ROSTER: SupervisoryAng[] = [
-  { name: "CDTO_Ang", title: "Chief Digital Transformation Officer", pmo: "DT-PMO", status: "DEPLOYED" },
-  { name: "CSO_Ang", title: "Chief Strategy Officer", pmo: "STRAT-PMO", status: "DEPLOYED" },
-  { name: "COO_Ang", title: "Chief Operating Officer", pmo: "OPS-PMO", status: "DEPLOYED" },
-  { name: "CIO_Ang", title: "Chief Innovation Officer", pmo: "INNOV-PMO", status: "DEPLOYED" },
-  { name: "CISO_Ang", title: "Chief Information Security Officer", pmo: "COMPLY-PMO", status: "DEPLOYED" },
-  { name: "CGO_Ang", title: "Chief Growth Officer", pmo: "GROWTH-PMO", status: "DEPLOYED" },
-  { name: "CTO_Ang", title: "Chief Technology Officer", pmo: "DT-PMO", status: "DEPLOYED" },
-  { name: "CFO_Ang", title: "Chief Financial Officer", pmo: "DT-PMO", status: "DEPLOYED" },
-  { name: "QA_Ang", title: "Quality Assurance Lead", pmo: "DT-PMO", status: "DEPLOYED" },
+  { name: "Boomer_CTO", title: "Chief Technology Officer", pmo: "TECH OFFICE", status: "DEPLOYED" },
+  { name: "Boomer_CFO", title: "Chief Financial Officer", pmo: "FINANCE OFFICE", status: "DEPLOYED" },
+  { name: "Boomer_COO", title: "Chief Operating Officer", pmo: "OPS OFFICE", status: "DEPLOYED" },
+  { name: "Boomer_CMO", title: "Chief Marketing Officer", pmo: "MARKETING OFFICE", status: "DEPLOYED" },
+  { name: "Boomer_CDO", title: "Chief Design Officer", pmo: "DESIGN OFFICE", status: "DEPLOYED" },
+  { name: "Boomer_CPO", title: "Chief Publication Officer", pmo: "PUBLISHING OFFICE", status: "DEPLOYED" },
+  { name: "DevOps Agent", title: "DevOps Specialist", pmo: "TECH OFFICE", status: "DEPLOYED" },
+  { name: "Value Agent", title: "Financial Analyst", pmo: "FINANCE OFFICE", status: "DEPLOYED" },
+  { name: "Flow Boss Agent", title: "Workflow Orchestrator", pmo: "OPS OFFICE", status: "DEPLOYED" },
+  { name: "Social Campaign Agent", title: "Campaign Manager", pmo: "MARKETING OFFICE", status: "DEPLOYED" },
+  { name: "Video Editing Agent", title: "Multimedia Producer", pmo: "DESIGN OFFICE", status: "DEPLOYED" },
+  { name: "Social Agent", title: "Content Publisher", pmo: "PUBLISHING OFFICE", status: "DEPLOYED" },
 ];
 
 interface ExecutionAng {
@@ -123,28 +126,43 @@ export default function HouseOfAngPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
-      {/* ---- Header ---- */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-amber-200">
-            <Factory size={24} />
+      {/* ---- Hero Section: Boomer_Angs at Port ---- */}
+      <section className="relative overflow-hidden rounded-3xl border border-amber-300/20 shadow-[0_0_60px_rgba(251,191,36,0.15)]">
+        <div className="relative min-h-[280px] md:min-h-[380px]">
+          {/* Hero Background Image */}
+          <div className="absolute inset-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/brand/boomerangs-port.png"
+              alt="Boomer_Angs organizing containers at the port"
+              className="h-full w-full object-cover"
+            />
+            {/* Gradient overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
           </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-amber-200/50 mb-1">
+
+          {/* Hero Content */}
+          <div className="relative z-10 flex h-full min-h-[280px] md:min-h-[380px] flex-col justify-end p-8 md:p-10">
+            <div className="flex items-center gap-2 mb-3">
+              <Building2 size={14} className="text-amber-300" />
+              <span className="text-[10px] uppercase font-bold text-amber-300 tracking-widest">
+                Factory Online
+              </span>
+            </div>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-amber-200/60 mb-1">
               Boomer_Ang Factory &amp; Deployment Center
             </p>
-            <h1 className="text-2xl font-semibold tracking-tight text-amber-50 font-display">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-amber-50 font-display">
               HOUSE OF ANG
             </h1>
+            <p className="mt-2 text-sm text-amber-100/50 max-w-lg">
+              The birthplace and command center for all Boomer_Angs.
+              Spawned here, deployed everywhere. Activity breeds Activity.
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Building2 size={14} className="text-amber-300" />
-          <span className="text-[10px] uppercase font-bold text-amber-300 tracking-widest">
-            Factory Online
-          </span>
-        </div>
-      </header>
+      </section>
 
       {/* ---- Stats Bar ---- */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">

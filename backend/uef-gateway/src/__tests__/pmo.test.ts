@@ -22,16 +22,53 @@ describe('PMO Registry', () => {
     }
   });
 
-  it('DT-PMO has 3 team members', () => {
-    const dtPmo = pmoRegistry.get('dt-pmo');
-    expect(dtPmo).toBeDefined();
-    expect(dtPmo!.team).toHaveLength(3);
-    expect(dtPmo!.director.id).toBe('CDTO_Ang');
+  it('TECH OFFICE has Boomer_CTO director and DevOps departmental agent', () => {
+    const techOffice = pmoRegistry.get('tech-office');
+    expect(techOffice).toBeDefined();
+    expect(techOffice!.director.id).toBe('Boomer_CTO');
+    expect(techOffice!.director.title).toBe('Chief Technology Officer');
+    expect(techOffice!.departmentalAgent.name).toBe('DevOps Agent');
+    expect(techOffice!.departmentalAgent.reportsTo).toBe('Boomer_CTO');
   });
 
-  it('all 6 PMO IDs are unique', () => {
+  it('all 6 canonical offices exist with correct IDs', () => {
     const ids = pmoRegistry.list().map(o => o.id);
+    expect(ids).toContain('tech-office');
+    expect(ids).toContain('finance-office');
+    expect(ids).toContain('ops-office');
+    expect(ids).toContain('marketing-office');
+    expect(ids).toContain('design-office');
+    expect(ids).toContain('publishing-office');
     expect(new Set(ids).size).toBe(6);
+  });
+
+  it('each office has a departmental agent reporting to its director', () => {
+    for (const office of pmoRegistry.list()) {
+      expect(office.departmentalAgent).toBeDefined();
+      expect(office.departmentalAgent.reportsTo).toBe(office.director.id);
+    }
+  });
+
+  it('all 6 Boomer_ directors are present', () => {
+    const directors = pmoRegistry.getDirectors();
+    const dirIds = directors.map(d => d.id);
+    expect(dirIds).toContain('Boomer_CTO');
+    expect(dirIds).toContain('Boomer_CFO');
+    expect(dirIds).toContain('Boomer_COO');
+    expect(dirIds).toContain('Boomer_CMO');
+    expect(dirIds).toContain('Boomer_CDO');
+    expect(dirIds).toContain('Boomer_CPO');
+  });
+
+  it('all 6 departmental agents are present', () => {
+    const agents = pmoRegistry.getDepartmentalAgents();
+    const names = agents.map(a => a.name);
+    expect(names).toContain('DevOps Agent');
+    expect(names).toContain('Value Agent');
+    expect(names).toContain('Flow Boss Agent');
+    expect(names).toContain('Social Campaign Agent');
+    expect(names).toContain('Video Editing Agent');
+    expect(names).toContain('Social Agent');
   });
 
   it('getHouseConfig returns valid stats', () => {
@@ -43,19 +80,41 @@ describe('PMO Registry', () => {
 });
 
 describe('House of Ang', () => {
-  it('has 14 Angs in initial roster (9 supervisory + 5 execution)', () => {
+  it('has 17 Angs in initial roster (12 supervisory + 5 execution)', () => {
     const stats = houseOfAng.getStats();
-    expect(stats.total).toBe(14);
-    expect(stats.supervisory).toBe(9);
+    expect(stats.total).toBe(17);
+    expect(stats.supervisory).toBe(12);
     expect(stats.execution).toBe(5);
   });
 
   it('lists all supervisory Angs as DEPLOYED', () => {
     const supervisory = houseOfAng.listByType('SUPERVISORY');
-    expect(supervisory).toHaveLength(9);
+    expect(supervisory).toHaveLength(12);
     for (const ang of supervisory) {
       expect(ang.status).toBe('DEPLOYED');
     }
+  });
+
+  it('has 6 C-Suite Boomer_ directors in supervisory roster', () => {
+    const supervisory = houseOfAng.listByType('SUPERVISORY');
+    const names = supervisory.map(a => a.name);
+    expect(names).toContain('Boomer_CTO');
+    expect(names).toContain('Boomer_CFO');
+    expect(names).toContain('Boomer_COO');
+    expect(names).toContain('Boomer_CMO');
+    expect(names).toContain('Boomer_CDO');
+    expect(names).toContain('Boomer_CPO');
+  });
+
+  it('has 6 departmental agents in supervisory roster', () => {
+    const supervisory = houseOfAng.listByType('SUPERVISORY');
+    const names = supervisory.map(a => a.name);
+    expect(names).toContain('DevOps Agent');
+    expect(names).toContain('Value Agent');
+    expect(names).toContain('Flow Boss Agent');
+    expect(names).toContain('Social Campaign Agent');
+    expect(names).toContain('Video Editing Agent');
+    expect(names).toContain('Social Agent');
   });
 
   it('execution Angs have correct task counts', () => {
@@ -69,9 +128,9 @@ describe('House of Ang', () => {
     expect(hawk!.tasksCompleted).toBe(28);
   });
 
-  it('can filter Angs by PMO', () => {
-    const dtAngs = houseOfAng.listByPmo('dt-pmo');
-    expect(dtAngs.length).toBeGreaterThanOrEqual(3);
+  it('can filter Angs by PMO office', () => {
+    const techAngs = houseOfAng.listByPmo('tech-office');
+    expect(techAngs.length).toBeGreaterThanOrEqual(2); // Boomer_CTO + DevOps Agent
   });
 
   it('spawns a new Ang', () => {
@@ -87,8 +146,8 @@ describe('House of Ang', () => {
   });
 
   it('can assign Ang to PMO', () => {
-    const ang = houseOfAng.assignToPmo('testang', 'innov-pmo');
-    expect(ang.assignedPmo).toBe('innov-pmo');
+    const ang = houseOfAng.assignToPmo('testang', 'tech-office');
+    expect(ang.assignedPmo).toBe('tech-office');
   });
 
   it('can transition Ang status', () => {
@@ -98,7 +157,7 @@ describe('House of Ang', () => {
 
   it('tracks spawn log', () => {
     const log = houseOfAng.getSpawnLog();
-    expect(log.length).toBeGreaterThanOrEqual(15); // 14 seed + 1 test spawn
+    expect(log.length).toBeGreaterThanOrEqual(18); // 17 seed + 1 test spawn
   });
 });
 
@@ -116,7 +175,7 @@ describe('ATS Procurement Pipeline', () => {
     expect(pipeline.bids.length).toBeGreaterThan(0);
     expect(pipeline.projections.length).toBeGreaterThan(0);
     expect(pipeline.totalProjectedSavings).toBeGreaterThan(0);
-    expect(pipeline.governedBy).toBe('COO_Ang');
+    expect(pipeline.governedBy).toBe('Boomer_COO');
     expect(pipeline.executedBy).toContain('analyst-ang');
     expect(pipeline.executedBy).toContain('engineer-ang');
   });
