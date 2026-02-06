@@ -16,6 +16,7 @@ import { VISION_SQUAD_PROFILES } from './agents/lil-hawks/vision-scout-squad';
 import { PREP_SQUAD_PROFILES, runPrepSquad } from './agents/lil-hawks/prep-squad-alpha';
 import { pmoRegistry } from './pmo/registry';
 import { houseOfAng } from './pmo/house-of-ang';
+import { TIER_CONFIGS, TASK_MULTIPLIERS as BILLING_MULTIPLIERS, checkAllowance } from './billing';
 
 import logger from './logger';
 
@@ -145,6 +146,23 @@ app.post('/house-of-ang/spawn', (req, res) => {
   }
 });
 
+
+// --------------------------------------------------------------------------
+// Billing — 3-6-9 Pricing Model
+// --------------------------------------------------------------------------
+app.get('/billing/tiers', (_req, res) => {
+  res.json({ tiers: TIER_CONFIGS, taskMultipliers: BILLING_MULTIPLIERS });
+});
+
+app.post('/billing/check-allowance', (req, res) => {
+  const { tierId, monthlyUsedTokens } = req.body;
+  if (!tierId) {
+    res.status(400).json({ error: 'Missing tierId' });
+    return;
+  }
+  const allowance = checkAllowance(tierId, monthlyUsedTokens || 0);
+  res.json(allowance);
+});
 
 // --------------------------------------------------------------------------
 // Lil_Hawks — Squad profiles
