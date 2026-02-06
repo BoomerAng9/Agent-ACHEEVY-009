@@ -5,9 +5,12 @@
  * POST /api/tts
  * Body: { text, voiceId?, speed? }
  * Returns: audio/mpeg stream
+ *
+ * SECURITY: All inputs validated and sanitized
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { validateTTSRequest } from '@/lib/security/validation';
 
 const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
 
@@ -32,12 +35,22 @@ const VOICE_IDS: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { text, voiceId, speed = 1.0 } = body;
-
-    if (!text || typeof text !== 'string') {
-      return NextResponse.json({ error: 'Text is required' }, { status: 400 });
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
     }
+
+    // Validate all inputs - NO BACKDOORS
+    const validation = validateTTSRequest(body);
+    if (!validation.valid || !validation.data) {
+      console.warn(`[TTS] Validation failed: ${validation.error}`);
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+
+    const { text, voiceId, speed = 1.0 } = validation.data;
 
     const apiKey = process.env.ELEVENLABS_API_KEY;
 

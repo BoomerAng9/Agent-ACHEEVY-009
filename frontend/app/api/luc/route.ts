@@ -5,6 +5,7 @@
  * Used by both the UI calculator and Boomer_Ang orchestration.
  *
  * PRODUCTION-READY: Uses file-based persistent storage.
+ * SECURITY: All inputs validated and sanitized
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -20,6 +21,7 @@ import {
   getLUCServerManager,
 } from '@/lib/luc/server-storage';
 import { INDUSTRY_PRESETS, getPreset, getPresetsByCategory } from '@/lib/luc/luc-presets';
+import { validateId, validateLUCRequest } from '@/lib/security/validation';
 
 // ─────────────────────────────────────────────────────────────
 // Initialize Storage (File-based persistence)
@@ -35,9 +37,16 @@ const accountManager = getLUCServerManager();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId') || 'default-user';
+    const rawUserId = searchParams.get('userId') || 'default-user';
     const includeHistory = searchParams.get('includeHistory') === 'true';
     const includeStats = searchParams.get('includeStats') === 'true';
+
+    // Validate userId - NO BACKDOORS
+    const userIdValidation = validateId(rawUserId, 'userId');
+    if (!userIdValidation.valid) {
+      return NextResponse.json({ success: false, error: userIdValidation.error }, { status: 400 });
+    }
+    const userId = userIdValidation.sanitized || 'default-user';
 
     const account = await storage.getOrCreateAccount(userId);
     const engine = createLUCEngine(account);
@@ -75,8 +84,22 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { action, userId = 'default-user', service, amount, planId, format, data, presetId } = body;
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ success: false, error: 'Invalid JSON' }, { status: 400 });
+    }
+
+    // Validate all inputs - NO BACKDOORS
+    const validation = validateLUCRequest(body);
+    if (!validation.valid || !validation.data) {
+      console.warn(`[LUC API] Validation failed: ${validation.error}`);
+      return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
+    }
+
+    const { action, userId, service, amount, planId, format, data, presetId } = validation.data;
 
     const account = await storage.getOrCreateAccount(userId);
     const engine = createLUCEngine(account);

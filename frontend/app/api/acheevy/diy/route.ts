@@ -1,12 +1,34 @@
-// frontend/app/api/acheevy/diy/route.ts
+/**
+ * DIY Chat API Route
+ *
+ * POST /api/acheevy/diy
+ * Body: { sessionId?, projectId?, message, imageBase64?, mode? }
+ *
+ * SECURITY: All inputs validated and sanitized
+ */
 import { NextRequest, NextResponse } from 'next/server';
+import { validateDIYRequest } from '@/lib/security/validation';
 
 const ACHEEVY_URL = process.env.ACHEEVY_URL || 'http://localhost:3003';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { sessionId, projectId, message, imageBase64, mode } = body;
+    // Parse and validate request body
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
+
+    // Validate all inputs - NO BACKDOORS
+    const validation = validateDIYRequest(body);
+    if (!validation.valid || !validation.data) {
+      console.warn(`[DIY API] Validation failed: ${validation.error}`);
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+
+    const { sessionId, projectId, message, imageBase64, mode } = validation.data;
 
     // Forward to ACHEEVY DIY endpoint
     const response = await fetch(`${ACHEEVY_URL}/diy/chat`, {

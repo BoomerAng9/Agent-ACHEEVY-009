@@ -5,9 +5,12 @@
  * POST /api/chat
  * Body: { messages, model?, sessionId? }
  * Returns: text/event-stream
+ *
+ * SECURITY: All inputs validated and sanitized
  */
 
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { validateChatRequest } from '@/lib/security/validation';
 
 const ACHEEVY_URL = process.env.ACHEEVY_URL || 'http://localhost:3003';
 
@@ -28,8 +31,22 @@ const MODEL_ENDPOINTS: Record<string, { url: string; key: string }> = {
 };
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const { messages, model = 'gemini-3-flash', sessionId } = body;
+  // Parse and validate request body
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  // Validate all inputs - NO BACKDOORS
+  const validation = validateChatRequest(body);
+  if (!validation.valid || !validation.data) {
+    console.warn(`[Chat API] Validation failed: ${validation.error}`);
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
+
+  const { messages, model = 'gemini-3-flash', sessionId } = validation.data;
 
   // Create a readable stream for SSE
   const encoder = new TextEncoder();
