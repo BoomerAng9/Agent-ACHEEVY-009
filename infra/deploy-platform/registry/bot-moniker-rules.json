@@ -1,0 +1,184 @@
+{
+  "$schema": "https://aims.dev/schemas/bot-moniker-rules.json",
+  "name": "Deploy Bot Moniker Rules",
+  "version": "1.0.0",
+  "description": "Naming conventions for Chicken_Hawk bots - small but relentless workers that power up when needed",
+
+  "mascot": {
+    "name": "Chicken_Hawk",
+    "description": "Small but relentless workers - determined, tenacious, can power up when the task demands",
+    "evolution": {
+      "base": "Small chick - handles atomic tasks",
+      "powered": "Wings spread - handles parallel tasks",
+      "maxPower": "Full power-up - handles complex operations"
+    },
+    "traits": ["relentless", "determined", "scrappy", "powerful_when_needed"]
+  },
+
+  "pattern": {
+    "canonical": "<Function>_Chicken_Hawk_<ShiftId>-<Serial>",
+    "regex": "^[A-Z][a-zA-Z]+_Chicken_Hawk_SFT-[0-9]{3}-CH[0-9]{3}$",
+    "examples": [
+      "Deploy_Chicken_Hawk_SFT-221-CH041",
+      "Scale_Chicken_Hawk_SFT-221-CH117",
+      "Verify_Chicken_Hawk_SFT-221-CH203",
+      "Route_Chicken_Hawk_SFT-221-CH088",
+      "Rollback_Chicken_Hawk_SFT-221-CH009",
+      "Move_Chicken_Hawk_SFT-221-CH055",
+      "Dispatch_Chicken_Hawk_SFT-221-CH012",
+      "Health_Chicken_Hawk_SFT-221-CH099"
+    ]
+  },
+
+  "components": {
+    "function": {
+      "description": "The primary action this Chicken_Hawk performs",
+      "allowed_values": [
+        "Deploy",
+        "Scale",
+        "Update",
+        "Swap",
+        "Canary",
+        "Rollback",
+        "Terminate",
+        "Health",
+        "Assign",
+        "Bind",
+        "Attach",
+        "Release",
+        "Quarantine",
+        "Rebalance",
+        "Dispatch",
+        "Split",
+        "Pause",
+        "Resume",
+        "Route",
+        "Guard",
+        "Limit",
+        "Kill",
+        "Incident",
+        "Cleanup",
+        "Rotate",
+        "Prewarm",
+        "Heal",
+        "Detect",
+        "Move",
+        "Verify",
+        "Check",
+        "Export",
+        "Import",
+        "Sync",
+        "Monitor"
+      ]
+    },
+    "identifier": {
+      "description": "All bots are Chicken_Hawks - small but relentless workers",
+      "value": "Chicken_Hawk",
+      "required": true
+    },
+    "power_level": {
+      "description": "Evolution state based on task complexity",
+      "levels": {
+        "base": {
+          "name": "Chick",
+          "description": "Small form - handles atomic tasks",
+          "max_concurrent": 1,
+          "visual": "Small determined chick"
+        },
+        "powered": {
+          "name": "Hawk",
+          "description": "Wings spread - handles parallel tasks",
+          "max_concurrent": 3,
+          "visual": "Wings spread with energy aura"
+        },
+        "max_power": {
+          "name": "Super_Hawk",
+          "description": "Full power-up - handles complex operations",
+          "max_concurrent": 5,
+          "visual": "Muscular form with energy lightning"
+        }
+      }
+    },
+    "shift_id": {
+      "description": "The deployment shift this Chicken_Hawk belongs to",
+      "format": "SFT-<3-digit-number>",
+      "example": "SFT-221"
+    },
+    "serial": {
+      "description": "Unique serial number within the shift",
+      "format": "CH<3-digit-number>",
+      "example": "CH041"
+    }
+  },
+
+  "rules": {
+    "always_chicken_hawk": {
+      "description": "Every bot moniker must include Chicken_Hawk identifier",
+      "enforced": true
+    },
+    "tied_to_shift": {
+      "description": "Every Chicken_Hawk must be tied to a ShiftId",
+      "enforced": true
+    },
+    "kyb_identity_required": {
+      "description": "Each Chicken_Hawk gets a KYB identity + Flight Recorder entry",
+      "enforced": true
+    },
+    "no_bot_spawning": {
+      "description": "No Chicken_Hawk spawns another Chicken_Hawk unless registry explicitly permits it",
+      "enforced": true,
+      "exceptions": ["Dispatch_Chicken_Hawk"]
+    },
+    "power_level_matches_task": {
+      "description": "Chicken_Hawk power level must match task complexity",
+      "enforced": true
+    },
+    "logs_only_no_decisions": {
+      "description": "Chicken_Hawks report logs only - no autonomous decisions",
+      "enforced": true
+    }
+  },
+
+  "kyb_integration": {
+    "required_fields": [
+      "chicken_hawk_moniker",
+      "shift_id",
+      "power_level",
+      "function",
+      "spawned_at",
+      "spawned_by",
+      "contract_ref",
+      "capabilities"
+    ],
+    "identity_format": "KYB-CH-<shift_id>-<serial>",
+    "flight_recorder": {
+      "enabled": true,
+      "retention_days": 90,
+      "fields": ["action", "input", "output", "duration", "status", "error", "power_level"]
+    }
+  },
+
+  "hierarchy": {
+    "description": "Boomer_Ang supervisors command Chicken_Hawk workers",
+    "supervisors": {
+      "pattern": "<Role>_Ang",
+      "examples": [
+        "CEO_Ang",
+        "CTO_Ang",
+        "COO_Ang",
+        "CFO_Ang",
+        "Orchestrator_Ang"
+      ],
+      "note": "Supervisors are persistent Boomer_Angs, not tied to shifts"
+    },
+    "workers": {
+      "pattern": "<Function>_Chicken_Hawk_<ShiftId>-<Serial>",
+      "examples": [
+        "Deploy_Chicken_Hawk_SFT-221-CH041",
+        "Scale_Chicken_Hawk_SFT-221-CH117"
+      ],
+      "note": "Chicken_Hawks are spawned per shift, supervised by Boomer_Angs"
+    },
+    "command_chain": "ACHEEVY → Boomer_Ang → Chicken_Hawk"
+  }
+}

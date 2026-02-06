@@ -2,7 +2,7 @@
   "$schema": "https://openclaw.dev/schemas/config.json",
   "version": "2026.2.3",
   "instance": {
-    "name": "A.I.M.S. Boomer_Ang Platform",
+    "name": "A.I.M.S. Deploy Platform",
     "prefix": "[A.I.M.S.]",
     "agentBranding": "Boomer_Ang",
     "agentPluralBranding": "Boomer_Angs",
@@ -10,6 +10,83 @@
       "enabled": true,
       "logo": "/assets/aims-logo.png",
       "theme": "dark"
+    }
+  },
+
+  "deploy": {
+    "description": "Deploy Platform - Container yard with cranes, crew, and traffic control",
+    "metaphor": "Port Authority (internal) / Deploy (external)",
+
+    "vocabulary": {
+      "userFacing": {
+        "deployIt": {
+          "name": "Deploy It",
+          "description": "Fast dispatch lane - manifest preview → confirm → shift runs",
+          "type": "lane"
+        },
+        "guideMe": {
+          "name": "Guide Me",
+          "description": "Consultative lane - needs analysis → manifest generation → approval",
+          "type": "lane"
+        },
+        "manifest": {
+          "name": "Manifest",
+          "description": "The deployment plan ACHEEVY generates (what's being moved, where, and why)"
+        },
+        "crew": {
+          "name": "Crew",
+          "description": "The Deploy team executing the manifest (OpenClaw + bots)"
+        },
+        "shift": {
+          "name": "Shift",
+          "description": "A single execution session with start/end, audit trail, and receipt"
+        },
+        "receipt": {
+          "name": "Receipt",
+          "description": "Proof of what ran + what changed + costs + checks (ties to LUC + KYB)"
+        }
+      },
+      "internal": {
+        "acheevy": "Orchestrator",
+        "boomerAngs": "Supervisors",
+        "openClaw": "Execution crew",
+        "bots": "Atomic workers",
+        "luc": "Locale Universal Calculator - metering + quotas + cost signals",
+        "kyb": "Identity + audit trail"
+      }
+    },
+
+    "visualMapping": {
+      "containerStacks": "Plugs / tenant workloads - each container = deployable unit with ID, owner, plan, state",
+      "craneArms": "OpenClaw (Deploy Crew) - mass movement + placement of workloads",
+      "groundCrew": "Boomer_Angs (Supervisors + Specialists) - oversight, safety, verification, dispatch",
+      "smallVehicles": "Spawned bots (Boomer_Ang-classed workers) - atomic tasks: move, check, patch, restart",
+      "centralLanes": "Execution lanes - Deploy It and Guide Me",
+      "sunrise": "Operational clarity - status lights, manifests, receipts, audit trails",
+      "emblems": "KYB identity + trust marks - verified and governed badge"
+    },
+
+    "lanes": {
+      "deployIt": {
+        "type": "fast_dispatch",
+        "flow": ["manifest_preview", "confirm", "shift_runs"],
+        "questions": "few",
+        "execution": "fast",
+        "output": "receipt"
+      },
+      "guideMe": {
+        "type": "consultative",
+        "flow": ["needs_analysis", "goal", "constraints", "target_outcome", "deployment_shape", "manifest_approval"],
+        "acheevy_collects": ["goal", "constraints", "target_outcome", "deployment_shape"],
+        "output": "manifest",
+        "then": "switches to Deploy It automatically"
+      }
+    },
+
+    "registryPaths": {
+      "capabilities": "/app/deploy-platform/registry/capability-registry.json",
+      "botMonikers": "/app/deploy-platform/registry/bot-moniker-rules.json",
+      "contracts": "/app/deploy-platform/contracts/shift-contract-schema.json"
     }
   },
 
@@ -41,9 +118,9 @@
         "required": true
       },
       "5_reporting": {
-        "actor": "Bots",
+        "actor": "Chicken_Hawk",
         "action": "report_logs_only",
-        "description": "Bots report execution logs only - no decisions, no deviations",
+        "description": "Chicken_Hawks report execution logs only - small but relentless workers, no decisions, no deviations",
         "required": true
       },
       "6_closure": {
@@ -75,12 +152,17 @@
         "canTerminate": false,
         "description": "Execution engine - follows contracts exactly"
       },
-      "Bots": {
+      "Chicken_Hawk": {
         "type": "worker",
         "permissions": ["log"],
         "canInitiate": false,
         "canTerminate": false,
-        "description": "Workers - execute tasks and report logs only"
+        "description": "Small but relentless workers - execute tasks and report logs only, can power up when needed",
+        "evolution": {
+          "base": "Chick - atomic tasks",
+          "powered": "Hawk - parallel tasks",
+          "maxPower": "Super_Hawk - complex operations"
+        }
       }
     },
     "contracts": {
@@ -362,10 +444,10 @@
     "format": "json",
     "includeTimestamp": true,
     "sanitize": true,
-    "botLogs": {
+    "chickenHawkLogs": {
       "required": true,
       "captureAll": true,
-      "fields": ["action", "input", "output", "contractRef", "timestamp"],
+      "fields": ["action", "input", "output", "contractRef", "timestamp", "powerLevel"],
       "noDecisions": true,
       "reportTo": "ACHEEVY"
     },
