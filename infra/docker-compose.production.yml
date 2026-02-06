@@ -320,6 +320,8 @@ services:
       - shared-workspace:/shared:ro
       # Mount Docker socket for sandbox containers
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      # OpenClaw v2026.2.3 configuration
+      - ./openclaw-sandbox/openclaw.config.json:/home/node/.openclaw/config.json:ro
     networks:
       # Only sandbox network - NO AIMS NETWORK ACCESS
       - sandbox-network
