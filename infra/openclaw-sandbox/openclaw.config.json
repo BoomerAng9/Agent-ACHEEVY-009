@@ -12,6 +12,90 @@
       "theme": "dark"
     }
   },
+
+  "governance": {
+    "description": "Chain of command: ACHEEVY → Boomer_Ang → Contract → OpenClaw → Bots → ACHEEVY",
+    "workflow": {
+      "1_approval": {
+        "actor": "ACHEEVY",
+        "action": "approves_plan",
+        "description": "ACHEEVY reviews and approves the execution plan",
+        "required": true
+      },
+      "2_validation": {
+        "actor": "Boomer_Ang",
+        "action": "validates_scope",
+        "description": "Boomer_Ang validates scope and enforces limits",
+        "required": true
+      },
+      "3_contract": {
+        "actor": "System",
+        "action": "issues_contract",
+        "description": "Formal contract issued to OpenClaw with exact specifications",
+        "required": true
+      },
+      "4_execution": {
+        "actor": "OpenClaw",
+        "action": "executes_exactly",
+        "description": "OpenClaw executes exactly what contract specifies - no more, no less",
+        "required": true
+      },
+      "5_reporting": {
+        "actor": "Bots",
+        "action": "report_logs_only",
+        "description": "Bots report execution logs only - no decisions, no deviations",
+        "required": true
+      },
+      "6_closure": {
+        "actor": "ACHEEVY",
+        "action": "verifies_and_closes",
+        "description": "ACHEEVY verifies completion and closes the task",
+        "required": true
+      }
+    },
+    "roles": {
+      "ACHEEVY": {
+        "type": "orchestrator",
+        "permissions": ["approve", "reject", "verify", "close"],
+        "canInitiate": true,
+        "canTerminate": true,
+        "description": "AI orchestrator - approves plans and verifies completion"
+      },
+      "Boomer_Ang": {
+        "type": "validator",
+        "permissions": ["validate", "limit", "scope"],
+        "canInitiate": false,
+        "canTerminate": false,
+        "description": "Scope validator - enforces boundaries and limits"
+      },
+      "OpenClaw": {
+        "type": "executor",
+        "permissions": ["execute"],
+        "canInitiate": false,
+        "canTerminate": false,
+        "description": "Execution engine - follows contracts exactly"
+      },
+      "Bots": {
+        "type": "worker",
+        "permissions": ["log"],
+        "canInitiate": false,
+        "canTerminate": false,
+        "description": "Workers - execute tasks and report logs only"
+      }
+    },
+    "contracts": {
+      "format": "json",
+      "requiredFields": ["taskId", "scope", "limits", "expectedOutputs", "approvedBy"],
+      "immutable": true,
+      "signatureRequired": true
+    },
+    "enforcement": {
+      "strictMode": true,
+      "noDeviations": true,
+      "logAllActions": true,
+      "requireApprovalChain": true
+    }
+  },
   "gateway": {
     "port": 8001,
     "host": "0.0.0.0",
@@ -71,35 +155,41 @@
 
   "taskModeling": {
     "behavior": {
-      "approach": "methodical",
-      "verbosity": "concise",
+      "approach": "contract-bound",
+      "verbosity": "logs-only",
       "confirmationRequired": false,
-      "autoRetry": true,
-      "maxRetries": 3
+      "autoRetry": false,
+      "maxRetries": 0,
+      "deviation": "prohibited",
+      "autonomy": "none"
     },
     "planning": {
-      "enabled": true,
-      "breakdownThreshold": 3,
-      "showProgress": true,
-      "estimateEffort": false
+      "enabled": false,
+      "description": "Planning is done by ACHEEVY, not bots",
+      "botsCanPlan": false,
+      "requiresApproval": true
     },
     "execution": {
-      "parallelTasks": true,
-      "maxConcurrent": 3,
-      "checkpointInterval": 5,
-      "rollbackOnFailure": true
+      "mode": "contract-exact",
+      "parallelTasks": false,
+      "maxConcurrent": 1,
+      "checkpointInterval": 1,
+      "rollbackOnFailure": true,
+      "haltOnDeviation": true,
+      "requireContractMatch": true
     },
     "communication": {
-      "style": "professional",
-      "updateFrequency": "on-milestone",
-      "errorReporting": "detailed",
-      "successAcknowledgment": "brief"
+      "style": "logs-only",
+      "updateFrequency": "every-action",
+      "errorReporting": "immediate",
+      "successAcknowledgment": "log-entry",
+      "noDecisionMaking": true
     },
     "qualityControl": {
-      "selfReview": true,
+      "selfReview": false,
       "validateOutputs": true,
-      "codeStyle": "consistent",
-      "documentationLevel": "minimal"
+      "verifiedBy": "ACHEEVY",
+      "botsCannotApprove": true
     }
   },
 
@@ -268,10 +358,23 @@
     ]
   },
   "logging": {
-    "level": "warn",
+    "level": "info",
     "format": "json",
     "includeTimestamp": true,
-    "sanitize": true
+    "sanitize": true,
+    "botLogs": {
+      "required": true,
+      "captureAll": true,
+      "fields": ["action", "input", "output", "contractRef", "timestamp"],
+      "noDecisions": true,
+      "reportTo": "ACHEEVY"
+    },
+    "auditTrail": {
+      "enabled": true,
+      "immutable": true,
+      "includeApprovalChain": true,
+      "includeContractHash": true
+    }
   },
   "integrations": {
     "cloudflareAIGateway": {
