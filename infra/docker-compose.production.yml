@@ -300,7 +300,7 @@ services:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       # Default to KIMI K2.5 (strong reasoning, cost-effective)
       - DEFAULT_MODEL=moonshot/kimi-k2.5
-      - FALLBACK_MODEL=anthropic/claude-sonnet-4.5
+      - FALLBACK_MODEL=anthropic/claude-sonnet-4.6
       # Cloudflare AI Gateway (v2026.2.3 feature)
       - CLOUDFLARE_AI_GATEWAY_ENABLED=${CLOUDFLARE_AI_GATEWAY_ENABLED:-false}
       - CLOUDFLARE_AI_GATEWAY_URL=${CLOUDFLARE_AI_GATEWAY_URL:-}
