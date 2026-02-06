@@ -2,13 +2,8 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import { Inter } from 'next/font/google';
 
-// System/Google fonts
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-
-// Local custom fonts
-// Copy your fonts to /frontend/fonts/ directory
+// All fonts are local - no Google Fonts dependency
 const doto = localFont({
   src: '../fonts/Doto/Doto-VariableFont_ROND,wght.ttf',
   variable: '--font-doto',
@@ -53,7 +48,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${doto.variable} ${permanentMarker.variable} ${caveat.variable} ${patrickHand.variable} ${nabla.variable} antialiased min-h-screen bg-[#0a0f1a] text-slate-200 font-sans`}>
+      <body className={`${doto.variable} ${permanentMarker.variable} ${caveat.variable} ${patrickHand.variable} ${nabla.variable} antialiased min-h-screen bg-[#0a0f1a] text-slate-200 font-sans`}>
         {children}
       </body>
     </html>
