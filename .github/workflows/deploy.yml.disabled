@@ -1,33 +1,16 @@
-name: Deploy to VPS
+name: Deploy to VPS (Legacy)
+
+# Primary deploy now happens via GCP Cloud Build → Cloud Run.
+# This workflow is kept as a manual Hostinger VPS fallback only.
+# Use: Actions → Deploy to VPS → Run workflow (manual trigger)
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend/uef-gateway
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: backend/uef-gateway/package-lock.json
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
-
   deploy:
-    name: Deploy to Hostinger VPS
-    needs: test
+    name: Deploy to Hostinger VPS (Manual)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +23,6 @@ jobs:
           script: |
             set -e
 
-            # Clone or update repo
             if [ -d /home/aims/AIMS ]; then
               cd /home/aims/AIMS
               git fetch origin main
@@ -50,10 +32,7 @@ jobs:
               cd /home/aims/AIMS
             fi
 
-            # Stop any old "locale" project containers (VPS was originally LOCALE)
             docker compose -p locale down 2>/dev/null || true
-
-            # Build and deploy as "aims"
             chmod +x deploy.sh
             ./deploy.sh
 
