@@ -126,7 +126,8 @@ steps:
       - --min-instances=0
       - --max-instances=3
       - --allow-unauthenticated
-      - --set-env-vars=NODE_ENV=production,PORT=3001
+      - --set-env-vars=NODE_ENV=production,PORT=3001,LOG_LEVEL=info
+      - --update-secrets=INTERNAL_API_KEY=INTERNAL_API_KEY:latest,OPENROUTER_API_KEY=OPENROUTER_API_KEY:latest
     waitFor: ['push-gateway']
 
   - id: deploy-frontend
@@ -144,6 +145,8 @@ steps:
       - --min-instances=0
       - --max-instances=5
       - --allow-unauthenticated
+      - --set-env-vars=NODE_ENV=production
+      - --update-secrets=NEXTAUTH_SECRET=NEXTAUTH_SECRET:latest,INTERNAL_API_KEY=INTERNAL_API_KEY:latest
     waitFor: ['push-frontend']
 
 # ── Substitution Variables ──
