@@ -1,4 +1,6 @@
 // frontend/app/dashboard/layout.tsx
+export const dynamic = 'force-dynamic';
+
 import type { ReactNode } from "react";
 import { DashboardShell } from "../../components/DashboardShell";
 import { FloatingACHEEVY } from "../../components/global/FloatingACHEEVY";
