@@ -19,8 +19,9 @@ import { houseOfAng } from './pmo/house-of-ang';
 import { TIER_CONFIGS, TASK_MULTIPLIERS as BILLING_MULTIPLIERS, PILLAR_CONFIGS, checkAllowance, calculatePillarAddon, checkAgentLimit } from './billing';
 import { openrouter, MODELS as LLM_MODELS } from './llm';
 import { verticalRegistry } from './verticals';
-import { projectStore, plugStore, deploymentStore } from './db';
+import { projectStore, plugStore, deploymentStore, auditStore, evidenceStore, startCleanupSchedule, stopCleanupSchedule, closeDb } from './db';
 import { getQuestions, analyzeRequirements, generateProjectSpec, createProject } from './intake';
+import { riskAssessor, definitionOfDone, acceptanceCriteria } from './intake/requirements';
 import { templateLibrary } from './templates';
 import { scaffolder } from './scaffolder';
 import { pipeline } from './pipeline';
@@ -28,6 +29,15 @@ import { deployer } from './deployer';
 import { integrationRegistry } from './integrations';
 import { analytics } from './analytics';
 import { makeItMine } from './make-it-mine';
+import { ownershipEnforcer, requirePermission } from './auth';
+import { secrets } from './secrets';
+import { supplyChain } from './supply-chain';
+import { sandboxEnforcer } from './sandbox';
+import { securityTester } from './security';
+import { alertEngine, correlationManager, metricsExporter } from './observability';
+import { releaseManager } from './release';
+import { backupManager } from './backup';
+import { incidentManager } from './backup/incident-runbook';
 
 import logger from './logger';
 
@@ -46,6 +56,31 @@ app.use(cors({
   methods: ['GET', 'POST'],
 }));
 app.use(express.json());
+
+// Correlation ID middleware — every request gets a trace ID
+app.use(correlationManager.correlationMiddleware());
+
+// Request metrics middleware — track all HTTP requests
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    metricsExporter.record('http_requests_total', 1, { method: req.method, path: req.path, status: String(res.statusCode) });
+    metricsExporter.record('http_request_duration_ms', duration, { method: req.method, path: req.path });
+    if (res.statusCode >= 400) {
+      metricsExporter.record('http_errors_total', 1, { method: req.method, path: req.path, status: String(res.statusCode) });
+    }
+    // Evaluate alert thresholds
+    if (res.statusCode >= 500) {
+      alertEngine.evaluate('error_rate', 1);
+    }
+    alertEngine.evaluate('response_time', duration);
+  });
+  next();
+});
+
+// Start data lifecycle cleanup schedule
+startCleanupSchedule();
 
 // Global rate limit: 100 req / 15 min per IP
 const globalLimiter = rateLimit({
@@ -604,6 +639,442 @@ app.get('/lil-hawks', (_req, res) => {
 });
 
 // --------------------------------------------------------------------------
+// Pillar 1 — Requirements Rigor (Risk, DoD, Acceptance Criteria)
+// --------------------------------------------------------------------------
+app.post('/requirements/risk', (req, res) => {
+  try {
+    const { complexity, features, integrations, scale } = req.body;
+    if (!complexity) {
+      res.status(400).json({ error: 'Missing complexity field' });
+      return;
+    }
+    const assessment = riskAssessor.assessRisk({ complexity, features: features || [], integrations: integrations || [], scale: scale || 'personal' });
+    res.json(assessment);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Risk assessment failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post('/requirements/dod', (req, res) => {
+  try {
+    const { spec, riskLevel } = req.body;
+    if (!spec) {
+      res.status(400).json({ error: 'Missing spec field' });
+      return;
+    }
+    const checklist = definitionOfDone.generate(spec, riskLevel || 'low');
+    res.json(checklist);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'DoD generation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post('/requirements/acceptance', (req, res) => {
+  try {
+    const { feature, archetype } = req.body;
+    if (!feature) {
+      res.status(400).json({ error: 'Missing feature field' });
+      return;
+    }
+    const criteria = acceptanceCriteria.generate(feature, archetype || 'custom');
+    res.json({ feature, criteria });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Acceptance criteria generation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+// --------------------------------------------------------------------------
+// Pillar 3 — Authorization (Ownership + Roles)
+// --------------------------------------------------------------------------
+app.get('/auth/roles/:projectId', (req, res) => {
+  const roles = ownershipEnforcer.listRoles(req.params.projectId);
+  res.json({ projectId: req.params.projectId, roles });
+});
+
+app.post('/auth/roles', (req, res) => {
+  try {
+    const { projectId, userId, role } = req.body;
+    if (!projectId || !userId || !role) {
+      res.status(400).json({ error: 'Missing projectId, userId, or role' });
+      return;
+    }
+    ownershipEnforcer.grantRole(projectId, userId, role);
+    res.json({ granted: true, projectId, userId, role });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Role grant failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post('/auth/check', (req, res) => {
+  const { userId, projectId, permission } = req.body;
+  if (!userId || !projectId || !permission) {
+    res.status(400).json({ error: 'Missing userId, projectId, or permission' });
+    return;
+  }
+  const result = ownershipEnforcer.checkProjectAccess(userId, projectId, permission);
+  res.json(result);
+});
+
+// --------------------------------------------------------------------------
+// Pillar 5 — Secrets Management
+// --------------------------------------------------------------------------
+app.get('/secrets/audit', (_req, res) => {
+  res.json(secrets.audit());
+});
+
+app.get('/secrets/validate', (_req, res) => {
+  res.json(secrets.validateRequired());
+});
+
+app.get('/secrets/keys', (_req, res) => {
+  res.json({ keys: secrets.listKeys() });
+});
+
+app.get('/secrets/rotation/:key', (req, res) => {
+  const history = secrets.getRotationHistory(req.params.key);
+  res.json({ key: req.params.key, history });
+});
+
+// --------------------------------------------------------------------------
+// Pillar 6 — Supply Chain Security
+// --------------------------------------------------------------------------
+app.get('/supply-chain/sbom', (_req, res) => {
+  try {
+    const sbom = supplyChain.generateSBOM();
+    res.json(sbom);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'SBOM generation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/supply-chain/lockfile', (_req, res) => {
+  try {
+    const result = supplyChain.verifyLockfile();
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Lockfile verification failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/supply-chain/audit', (_req, res) => {
+  try {
+    const result = supplyChain.runAudit();
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Audit failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/supply-chain/report', (_req, res) => {
+  try {
+    const report = supplyChain.getReport();
+    res.json(report);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Report generation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+// --------------------------------------------------------------------------
+// Pillar 7 — Execution Safety (Sandbox)
+// --------------------------------------------------------------------------
+app.post('/sandbox/config', (req, res) => {
+  try {
+    const { projectName } = req.body;
+    if (!projectName || typeof projectName !== 'string') {
+      res.status(400).json({ error: 'Missing projectName' });
+      return;
+    }
+    const config = sandboxEnforcer.generateSandboxConfig(projectName);
+    res.json(config);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Sandbox config generation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post('/sandbox/validate', (req, res) => {
+  try {
+    const result = sandboxEnforcer.validateSandbox(req.body);
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Sandbox validation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/sandbox/posture', (_req, res) => {
+  res.json(sandboxEnforcer.getSecurityPosture());
+});
+
+app.get('/sandbox/seccomp', (_req, res) => {
+  res.json(sandboxEnforcer.generateSeccompProfile());
+});
+
+// --------------------------------------------------------------------------
+// Pillar 9 — Security Testing
+// --------------------------------------------------------------------------
+app.get('/security/sast', async (_req, res) => {
+  try {
+    const result = await securityTester.runSAST();
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'SAST scan failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/security/sca', (_req, res) => {
+  try {
+    const result = securityTester.runSCA();
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'SCA scan failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/security/input-validation', async (_req, res) => {
+  try {
+    const result = await securityTester.runInputValidation();
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Input validation scan failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/security/report', async (_req, res) => {
+  try {
+    const report = await securityTester.runFullScan();
+    res.json(report);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Security scan failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+// --------------------------------------------------------------------------
+// Pillar 10 — Observability (Alerts, Metrics)
+// --------------------------------------------------------------------------
+app.get('/observability/alerts', (_req, res) => {
+  res.json({ active: alertEngine.getActiveAlerts(), history: alertEngine.getAlertHistory(50) });
+});
+
+app.post('/observability/alerts/acknowledge', (req, res) => {
+  const { alertId } = req.body;
+  if (!alertId) {
+    res.status(400).json({ error: 'Missing alertId' });
+    return;
+  }
+  alertEngine.acknowledge(alertId);
+  res.json({ acknowledged: true, alertId });
+});
+
+app.get('/observability/metrics', (_req, res) => {
+  res.json(metricsExporter.exportJSON());
+});
+
+app.get('/observability/metrics/prometheus', (_req, res) => {
+  res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
+  res.send(metricsExporter.exportPrometheus());
+});
+
+// --------------------------------------------------------------------------
+// Pillar 11 — Release Engineering
+// --------------------------------------------------------------------------
+app.get('/releases', (_req, res) => {
+  res.json({ releases: releaseManager.listReleases() });
+});
+
+app.post('/releases', (req, res) => {
+  try {
+    const { version, changelog, artifacts } = req.body;
+    if (!version || typeof version !== 'string') {
+      res.status(400).json({ error: 'Missing version' });
+      return;
+    }
+    const release = releaseManager.createRelease(version, changelog || '', artifacts || []);
+    res.status(201).json(release);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Release creation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/releases/:id', (req, res) => {
+  const release = releaseManager.getRelease(req.params.id);
+  if (!release) {
+    res.status(404).json({ error: 'Release not found' });
+    return;
+  }
+  res.json(release);
+});
+
+app.post('/releases/:id/promote', (req, res) => {
+  try {
+    const { from, to } = req.body;
+    const result = releaseManager.promote(req.params.id, from, to);
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Promotion failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post('/releases/rollback', (req, res) => {
+  try {
+    const { environment } = req.body;
+    if (!environment) {
+      res.status(400).json({ error: 'Missing environment' });
+      return;
+    }
+    const result = releaseManager.rollback(environment);
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Rollback failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/environments', (_req, res) => {
+  const envs = (['development', 'staging', 'production'] as const).map(env => releaseManager.getEnvironmentState(env));
+  res.json({ environments: envs });
+});
+
+app.get('/releases/api/versions', (_req, res) => {
+  res.json({ versions: releaseManager.getActiveVersions() });
+});
+
+// --------------------------------------------------------------------------
+// Pillar 12 — Backup & Restore + Incidents
+// --------------------------------------------------------------------------
+app.post('/backups', (_req, res) => {
+  try {
+    const backup = backupManager.createBackup();
+    res.status(201).json(backup);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Backup failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/backups', (_req, res) => {
+  res.json({ backups: backupManager.listBackups() });
+});
+
+app.post('/backups/:id/restore', (req, res) => {
+  try {
+    const result = backupManager.restoreBackup(req.params.id);
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Restore failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post('/backups/drill', (_req, res) => {
+  try {
+    const result = backupManager.runRestoreDrill();
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Restore drill failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/backups/drill/status', (_req, res) => {
+  const lastDrill = backupManager.getLastDrillResult();
+  const schedule = backupManager.getDrillSchedule();
+  res.json({ lastDrill, schedule });
+});
+
+// Incidents
+app.post('/incidents', (req, res) => {
+  try {
+    const { severity, title, description } = req.body;
+    if (!severity || !title) {
+      res.status(400).json({ error: 'Missing severity or title' });
+      return;
+    }
+    const incident = incidentManager.createIncident(severity, title, description || '');
+    res.status(201).json(incident);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Incident creation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/incidents', (req, res) => {
+  const status = req.query.status as string | undefined;
+  const severity = req.query.severity as string | undefined;
+  const filter: Record<string, string> = {};
+  if (status) filter.status = status;
+  if (severity) filter.severity = severity;
+  res.json({ incidents: incidentManager.listIncidents(Object.keys(filter).length > 0 ? filter as any : undefined) });
+});
+
+app.post('/incidents/:id/update', (req, res) => {
+  try {
+    const incident = incidentManager.updateIncident(req.params.id, req.body);
+    res.json(incident);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Incident update failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post('/incidents/:id/resolve', (req, res) => {
+  try {
+    const { resolution } = req.body;
+    const incident = incidentManager.resolveIncident(req.params.id, resolution || 'Resolved');
+    res.json(incident);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Incident resolution failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/incidents/runbook/:severity', (req, res) => {
+  const runbook = incidentManager.getRunbook(req.params.severity as any);
+  res.json({ severity: req.params.severity, steps: runbook });
+});
+
+// --------------------------------------------------------------------------
+// Audit Trail
+// --------------------------------------------------------------------------
+app.get('/audit', (req, res) => {
+  const actor = req.query.actor as string | undefined;
+  const records = actor
+    ? auditStore.findBy(r => r.actor === actor)
+    : auditStore.list();
+  res.json({ records, count: records.length });
+});
+
+// --------------------------------------------------------------------------
+// Evidence Locker
+// --------------------------------------------------------------------------
+app.get('/evidence', (req, res) => {
+  const projectId = req.query.projectId as string | undefined;
+  const records = projectId
+    ? evidenceStore.findBy(r => r.projectId === projectId)
+    : evidenceStore.list();
+  res.json({ records, count: records.length });
+});
+
+app.get('/evidence/:gateId', (req, res) => {
+  const records = evidenceStore.findBy(r => r.gateId === req.params.gateId);
+  res.json({ gateId: req.params.gateId, records, count: records.length });
+});
+
+// --------------------------------------------------------------------------
 // Intent-specific execution plan generation
 // --------------------------------------------------------------------------
 function buildExecutionPlan(intent: string, _query: string): { steps: string[]; estimatedDuration: string } {
@@ -818,8 +1289,10 @@ export const server = app.listen(PORT, () => {
 // --------------------------------------------------------------------------
 function shutdown(signal: string) {
   logger.info({ signal }, '[UEF] Received shutdown signal, draining connections...');
+  stopCleanupSchedule();
   server.close(() => {
-    logger.info('[UEF] All connections drained. Exiting.');
+    closeDb();
+    logger.info('[UEF] All connections drained. DB closed. Exiting.');
     process.exit(0);
   });
   // Force exit after 10s if connections don't drain

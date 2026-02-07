@@ -5,7 +5,7 @@
  * Tests the full plug-building platform infrastructure.
  */
 
-import { projectStore, plugStore, deploymentStore, Store } from '../db';
+import { projectStore, plugStore, deploymentStore, Store, getDb } from '../db';
 import { getQuestions, analyzeRequirements, generateProjectSpec, createProject } from '../intake';
 import { templateLibrary } from '../templates';
 import { scaffolder } from '../scaffolder';
@@ -15,36 +15,43 @@ import { integrationRegistry } from '../integrations';
 import { analytics } from '../analytics';
 import { makeItMine } from '../make-it-mine';
 
+// Unique suffix per test run to avoid UNIQUE constraint clashes in persistent SQLite
+const RUN = Date.now().toString(36);
+
 // ---------------------------------------------------------------------------
 // DB Store
 // ---------------------------------------------------------------------------
 describe('DB Store', () => {
   it('creates and retrieves items', () => {
-    const store = new Store<{ id: string; name: string }>('test');
-    const item = store.create({ id: 'test-1', name: 'Test Item' });
-    expect(item.id).toBe('test-1');
-    expect(store.get('test-1')?.name).toBe('Test Item');
+    const tbl = `test_cr_${RUN}`;
+    const store = new Store<{ id: string; name: string }>('test', tbl);
+    const item = store.create({ id: `test-1-${RUN}`, name: 'Test Item' });
+    expect(item.id).toBe(`test-1-${RUN}`);
+    expect(store.get(`test-1-${RUN}`)?.name).toBe('Test Item');
   });
 
   it('updates items', () => {
-    const store = new Store<{ id: string; name: string }>('test2');
-    store.create({ id: 'u-1', name: 'Original' });
-    const updated = store.update('u-1', { name: 'Updated' });
+    const tbl = `test_up_${RUN}`;
+    const store = new Store<{ id: string; name: string }>('test', tbl);
+    store.create({ id: `u-1-${RUN}`, name: 'Original' });
+    const updated = store.update(`u-1-${RUN}`, { name: 'Updated' });
     expect(updated?.name).toBe('Updated');
   });
 
   it('deletes items', () => {
-    const store = new Store<{ id: string; name: string }>('test3');
-    store.create({ id: 'd-1', name: 'Delete Me' });
-    expect(store.delete('d-1')).toBe(true);
-    expect(store.get('d-1')).toBeUndefined();
+    const tbl = `test_del_${RUN}`;
+    const store = new Store<{ id: string; name: string }>('test', tbl);
+    store.create({ id: `d-1-${RUN}`, name: 'Delete Me' });
+    expect(store.delete(`d-1-${RUN}`)).toBe(true);
+    expect(store.get(`d-1-${RUN}`)).toBeUndefined();
   });
 
   it('lists and filters items', () => {
-    const store = new Store<{ id: string; type: string }>('test4');
-    store.create({ id: 'f-1', type: 'a' });
-    store.create({ id: 'f-2', type: 'b' });
-    store.create({ id: 'f-3', type: 'a' });
+    const tbl = `test_filt_${RUN}`;
+    const store = new Store<{ id: string; type: string }>('test', tbl);
+    store.create({ id: `f-1-${RUN}`, type: 'a' });
+    store.create({ id: `f-2-${RUN}`, type: 'b' });
+    store.create({ id: `f-3-${RUN}`, type: 'a' });
     expect(store.list()).toHaveLength(3);
     expect(store.findBy(i => i.type === 'a')).toHaveLength(2);
   });
