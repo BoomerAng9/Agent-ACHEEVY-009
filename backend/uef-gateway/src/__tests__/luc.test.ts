@@ -14,14 +14,14 @@ describe('LUCEngine', () => {
       const quote = LUCEngine.estimate('Build a landing page');
       const names = quote.variants.map(v => v.name);
 
-      expect(names).toContain('Standard (Kimi)');
-      expect(names).toContain('Premium (GPT-4)');
+      expect(names).toContain('Fast (Sonnet 4.5)');
+      expect(names).toContain('Premium (Opus 4.6)');
     });
 
     it('standard variant is cheaper than premium', () => {
       const quote = LUCEngine.estimate('Build a complex SaaS dashboard');
-      const standard = quote.variants.find(v => v.name.includes('Kimi'));
-      const premium = quote.variants.find(v => v.name.includes('GPT-4'));
+      const standard = quote.variants.find(v => v.name.includes('Sonnet'));
+      const premium = quote.variants.find(v => v.name.includes('Opus'));
 
       expect(standard!.estimate.totalUsd).toBeLessThan(premium!.estimate.totalUsd);
     });
@@ -39,11 +39,17 @@ describe('LUCEngine', () => {
     });
 
     it('applies ByteRover discount', () => {
-      const quote = LUCEngine.estimate('Some task');
+      const quote = LUCEngine.estimate('Build a full-stack SaaS application with authentication and payments');
 
       for (const variant of quote.variants) {
         expect(variant.estimate.byteRoverDiscountApplied).toBe(true);
         expect(variant.estimate.byteRoverSavingsUsd).toBeGreaterThan(0);
+        expect(variant.estimate.byteRover).toBeDefined();
+        expect(variant.estimate.byteRover.relevance).toBeGreaterThan(0);
+        expect(variant.estimate.byteRover.tokensSaved).toBeGreaterThan(0);
+        expect(variant.estimate.byteRover.preSavingsTokens).toBeGreaterThan(
+          variant.estimate.byteRover.postSavingsTokens
+        );
       }
     });
 

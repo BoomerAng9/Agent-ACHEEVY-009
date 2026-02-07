@@ -10,7 +10,9 @@ coverage
 .next/
 out/
 build/
+!frontend/app/dashboard/build/
 dist/
+*.tsbuildinfo
 
 # System
 .DS_Store
@@ -32,6 +34,7 @@ yarn-error.log*
 *.env
 *.env.*
 !*.env.example
+!*.env.*.example
 
 # Docker
 .docker/
@@ -43,3 +46,4 @@ yarn-error.log*
 # A.I.M.S. Specific
 infra/.env
 backend/uef-gateway/dist/
+backend/uef-gateway/data/

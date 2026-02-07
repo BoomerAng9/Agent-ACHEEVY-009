@@ -4,6 +4,8 @@
 import type { ReactNode } from "react";
 import { DashboardNav } from "./DashboardNav";
 import { LogoWallBackground } from "./LogoWallBackground";
+import { DynamicTagline } from "./DynamicTagline";
+import { MottoBar } from "./MottoBar";
 
 type Props = {
   children: ReactNode;
@@ -17,7 +19,7 @@ export function DashboardShell({ children }: Props) {
         <aside className="hidden w-64 border-r border-amber-50/8 bg-black/40/60 px-3 py-4 backdrop-blur-xl lg:block">
           <div className="mb-6 px-2">
             <p className="text-[0.7rem] uppercase tracking-[0.22em] text-amber-200/70">
-              The Hybrid Business Architect
+              AI Managed Solutions
             </p>
             <p className="mt-1 text-xs text-amber-100/65">
               ACHEEVY command center
@@ -31,7 +33,7 @@ export function DashboardShell({ children }: Props) {
               Live status
             </p>
             <p className="mt-1">
-              ACHEEVY is online and ready to orchestrate BoomerAngs.
+              ACHEEVY is online and ready to orchestrate Boomer_Angs.
             </p>
             <p className="mt-1 text-amber-100/60">
               LUC tracking:{" "}
@@ -40,6 +42,11 @@ export function DashboardShell({ children }: Props) {
               </span>
               .
             </p>
+          </div>
+
+          {/* Dynamic tagline — soft billboard */}
+          <div className="mt-6">
+            <DynamicTagline compact />
           </div>
         </aside>
 
@@ -52,7 +59,7 @@ export function DashboardShell({ children }: Props) {
                 Dashboard
               </span>
               <span className="text-sm text-amber-50">
-                Think it. Speak it. ACHEEVY builds it.
+                Think it. Prompt it. Let ACHEEVY manage it.
               </span>
             </div>
             <div className="flex items-center gap-4">
@@ -78,6 +85,9 @@ export function DashboardShell({ children }: Props) {
           </main>
         </div>
       </div>
+
+      {/* Doctrine — ambient reinforcement */}
+      <MottoBar position="fixed" />
     </LogoWallBackground>
   );
 }

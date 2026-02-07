@@ -2,22 +2,21 @@
  * Chicken Hawk — Execution & Coding Bot
  *
  * The workhorse. Receives execution plans from the UEF Gateway and runs them
- * step-by-step, coordinating with BoomerAng specialists as needed.
+ * step-by-step, coordinating with Boomer_Ang specialists as needed.
  *
- * Unlike BoomerAngs (which are domain specialists), Chicken Hawk is a
+ * Unlike Boomer_Angs (which are domain specialists), Chicken Hawk is a
  * general-purpose executor: it sequences steps, manages retries, tracks
  * cost accrual, and produces final artifacts.
  *
  * Behavior:
  *   1. Parse the execution plan into ordered steps
- *   2. For each step, determine which BoomerAng (if any) should handle it
+ *   2. For each step, determine which Boomer_Ang (if any) should handle it
  *   3. Execute steps sequentially, accumulating artifacts and costs
  *   4. Return consolidated result to UEF Gateway
  */
 
-import { v4 as uuidv4 } from 'uuid';
 import logger from '../logger';
-import { Agent, AgentId, AgentTaskInput, AgentTaskOutput, makeOutput, failOutput } from './types';
+import { Agent, AgentId, AgentTaskInput, AgentTaskOutput, failOutput } from './types';
 import { registry } from './registry';
 
 const profile = {
@@ -35,7 +34,7 @@ const profile = {
 };
 
 // ---------------------------------------------------------------------------
-// Step routing — which BoomerAng handles which kind of step
+// Step routing — which Boomer_Ang handles which kind of step
 // ---------------------------------------------------------------------------
 
 const STEP_AGENT_MAP: Record<string, AgentId> = {

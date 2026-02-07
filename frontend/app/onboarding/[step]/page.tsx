@@ -74,7 +74,7 @@ export default function OnboardingStepPage() {
         );
       case "finish":
         return (
-          <OnboardingShell title="Ready" subtitle="ACHEEVY is primed. Your BoomerAng team is in standby.">
+          <OnboardingShell title="Ready" subtitle="ACHEEVY is primed. Your Boomer_Ang team is in standby.">
              <div className="flex flex-col items-center gap-6 py-6">
                <div className="h-24 w-24 rounded-full border-2 border-amber-300/20 bg-amber-400/10 flex items-center justify-center animate-pulse">
                   <span className="text-3xl text-amber-300">🛡️</span>

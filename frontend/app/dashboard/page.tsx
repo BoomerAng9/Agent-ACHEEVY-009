@@ -1,12 +1,15 @@
 // frontend/app/dashboard/page.tsx
 import React from "react";
 import Link from "next/link";
-import { 
-  MessageSquare, 
-  Layers, 
-  Settings, 
+import {
+  MessageSquare,
+  Layers,
+  Settings,
   CreditCard,
-  ArrowRight
+  ArrowRight,
+  Hammer,
+  Copy,
+  Plug,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -31,6 +34,27 @@ export default function DashboardPage() {
       desc: "Deploy capability modules.", 
       status: "Active",
       href: "/dashboard/ai-plugs" 
+    },
+    {
+      title: "Build a Plug",
+      icon: Hammer,
+      desc: "Step-by-step plug builder.",
+      status: "Active",
+      href: "/dashboard/build"
+    },
+    {
+      title: "Your Plugs",
+      icon: Plug,
+      desc: "Manage deployed plugs.",
+      status: "Active",
+      href: "/dashboard/plugs"
+    },
+    {
+      title: "Make It Mine",
+      icon: Copy,
+      desc: "Clone and customize templates.",
+      status: "Active",
+      href: "/dashboard/make-it-mine"
     },
     {
       title: "Settings",
@@ -59,7 +83,7 @@ export default function DashboardPage() {
          <div className="flex flex-col md:flex-row items-center justify-between rounded-[31px] bg-black/80 p-6 md:p-8">
             <div className="space-y-2 text-center md:text-left">
                <h2 className="text-lg font-semibold text-amber-100 italic">Continue Onboarding?</h2>
-               <p className="text-sm text-amber-100/60 max-w-sm">You haven't finalized your model selection or initialized ByteRover memory.</p>
+               <p className="text-sm text-amber-100/60 max-w-sm">You haven&apos;t finalized The Park model configuration or initialized ByteRover memory.</p>
             </div>
             <Link href="/onboarding/estimate" className="mt-4 md:mt-0 flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 text-sm font-bold text-black shadow-[0_0_20px_rgba(251,191,36,0.3)] transition-all hover:scale-105 active:scale-95">
                Run Simulation <ArrowRight size={16} />

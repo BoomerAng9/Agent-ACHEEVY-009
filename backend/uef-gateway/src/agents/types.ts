@@ -1,5 +1,5 @@
 /**
- * Agent Registry — BoomerAng Team + Chicken Hawk Bot
+ * Agent Registry — Boomer_Ang Team + Chicken Hawk Bot
  *
  * Every agent is an in-process worker that fulfills ACP task contracts.
  * When external containers come online they'll implement the same interface
@@ -17,7 +17,9 @@ export type AgentId =
   | 'marketer-ang'
   | 'analyst-ang'
   | 'quality-ang'
-  | 'chicken-hawk';
+  | 'chicken-hawk'
+  | 'workflow-smith-squad'
+  | 'vision-scout-squad';
 
 export type AgentStatus = 'IDLE' | 'BUSY' | 'OFFLINE';
 

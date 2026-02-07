@@ -13,7 +13,7 @@ const missions = [
     progress: 45,
     steps: [
       { label: "Intent Analysis (AVVA NOON)", done: true },
-      { label: "Schema Design (EngineerAng)", done: true },
+      { label: "Schema Design (Engineer_Ang)", done: true },
       { label: "API Endpoints", done: false },
       { label: "Frontend Dashboard", done: false },
       { label: "ORACLE Verification", done: false },
@@ -27,7 +27,7 @@ const missions = [
     status: "pending" as const,
     progress: 0,
     steps: [
-      { label: "Campaign Strategy (MarketerAng)", done: false },
+      { label: "Campaign Strategy (Marketer_Ang)", done: false },
       { label: "Copy Generation", done: false },
       { label: "Scheduling Integration", done: false },
       { label: "Analytics Hook-up", done: false },
@@ -61,7 +61,7 @@ export default function PlanPage() {
             MISSION PLAN
           </h1>
           <p className="text-sm text-amber-100/70">
-            Track active objectives orchestrated by ACHEEVY and executed by your BoomerAng team.
+            Track active objectives orchestrated by ACHEEVY and executed by your Boomer_Ang team.
           </p>
         </div>
         <Link

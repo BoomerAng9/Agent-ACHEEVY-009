@@ -1,5 +1,5 @@
 /**
- * EngineerAng — Full-Stack Builder
+ * Engineer_Ang — Full-Stack Builder
  *
  * Handles BUILD_PLUG intents, code generation tasks, infrastructure work.
  * Specialties: React / Next.js, Node.js APIs, Cloud Deploy
@@ -7,11 +7,12 @@
 
 import logger from '../../logger';
 import { ByteRover } from '../../byterover';
+import { agentChat } from '../../llm';
 import { Agent, AgentTaskInput, AgentTaskOutput, makeOutput, failOutput } from '../types';
 
 const profile = {
   id: 'engineer-ang' as const,
-  name: 'EngineerAng',
+  name: 'Engineer_Ang',
   role: 'Full-Stack Builder',
   capabilities: [
     { name: 'react-nextjs', weight: 0.95 },
@@ -24,7 +25,7 @@ const profile = {
 };
 
 async function execute(input: AgentTaskInput): Promise<AgentTaskOutput> {
-  logger.info({ taskId: input.taskId }, '[EngineerAng] Starting task');
+  logger.info({ taskId: input.taskId }, '[Engineer_Ang] Starting task');
 
   try {
     // 1. Retrieve context from ByteRover for pattern reuse
@@ -33,20 +34,42 @@ async function execute(input: AgentTaskInput): Promise<AgentTaskOutput> {
       `Retrieved ${ctx.patterns.length} patterns (relevance: ${ctx.relevance})`,
     ];
 
-    // 2. Analyze the build request
+    // 2. Try LLM-powered analysis via OpenRouter
+    const llmResult = await agentChat({
+      agentId: 'engineer-ang',
+      query: input.query,
+      intent: input.intent,
+      context: ctx.patterns.length > 0 ? `Reusable patterns: ${ctx.patterns.join(', ')}` : undefined,
+    });
+
+    if (llmResult) {
+      // LLM-powered response — real AI analysis
+      logs.push(`LLM model: ${llmResult.model}`);
+      logs.push(`Tokens used: ${llmResult.tokens.total}`);
+
+      return makeOutput(
+        input.taskId,
+        'engineer-ang',
+        llmResult.content,
+        [`[llm-analysis] Build plan via ${llmResult.model}`],
+        logs,
+        llmResult.tokens.total,
+        llmResult.cost.usd,
+      );
+    }
+
+    // 3. Fallback: Heuristic analysis (no OpenRouter key)
+    logs.push('Mode: heuristic (configure OPENROUTER_API_KEY for LLM-powered responses)');
     const analysis = analyzeBuildRequest(input.query);
     logs.push(`Analyzed: ${analysis.components.length} components, complexity=${analysis.complexity}`);
 
-    // 3. Generate execution plan
     const plan = generateBuildPlan(analysis);
     logs.push(`Plan: ${plan.steps.length} steps generated`);
 
-    // 4. Simulate build execution
     const artifacts = plan.steps.map(step => `[artifact] ${step}`);
 
-    // 5. Estimate cost
     const tokens = analysis.complexity * 500;
-    const usd = tokens * 0.00003; // GPT-4 rate
+    const usd = tokens * 0.00003;
 
     const summary = [
       `Build plan for: ${analysis.type}`,
@@ -55,7 +78,7 @@ async function execute(input: AgentTaskInput): Promise<AgentTaskOutput> {
       `Patterns reused: ${ctx.patterns.length}`,
     ].join('\n');
 
-    logger.info({ taskId: input.taskId, steps: plan.steps.length }, '[EngineerAng] Task complete');
+    logger.info({ taskId: input.taskId, steps: plan.steps.length }, '[Engineer_Ang] Task complete');
     return makeOutput(input.taskId, 'engineer-ang', summary, artifacts, logs, tokens, usd);
   } catch (err) {
     return failOutput(input.taskId, 'engineer-ang', err instanceof Error ? err.message : 'Unknown error');
@@ -144,4 +167,4 @@ function generateBuildPlan(analysis: BuildAnalysis): { steps: string[] } {
   return { steps };
 }
 
-export const EngineerAng: Agent = { profile, execute };
+export const Engineer_Ang: Agent = { profile, execute };

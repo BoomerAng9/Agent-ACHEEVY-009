@@ -1,5 +1,5 @@
 /**
- * AnalystAng — Data & Intelligence Officer
+ * Analyst_Ang — Data & Intelligence Officer
  *
  * Handles RESEARCH intents, data analysis, market intelligence.
  * Specialties: Market Research, Data Pipelines, Visualization
@@ -7,11 +7,12 @@
 
 import logger from '../../logger';
 import { ByteRover } from '../../byterover';
+import { agentChat } from '../../llm';
 import { Agent, AgentTaskInput, AgentTaskOutput, makeOutput, failOutput } from '../types';
 
 const profile = {
   id: 'analyst-ang' as const,
-  name: 'AnalystAng',
+  name: 'Analyst_Ang',
   role: 'Data & Intelligence Officer',
   capabilities: [
     { name: 'market-research', weight: 0.95 },
@@ -24,7 +25,7 @@ const profile = {
 };
 
 async function execute(input: AgentTaskInput): Promise<AgentTaskOutput> {
-  logger.info({ taskId: input.taskId }, '[AnalystAng] Starting task');
+  logger.info({ taskId: input.taskId }, '[Analyst_Ang] Starting task');
 
   try {
     const ctx = await ByteRover.retrieveContext(input.query);
@@ -32,6 +33,31 @@ async function execute(input: AgentTaskInput): Promise<AgentTaskOutput> {
       `Retrieved ${ctx.patterns.length} knowledge patterns`,
     ];
 
+    // Try LLM-powered research via OpenRouter
+    const llmResult = await agentChat({
+      agentId: 'analyst-ang',
+      query: input.query,
+      intent: input.intent,
+      context: ctx.patterns.length > 0 ? `Known patterns: ${ctx.patterns.join(', ')}` : undefined,
+    });
+
+    if (llmResult) {
+      logs.push(`LLM model: ${llmResult.model}`);
+      logs.push(`Tokens used: ${llmResult.tokens.total}`);
+
+      return makeOutput(
+        input.taskId,
+        'analyst-ang',
+        llmResult.content,
+        [`[llm-analysis] Research report via ${llmResult.model}`],
+        logs,
+        llmResult.tokens.total,
+        llmResult.cost.usd,
+      );
+    }
+
+    // Fallback: Heuristic analysis
+    logs.push('Mode: heuristic (configure OPENROUTER_API_KEY for LLM-powered responses)');
     const analysis = analyzeResearchRequest(input.query);
     logs.push(`Research type: ${analysis.type}`);
     logs.push(`Sources to consult: ${analysis.sources.length}`);
@@ -53,7 +79,7 @@ async function execute(input: AgentTaskInput): Promise<AgentTaskOutput> {
       `Confidence: ${analysis.confidence}%`,
     ].join('\n');
 
-    logger.info({ taskId: input.taskId }, '[AnalystAng] Task complete');
+    logger.info({ taskId: input.taskId }, '[Analyst_Ang] Task complete');
     return makeOutput(input.taskId, 'analyst-ang', summary, artifacts, logs, tokens, usd);
   } catch (err) {
     return failOutput(input.taskId, 'analyst-ang', err instanceof Error ? err.message : 'Unknown error');
@@ -118,4 +144,4 @@ function analyzeResearchRequest(query: string): ResearchAnalysis {
   return { type, dimensions, sources, confidence };
 }
 
-export const AnalystAng: Agent = { profile, execute };
+export const Analyst_Ang: Agent = { profile, execute };

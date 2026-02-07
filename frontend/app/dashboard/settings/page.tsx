@@ -148,7 +148,7 @@ export default function SettingsPage() {
           </div>
           <div className="space-y-4">
             {[
-              { label: "Task Completion Alerts", desc: "Notify when BoomerAngs finish tasks.", enabled: true },
+              { label: "Task Completion Alerts", desc: "Notify when Boomer_Angs finish tasks.", enabled: true },
               { label: "Budget Threshold Warnings", desc: "Alert when LUC spend exceeds 80%.", enabled: true },
               { label: "ORACLE Gate Failures", desc: "Notify on verification failures.", enabled: false },
               { label: "Weekly Usage Digest", desc: "Email summary of platform usage.", enabled: false },
