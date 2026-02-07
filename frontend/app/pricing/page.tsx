@@ -9,6 +9,7 @@ import {
   TASK_MULTIPLIERS,
   USAGE_MODIFIERS,
   PILLARS,
+  WHITE_LABEL_PLANS,
   calculateBill,
   type FrequencyId,
   type GroupId,
@@ -598,6 +599,76 @@ export default function PricingPage() {
           <p className="mt-3 text-[10px] text-amber-100/30 text-center">
             A.I.M.S. anchors on <strong className="text-amber-100/50">tokens</strong> — transparent, measurable, and optimized by ByteRover pattern reuse (15–40% savings).
             No opaque credits. No hidden ACUs. You see exactly what you consume.
+          </p>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            WHITE LABEL — Enterprise Solution
+            ═══════════════════════════════════════════════════════════════ */}
+        <section className="mb-14">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-amber-300/20 to-transparent" />
+            <h2 className="text-xs uppercase tracking-[0.3em] text-amber-200/60 font-display whitespace-nowrap">
+              White Label — Run A.I.M.S. as Your Own
+            </h2>
+            <div className="h-px flex-1 bg-gradient-to-l from-amber-300/20 to-transparent" />
+          </div>
+
+          <p className="text-sm text-amber-100/40 max-w-3xl mx-auto text-center mb-8">
+            Deploy A.I.M.S. under your brand as a full enterprise solution.
+            Choose how much you want to manage — do it yourself, hire us, or let
+            ACHEEVY and the Boomer_Angs run everything autonomously.
+          </p>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            {WHITE_LABEL_PLANS.map((plan, i) => (
+              <div
+                key={plan.id}
+                className={`relative rounded-3xl border p-6 backdrop-blur-2xl transition-all hover:scale-[1.01] ${
+                  i === 2
+                    ? "border-amber-300/30 bg-gradient-to-br from-amber-300/5 to-black/80 shadow-[0_0_40px_rgba(251,191,36,0.08)]"
+                    : "border-white/10 bg-black/60"
+                }`}
+              >
+                {i === 2 && (
+                  <span className="absolute -top-3 left-6 rounded-full bg-amber-300 px-3 py-0.5 text-[9px] font-bold text-black uppercase tracking-wider">
+                    Most Popular
+                  </span>
+                )}
+                <h3 className="text-lg font-bold text-amber-50">{plan.name}</h3>
+                <p className="text-[10px] text-amber-100/40 mt-0.5 uppercase tracking-wider">
+                  {plan.tagline}
+                </p>
+                <p className="text-2xl font-bold text-amber-300 mt-4">{plan.startingPrice}</p>
+                <p className="text-[9px] text-amber-100/30 mt-0.5">Custom quote based on scale</p>
+
+                <ul className="mt-5 space-y-2">
+                  {plan.features.map((f, fi) => (
+                    <li key={fi} className="flex items-start gap-2 text-xs text-amber-100/50">
+                      <span className="text-amber-300/60 mt-0.5 shrink-0">{"\u2713"}</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href="/dashboard/chat"
+                  className={`mt-6 block w-full text-center rounded-full py-2.5 text-xs font-semibold transition-all ${
+                    i === 2
+                      ? "bg-amber-300 text-black hover:shadow-[0_0_20px_rgba(251,191,36,0.4)]"
+                      : "border border-amber-300/30 text-amber-300 hover:bg-amber-300/10"
+                  }`}
+                >
+                  Talk to Sales
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-4 text-[10px] text-amber-100/30 text-center max-w-2xl mx-auto">
+            All White Label plans include dedicated infrastructure, custom branding, and full access to the A.I.M.S.
+            agent ecosystem — ACHEEVY, Boomer_Angs, Chicken Hawk, and Lil_Hawk squads.
+            Volume discounts available for multi-instance deployments.
           </p>
         </section>
 

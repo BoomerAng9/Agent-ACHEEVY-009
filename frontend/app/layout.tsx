@@ -2,6 +2,7 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import { LogoWallBackground } from "@/components/LogoWallBackground";
 import { SiteFooter } from "@/components/SiteFooter";
+import Providers from "@/components/Providers";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -21,10 +22,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="antialiased min-h-screen bg-obsidian text-slate-200 font-sans">
-        <LogoWallBackground mode="hero">
-          {children}
-        </LogoWallBackground>
-        <SiteFooter />
+        <Providers>
+          <LogoWallBackground mode="hero">
+            {children}
+          </LogoWallBackground>
+          <SiteFooter />
+        </Providers>
       </body>
     </html>
   );

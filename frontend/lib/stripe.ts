@@ -312,6 +312,71 @@ export const PILLARS: Pillar[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Dimension 6: White Label Enterprise
+// ---------------------------------------------------------------------------
+
+export type WhiteLabelMode = 'self_managed' | 'aims_managed' | 'fully_autonomous';
+
+export interface WhiteLabelPlan {
+  id: WhiteLabelMode;
+  name: string;
+  tagline: string;
+  startingPrice: string;
+  features: string[];
+}
+
+export const WHITE_LABEL_PLANS: WhiteLabelPlan[] = [
+  {
+    id: 'self_managed',
+    name: 'Self-Managed',
+    tagline: 'Your brand, your control',
+    startingPrice: 'From $499/mo',
+    features: [
+      'Full A.I.M.S. platform under your brand',
+      'Custom domain + branding (logo, colors, copy)',
+      'You manage users, billing, and operations',
+      'All agent types included',
+      'Dedicated infrastructure',
+      'API access for custom integrations',
+      'SOC 2 readiness package',
+    ],
+  },
+  {
+    id: 'aims_managed',
+    name: 'A.I.M.S. Managed',
+    tagline: 'Hire us to run it for you',
+    startingPrice: 'From $999/mo',
+    features: [
+      'Everything in Self-Managed',
+      'Dedicated A.I.M.S. operations team',
+      'Platform maintenance + updates',
+      'User onboarding + support handled',
+      'Monthly performance reports',
+      'Custom workflow design',
+      'Priority escalation path',
+      '99.9% uptime SLA',
+    ],
+  },
+  {
+    id: 'fully_autonomous',
+    name: 'Fully Autonomous',
+    tagline: 'ACHEEVY + Boomer_Angs run it all',
+    startingPrice: 'From $1,499/mo',
+    features: [
+      'Everything in A.I.M.S. Managed',
+      'ACHEEVY orchestrates all operations',
+      'Boomer_Angs execute tasks autonomously',
+      'Chicken Hawk pipelines run 24/7',
+      'Lil_Hawks handle micro-tasks continuously',
+      'Self-healing agent infrastructure',
+      'Autonomous scaling based on demand',
+      'Human oversight only when flagged',
+      'Full PMO structure deployed',
+    ],
+  },
+];
+
+// ---------------------------------------------------------------------------
 // Bill Calculator
 // ---------------------------------------------------------------------------
 

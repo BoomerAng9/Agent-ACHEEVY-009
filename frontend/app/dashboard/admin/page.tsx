@@ -1,0 +1,298 @@
+// frontend/app/dashboard/admin/page.tsx
+"use client";
+
+import React, { useState } from "react";
+import OwnerGate from "@/components/OwnerGate";
+
+// ── Data ────────────────────────────────────────────────────────────────────
+
+const MODELS = [
+  { id: "claude-opus-4.6", name: "Claude Opus 4.6", role: "Primary Reasoning" },
+  { id: "claude-sonnet-4.5", name: "Claude Sonnet 4.5", role: "Fast Execution" },
+  { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", role: "Fallback" },
+  { id: "kimi-k2.5", name: "Kimi K2.5", role: "Specialized" },
+];
+
+const CSUITE = [
+  { role: "Boomer_CTO", title: "Chief Technology Officer", agent: "DevOps Agent", scope: "Architecture, stack alignment" },
+  { role: "Boomer_CFO", title: "Chief Financial Officer", agent: "Value Agent", scope: "Token efficiency, LUC governance" },
+  { role: "Boomer_COO", title: "Chief Operating Officer", agent: "Flow Boss Agent", scope: "Runtime health, SLAs" },
+  { role: "Boomer_CMO", title: "Chief Marketing Officer", agent: "Social Campaign Agent", scope: "Brand strategy, campaigns" },
+  { role: "Boomer_CDO", title: "Chief Design Officer", agent: "Video Editing Agent", scope: "Visual identity, multimedia" },
+  { role: "Boomer_CPO", title: "Chief Publication Officer", agent: "Social Agent", scope: "Content publishing, distribution" },
+];
+
+const EXEC_AGENTS = [
+  { role: "EngineerAng", status: "Active", tasks: "Full-stack building, deployment" },
+  { role: "MarketerAng", status: "Active", tasks: "Growth strategy, content, SEO" },
+  { role: "AnalystAng", status: "Standby", tasks: "Market research, competitive intel" },
+  { role: "QualityAng", status: "Standby", tasks: "ORACLE verification gates" },
+  { role: "Chicken Hawk", status: "Active", tasks: "Pipeline execution, multi-agent orchestration" },
+];
+
+const SQUADS = [
+  { squad: "PREP_SQUAD_ALPHA", purpose: "Pre-Execution Intelligence", hawks: ["INTAKE", "DECOMP", "CONTEXT", "POLICY", "COST", "ROUTER"] },
+  { squad: "WORKFLOW_SMITH_SQUAD", purpose: "n8n Workflow Integrity", hawks: ["AUTHOR", "VALIDATE", "FAILURE", "GATE"] },
+  { squad: "VISION_SCOUT_SQUAD", purpose: "Video/Footage Assessment", hawks: ["VISION", "SIGNAL", "COMPLIANCE"] },
+];
+
+const SYSTEM_METRICS = [
+  { label: "Active Users", value: "0", note: "No DB yet" },
+  { label: "Total Tasks Executed", value: "0", note: "Pending persistence" },
+  { label: "Agent Uptime", value: "99.8%", note: "In-process" },
+  { label: "ORACLE Gate Pass Rate", value: "87%", note: "7-gate avg" },
+  { label: "ByteRover Cache Hit", value: "72%", note: "Pattern reuse" },
+  { label: "Gateway Uptime", value: "100%", note: "Current session" },
+];
+
+const BILLING_OVERVIEW = [
+  { tier: "Garage", price: "$99/mo", tokens: "100K", agents: 3, concurrent: 1, subscribers: 0 },
+  { tier: "Community", price: "$89/mo", tokens: "250K", agents: 10, concurrent: 5, subscribers: 0 },
+  { tier: "Enterprise", price: "$67/mo", tokens: "500K", agents: 50, concurrent: 25, subscribers: 0 },
+  { tier: "P2P", price: "Metered", tokens: "Pay-per-use", agents: "\u221E" as string, concurrent: 1, subscribers: 0 },
+  { tier: "White Label (Self)", price: "From $499/mo", tokens: "Custom", agents: "All" as string, concurrent: "Custom" as unknown as number, subscribers: 0 },
+  { tier: "White Label (Managed)", price: "From $999/mo", tokens: "Custom", agents: "All" as string, concurrent: "Custom" as unknown as number, subscribers: 0 },
+  { tier: "White Label (Auto)", price: "From $1,499/mo", tokens: "Custom", agents: "All" as string, concurrent: "Custom" as unknown as number, subscribers: 0 },
+];
+
+// ── Component ───────────────────────────────────────────────────────────────
+
+function AdminPanel() {
+  const [primaryModel, setPrimaryModel] = useState("claude-opus-4.6");
+  const [systemPrompt, setSystemPrompt] = useState(
+    "You are ACHEEVY, the lead orchestrator for A.I.M.S. Your primary goal is to maintain business architecture integrity while delegating discrete tasks to Boomer_Angs. All tasks pass through PREP_SQUAD_ALPHA before execution. Activity breeds Activity."
+  );
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-700">
+      {/* Header */}
+      <section className="rounded-3xl border border-red-500/30 bg-gradient-to-r from-red-500/5 to-black/80 p-6 shadow-[0_0_40px_rgba(239,68,68,0.1)]">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-red-500/20 border border-red-500/30 px-2.5 py-0.5 text-[9px] font-bold text-red-400 uppercase tracking-wider">
+                Owner Only
+              </span>
+              <h1 className="text-2xl font-bold text-amber-50 font-display">Super Admin</h1>
+            </div>
+            <p className="mt-1 text-xs text-amber-100/40">
+              Full system control — agents, billing, models, squads, and platform metrics.
+              This panel is not visible to regular users.
+            </p>
+          </div>
+          <button className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold text-black shadow-[0_0_15px_rgba(251,191,36,0.4)] hover:scale-105 active:scale-95 transition-transform">
+            Save All
+          </button>
+        </div>
+      </section>
+
+      {/* System Metrics */}
+      <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
+          Platform Metrics
+        </h2>
+        <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">Real-time system health</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {SYSTEM_METRICS.map((m) => (
+            <div key={m.label} className="rounded-2xl border border-white/5 bg-black/40 p-4">
+              <p className="text-[10px] uppercase tracking-wider text-amber-100/40">{m.label}</p>
+              <p className="text-xl font-bold text-amber-50 mt-1">{m.value}</p>
+              <p className="text-[9px] text-amber-100/30 mt-0.5">{m.note}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Billing Overview */}
+      <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
+          Billing Overview
+        </h2>
+        <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">3-6-9 tier subscriptions + revenue</p>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/5">
+                <th className="p-3 text-left text-[10px] uppercase tracking-widest text-amber-100/40">Tier</th>
+                <th className="p-3 text-center text-[10px] uppercase tracking-widest text-amber-100/40">Price</th>
+                <th className="p-3 text-center text-[10px] uppercase tracking-widest text-amber-100/40">Tokens</th>
+                <th className="p-3 text-center text-[10px] uppercase tracking-widest text-amber-100/40">Agents</th>
+                <th className="p-3 text-center text-[10px] uppercase tracking-widest text-amber-100/40">Concurrent</th>
+                <th className="p-3 text-center text-[10px] uppercase tracking-widest text-amber-100/40">Subscribers</th>
+                <th className="p-3 text-center text-[10px] uppercase tracking-widest text-amber-100/40">MRR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {BILLING_OVERVIEW.map((t) => (
+                <tr key={t.tier} className="border-t border-white/5">
+                  <td className="p-3 text-xs font-semibold text-amber-50">{t.tier}</td>
+                  <td className="p-3 text-xs text-center text-amber-100/60">{t.price}</td>
+                  <td className="p-3 text-xs text-center text-amber-100/60">{t.tokens}</td>
+                  <td className="p-3 text-xs text-center text-emerald-400">{t.agents}</td>
+                  <td className="p-3 text-xs text-center text-emerald-400">{t.concurrent}</td>
+                  <td className="p-3 text-xs text-center text-amber-50 font-semibold">{t.subscribers}</td>
+                  <td className="p-3 text-xs text-center text-amber-300 font-semibold">$0</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="border-t border-amber-300/20 bg-amber-300/[0.03]">
+                <td className="p-3 text-xs font-bold text-amber-300" colSpan={5}>Total MRR</td>
+                <td className="p-3 text-xs text-center font-bold text-amber-50">0</td>
+                <td className="p-3 text-xs text-center font-bold text-amber-300">$0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* The Park — Model Selection */}
+        <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
+            The Park
+          </h2>
+          <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">Model Selection</p>
+          <div className="mt-4 space-y-4">
+            <div className="space-y-2">
+              <label className="text-xs text-amber-100/60 uppercase tracking-wider">Primary Reasoning Model</label>
+              <select
+                value={primaryModel}
+                onChange={(e) => setPrimaryModel(e.target.value)}
+                className="w-full rounded-xl border border-white/5 bg-black/80 p-2.5 text-sm text-amber-50 outline-none focus:border-amber-300"
+              >
+                {MODELS.map((m) => (
+                  <option key={m.id} value={m.id}>{m.name} ({m.role})</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs text-amber-100/60 uppercase tracking-wider">System Instructions</label>
+              <textarea
+                className="w-full h-32 rounded-xl border border-white/5 bg-black/80 p-3 text-sm text-amber-50 outline-none focus:border-amber-300"
+                value={systemPrompt}
+                onChange={(e) => setSystemPrompt(e.target.value)}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* C-Suite Directors */}
+        <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
+            C-Suite Directors
+          </h2>
+          <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">PMO governance layer</p>
+          <div className="mt-4 space-y-2">
+            {CSUITE.map((ang) => (
+              <div key={ang.role} className="flex items-center justify-between rounded-xl border border-white/5 bg-black/40 p-3">
+                <div>
+                  <p className="text-xs font-medium text-amber-50">{ang.role}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <p className="text-[10px] text-amber-100/40">{ang.scope}</p>
+                    <span className="rounded-full bg-amber-400/10 border border-amber-300/20 px-2 py-0.5 text-[9px] font-mono text-amber-300">
+                      {ang.agent}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  <span className="text-[9px] uppercase font-semibold text-amber-50/60">Active</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* Execution Agents */}
+      <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
+          Execution Agents
+        </h2>
+        <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">Boomer_Ang routing + status</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {EXEC_AGENTS.map((ang) => (
+            <div key={ang.role} className="flex items-center justify-between rounded-2xl border border-white/5 bg-black/40 p-4">
+              <div>
+                <p className="text-sm font-medium text-amber-50">{ang.role}</p>
+                <p className="text-xs text-amber-100/50">{ang.tasks}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`h-1.5 w-1.5 rounded-full ${ang.status === 'Active' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                <span className="text-[10px] uppercase font-semibold text-amber-50/70">{ang.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Lil_Hawk Squads */}
+      <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
+          Lil_Hawk Squads
+        </h2>
+        <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">Ephemeral task-scoped specialists</p>
+        <div className="mt-4 grid gap-4 lg:grid-cols-3">
+          {SQUADS.map((squad) => (
+            <div key={squad.squad} className="rounded-2xl border border-white/5 bg-black/40 p-4">
+              <p className="text-xs font-semibold text-amber-200">{squad.squad}</p>
+              <p className="text-[10px] text-amber-100/40 mt-0.5">{squad.purpose}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {squad.hawks.map((hawk) => (
+                  <span key={hawk} className="rounded-full border border-amber-50/10 bg-amber-400/5 px-2 py-0.5 text-[9px] font-mono text-amber-100/60">
+                    {hawk}_LIL_HAWK
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* User Management Placeholder */}
+      <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
+          User Management
+        </h2>
+        <p className="mt-1 text-[0.65rem] text-amber-100/40 uppercase tracking-wider">Requires database persistence layer</p>
+        <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center">
+          <p className="text-sm text-amber-100/40">
+            User table, subscription status, usage metrics, and account actions
+            will be available once the persistence layer (PostgreSQL) is wired.
+          </p>
+          <p className="text-[10px] text-amber-100/30 mt-2">
+            Planned: User list, search, tier assignment, usage graphs, suspension, impersonation
+          </p>
+        </div>
+      </section>
+
+      {/* Danger Zone */}
+      <section className="rounded-3xl border border-red-500/20 bg-red-500/5 p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-widest text-red-400/90 font-display">
+          Danger Zone
+        </h2>
+        <p className="mt-1 text-[0.65rem] text-red-400/40 uppercase tracking-wider">Destructive actions — proceed with caution</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button className="rounded-full border border-red-500/30 px-4 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors">
+            Reset All Agent State
+          </button>
+          <button className="rounded-full border border-red-500/30 px-4 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors">
+            Flush ByteRover Cache
+          </button>
+          <button className="rounded-full border border-red-500/30 px-4 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors">
+            Clear Rate Limits
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <OwnerGate>
+      <AdminPanel />
+    </OwnerGate>
+  );
+}

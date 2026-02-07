@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import clsx from "clsx";
 
 const navItems = [
@@ -22,6 +23,8 @@ const navItems = [
 
 export function DashboardNav() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const role = (session?.user as Record<string, unknown> | undefined)?.role;
 
   return (
     <nav className="flex flex-col gap-1 text-sm text-amber-100/80">
@@ -49,6 +52,25 @@ export function DashboardNav() {
           </Link>
         );
       })}
+
+      {/* Owner-only admin link */}
+      {role === "OWNER" && (
+        <>
+          <div className="mx-3 my-2 border-t border-red-500/20" />
+          <Link
+            href="/dashboard/admin"
+            className={clsx(
+              "mx-1 flex items-center gap-2 rounded-full px-3 py-2 transition-colors",
+              pathname === "/dashboard/admin"
+                ? "bg-red-500/20 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                : "text-red-400/60 hover:bg-red-500/10 hover:text-red-300"
+            )}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-red-400/80" />
+            <span>Super Admin</span>
+          </Link>
+        </>
+      )}
     </nav>
   );
 }
