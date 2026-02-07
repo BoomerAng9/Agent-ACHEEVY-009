@@ -61,7 +61,7 @@ export default function PlanPage() {
             MISSION PLAN
           </h1>
           <p className="text-sm text-amber-100/70">
-            Track active objectives orchestrated by ACHEEVY and executed by your BoomerAng team.
+            Track active objectives orchestrated by ACHEEVY and executed by your Boomer_Ang team.
           </p>
         </div>
         <Link

@@ -33,7 +33,7 @@ export function DashboardShell({ children }: Props) {
               Live status
             </p>
             <p className="mt-1">
-              ACHEEVY is online and ready to orchestrate BoomerAngs.
+              ACHEEVY is online and ready to orchestrate Boomer_Angs.
             </p>
             <p className="mt-1 text-amber-100/60">
               LUC tracking:{" "}

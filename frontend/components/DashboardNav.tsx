@@ -12,7 +12,7 @@ const navItems = [
   { href: "/dashboard/chat", label: "ACHEEVY Chat" },
   { href: "/dashboard/plan", label: "Plan" },
   { href: "/dashboard/ai-plugs", label: "aiPlugs" },
-  { href: "/dashboard/boomerangs", label: "BoomerAngs" },
+  { href: "/dashboard/boomerangs", label: "Boomer_Angs" },
   { href: "/dashboard/house-of-ang", label: "House of Ang" },
   { href: "/dashboard/project-management", label: "PMO Offices" },
   { href: "/dashboard/lab", label: "Lab" },
