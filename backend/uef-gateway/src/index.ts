@@ -384,4 +384,23 @@ export const server = app.listen(PORT, () => {
   logger.info(`ACP Ingress available at http://localhost:${PORT}/ingress/acp`);
 });
 
+// --------------------------------------------------------------------------
+// Graceful Shutdown — let Docker stop containers cleanly
+// --------------------------------------------------------------------------
+function shutdown(signal: string) {
+  logger.info({ signal }, '[UEF] Received shutdown signal, draining connections...');
+  server.close(() => {
+    logger.info('[UEF] All connections drained. Exiting.');
+    process.exit(0);
+  });
+  // Force exit after 10s if connections don't drain
+  setTimeout(() => {
+    logger.warn('[UEF] Forced shutdown after 10s timeout');
+    process.exit(1);
+  }, 10_000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+
 export default app;
