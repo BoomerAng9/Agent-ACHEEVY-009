@@ -15,19 +15,19 @@ export interface LucEstimate {
   }[];
 }
 
-export function getLucEstimateStub(): LucEstimate {
+export function getLucEstimateStub(query: string = "default"): LucEstimate {
   return {
     totalUsd: 12.45,
     totalTokens: 450000,
     breakdown: [
       { label: "ACHEEVY Orchestration", usd: 4.50, tokens: 150000 },
-      { label: "Boomer_Ang Task Execution", usd: 6.20, tokens: 250000 },
+      { label: "BoomerAng Task Execution", usd: 6.20, tokens: 250000 },
       { label: "ByteRover Memory & Storage", usd: 1.75, tokens: 50000 },
     ],
     modelOptions: [
-      { name: "Claude Sonnet 4.5", description: "Fast, efficient, default", costMultiplier: 1 },
-      { name: "Claude Opus 4.6", description: "Complex business reasoning", costMultiplier: 1.5 },
-      { name: "Gemini 2.5 Pro", description: "High-precision strategy", costMultiplier: 3 },
+      { name: "Gemini 3 Flash Thinking", description: "Default, fast, efficient", costMultiplier: 1 },
+      { name: "Kimi K2.5", description: "Complex business reasoning", costMultiplier: 1.5 },
+      { name: "Claude Opus 4.6", description: "Elite agents, 1M context, adaptive thinking", costMultiplier: 3 },
     ]
   };
 }

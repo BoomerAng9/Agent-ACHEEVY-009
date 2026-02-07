@@ -1,202 +1,241 @@
+/**
+ * A.I.M.S. Landing Page
+ *
+ * Clean, professional landing page for AI Managed Solutions
+ */
+
 import Link from 'next/link';
-import { DynamicTagline } from '@/components/DynamicTagline';
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* ─── Top bar ─── */}
-      <header className="flex items-center justify-between px-6 md:px-12 py-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black font-bold text-sm">
-            A
-          </div>
-          <span className="text-sm font-semibold tracking-wider text-amber-200">A.I.M.S.</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href="/pricing" className="text-xs text-amber-100/60 hover:text-amber-100 transition-colors tracking-wide">
-            Pricing
-          </Link>
-          <Link href="/sign-in" className="rounded-full border border-amber-400/30 px-5 py-2 text-xs font-medium text-amber-200 hover:bg-amber-400/10 transition-colors">
-            Sign In
-          </Link>
-          <Link href="/sign-up" className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-5 py-2 text-xs font-semibold text-black hover:shadow-[0_0_20px_rgba(251,191,36,0.4)] transition-all">
-            Get Started
-          </Link>
-        </div>
-      </header>
+    <main className="min-h-screen bg-[#0a0f1a]">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center px-6">
+        {/* Gradient Background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at center, #1a2942 0%, #0a0f1a 70%)',
+          }}
+        />
 
-      {/* ─── Hero ─── */}
-      <section className="flex-1 flex flex-col items-center justify-center px-6 py-16 md:py-24">
-        <div className="flex flex-col md:flex-row items-center gap-12 max-w-6xl w-full">
-          {/* Left: Copy */}
-          <div className="flex-1 space-y-6 text-center md:text-left">
-            <p className="text-[0.7rem] uppercase tracking-[0.3em] text-amber-400/80 font-medium">
-              AI Managed Solutions
-            </p>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-amber-50 leading-[1.1]">
-              Think it. Prompt it.<br />
-              Let <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">ACHEEVY</span> build it.
-            </h1>
-            <p className="max-w-lg text-base leading-relaxed text-amber-100/70">
-              Orchestrate Boomer_Ang agents, aiPlugs, and A.I.M.S. workflows from a
-              single executive console. You stay in the loop as final approver.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2 justify-center md:justify-start">
-              <Link
-                href="/sign-up"
-                className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-8 py-3.5 text-sm font-bold text-black hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] transition-all transform hover:scale-105 active:scale-95"
-              >
-                Start my project
-              </Link>
-              <Link
-                href="/dashboard"
-                className="rounded-full border border-white/15 bg-white/5 px-7 py-3.5 text-sm font-medium text-amber-100 backdrop-blur-sm hover:bg-white/10 transition-colors"
-              >
-                Enter Dashboard
-              </Link>
-            </div>
+        {/* Grid Pattern Overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(212, 175, 55, 0.5) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(212, 175, 55, 0.5) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+          }}
+        />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-5xl mx-auto text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-8">
+            <span className="text-amber-400 text-lg">✦</span>
+            <span className="text-amber-200 text-sm font-medium">AI-Powered Automation Platform</span>
           </div>
 
-          {/* Right: ACHEEVY image */}
-          <div className="flex-1 flex justify-center">
-            <div className="relative group">
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-64 h-16 bg-amber-400/15 blur-[80px] rounded-full group-hover:bg-amber-400/25 transition-all duration-700" />
-              <img
-                src="/images/acheevy/acheevy-office-plug.png"
-                alt="ACHEEVY holding an aiPlug cube"
-                className="w-full max-w-[420px] drop-shadow-[0_0_60px_rgba(0,0,0,0.9)]"
-              />
-            </div>
+          {/* Main Heading */}
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            <span className="text-amber-400">A.I.M.S:</span>{' '}
+            <span className="text-white">Build Your</span>
+            <br />
+            <span className="text-white">Future.</span>{' '}
+            <span className="bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">
+              Empower Your Vision.
+            </span>
+          </h1>
+
+          {/* Subheading */}
+          <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-12">
+            AI Managed Solutions — An intelligent platform for the next generation
+            of builders, powered by autonomous agents, smart workflows, and the
+            Boomer_Ang orchestration system.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <Link
+              href="/dashboard"
+              className="group flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-black bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 transition-all hover:scale-105 shadow-lg shadow-amber-500/25"
+            >
+              Get Started Today
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </Link>
+
+            <Link
+              href="/dashboard/chat"
+              className="flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-amber-200 border border-amber-500/30 hover:bg-amber-500/10 transition-all"
+            >
+              Talk to ACHEEVY
+            </Link>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+            {[
+              { value: '200+', label: 'AI Models' },
+              { value: '50+', label: 'Integrations' },
+              { value: '∞', label: 'Possibilities' },
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-amber-400 mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-gray-500">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Dynamic tagline */}
-        <div className="mt-12 w-full max-w-md">
-          <DynamicTagline />
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+          <span className="text-xs text-gray-500 uppercase tracking-wider">Scroll to explore</span>
+          <div className="w-6 h-10 rounded-full border-2 border-gray-600 flex items-start justify-center p-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-bounce" />
+          </div>
         </div>
       </section>
 
-      {/* ─── What A.I.M.S. Does ─── */}
-      <section className="px-6 md:px-12 py-20 border-t border-amber-400/5">
+      {/* Features Section */}
+      <section className="py-20 px-6 bg-[#0d1220]">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[0.65rem] uppercase tracking-[0.3em] text-amber-400/60 text-center mb-3">
-            The Platform
-          </p>
-          <h2 className="text-2xl md:text-3xl font-bold text-amber-50 text-center mb-12">
-            Your AI workforce, managed.
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">
+              <span className="text-amber-400">Everything</span>{' '}
+              <span className="text-white">You Need to Build</span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              A.I.M.S. provides a complete toolkit for building AI-powered applications
+              and automating your workflows.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
+                title: 'ACHEEVY Assistant',
+                description: 'Your AI executive assistant that orchestrates complex tasks across departments.',
+                icon: '🎯',
+                href: '/dashboard/chat',
+              },
+              {
                 title: 'Boomer_Ang Agents',
-                desc: 'Engineer_Ang builds. Marketer_Ang grows. Analyst_Ang researches. Quality_Ang verifies. All orchestrated by ACHEEVY.',
-                icon: '\u{1FA83}',
+                description: 'Specialized AI workers that handle everything from research to code generation.',
+                icon: '🤖',
+                href: '/dashboard/boomerangs',
               },
               {
-                title: 'aiPlugs & Shelves',
-                desc: 'Digital tools that plug into your workflow. Browse, deploy, and manage from your personal Shelf.',
-                icon: '\u{1F50C}',
+                title: 'Model Garden',
+                description: '200+ AI models at your fingertips - Claude, GPT, Gemini, and more.',
+                icon: '🌱',
+                href: '/dashboard/model-garden',
               },
               {
-                title: 'ORACLE Verification',
-                desc: '7-gate methodology ensures every deliverable passes security, quality, and compliance before shipping.',
-                icon: '\u{1F6E1}',
+                title: 'Circuit Box',
+                description: 'Clean system management dashboard for wiring all your integrations.',
+                icon: '⚡',
+                href: '/dashboard/circuit-box',
               },
               {
-                title: 'Build Pipeline',
-                desc: 'From intake questionnaire to deployed product. Templates, scaffolding, CI/CD \u2014 all automated.',
-                icon: '\u26A1',
+                title: 'LUC Calculator',
+                description: 'Real-time usage tracking and quota management with smart gating.',
+                icon: '📊',
+                href: '/dashboard/luc',
               },
               {
-                title: 'Make It Mine',
-                desc: 'White-label any Plug with your brand colors, logo, domain, and custom features.',
-                icon: '\u{1F3A8}',
+                title: 'House of Ang',
+                description: 'Browse, hire, and manage your team of specialized AI agents.',
+                icon: '🏠',
+                href: '/dashboard/house-of-ang',
               },
-              {
-                title: '12 SOP Pillars',
-                desc: 'Enterprise-grade: auth, RBAC, secrets, SBOM, sandboxing, observability, backup, and more.',
-                icon: '\u{1F3D7}',
-              },
-            ].map((card) => (
-              <div
-                key={card.title}
-                className="rounded-2xl border border-amber-400/10 bg-black/40 p-6 backdrop-blur-sm hover:border-amber-400/25 transition-colors group"
+            ].map((feature) => (
+              <Link
+                key={feature.title}
+                href={feature.href}
+                className="group p-6 rounded-2xl bg-[#1a2234] border border-[#2d3a4d] hover:border-amber-500/30 transition-all hover:scale-[1.02]"
               >
-                <div className="text-3xl mb-4">{card.icon}</div>
-                <h3 className="text-base font-semibold text-amber-100 mb-2 group-hover:text-amber-300 transition-colors">
-                  {card.title}
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors">
+                  {feature.title}
                 </h3>
-                <p className="text-sm text-amber-100/60 leading-relaxed">{card.desc}</p>
-              </div>
+                <p className="text-gray-400">{feature.description}</p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Boomerang section ─── */}
-      <section className="px-6 md:px-12 py-20 border-t border-amber-400/5">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1">
-            <img
-              src="/images/acheevy/acheevy-helmet.png"
-              alt="ACHEEVY helmet with amber visor"
-              className="w-full max-w-[280px] mx-auto drop-shadow-[0_0_40px_rgba(212,175,55,0.3)]"
-            />
-          </div>
-          <div className="flex-1 space-y-4">
-            <p className="text-[0.65rem] uppercase tracking-[0.3em] text-amber-400/60">
-              The Boomer_Ang Way
-            </p>
-            <h2 className="text-2xl md:text-3xl font-bold text-amber-50">
-              They go out. They come back with the goods.
+      {/* CTA Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="p-12 rounded-3xl bg-gradient-to-br from-[#1a2234] to-[#0d1220] border border-amber-500/20">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Ready to Build Something Amazing?
             </h2>
-            <p className="text-sm text-amber-100/70 leading-relaxed">
-              Boomer_Angs take the digital form of the boomerang during task execution.
-              Each agent is dispatched by ACHEEVY, completes their mission autonomously,
-              and returns with verified deliverables. Activity breeds Activity &mdash; but only
-              when discipline holds.
+            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+              Join the A.I.M.S. platform and start building AI-powered solutions today.
+              No coding required — just describe your vision.
             </p>
-            <Link
-              href="/dashboard/house-of-ang"
-              className="inline-block rounded-full border border-amber-400/30 px-6 py-2.5 text-xs font-medium text-amber-200 hover:bg-amber-400/10 transition-colors mt-2"
-            >
-              Visit the House of Ang
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/dashboard/chat"
+                className="flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-black bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 transition-all hover:scale-105"
+              >
+                Start Building with ACHEEVY
+                <span>→</span>
+              </Link>
+              <Link
+                href="https://github.com/BoomerAng9/AIMS"
+                target="_blank"
+                className="flex items-center gap-2 px-6 py-4 rounded-xl font-medium text-gray-300 border border-[#2d3a4d] hover:bg-white/5 transition-all"
+              >
+                View on GitHub
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─── CTA ─── */}
-      <section className="px-6 md:px-12 py-20 border-t border-amber-400/5">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-amber-50">
-            Ready to build?
-          </h2>
-          <p className="text-amber-100/60 max-w-lg mx-auto">
-            Start your first project in minutes. No credit card required. ACHEEVY and the
-            full Boomer_Ang team are standing by.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Link
-              href="/sign-up"
-              className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-10 py-4 text-sm font-bold text-black hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] transition-all"
-            >
-              Get Started Free
-            </Link>
-            <Link
-              href="/pricing"
-              className="rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-medium text-amber-100 hover:bg-white/10 transition-colors"
-            >
-              View Pricing
-            </Link>
+      {/* Footer */}
+      <footer className="py-12 px-6 border-t border-[#1a2234]">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-400 flex items-center justify-center font-bold text-black">
+                A
+              </div>
+              <span className="text-xl font-bold text-amber-100">A.I.M.S.</span>
+            </div>
+
+            {/* Links */}
+            <div className="flex items-center gap-6 text-sm">
+              <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
+                Dashboard
+              </Link>
+              <Link href="/dashboard/chat" className="text-gray-400 hover:text-white transition-colors">
+                ACHEEVY
+              </Link>
+              <Link href="/dashboard/model-garden" className="text-gray-400 hover:text-white transition-colors">
+                Model Garden
+              </Link>
+              <Link href="https://github.com/BoomerAng9/AIMS" target="_blank" className="text-gray-400 hover:text-white transition-colors">
+                GitHub
+              </Link>
+            </div>
+
+            {/* Copyright */}
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} A.I.M.S. All rights reserved.
+            </p>
           </div>
         </div>
-      </section>
-
-      {/* ─── Motto ─── */}
-      <div className="py-8 text-center text-[0.6rem] uppercase tracking-[0.4em] text-amber-200/20 select-none border-t border-amber-400/5">
-        Activity breeds Activity.
-      </div>
-    </div>
+      </footer>
+    </main>
   );
 }

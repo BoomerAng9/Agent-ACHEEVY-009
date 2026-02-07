@@ -10,9 +10,7 @@ coverage
 .next/
 out/
 build/
-!frontend/app/dashboard/build/
 dist/
-*.tsbuildinfo
 
 # System
 .DS_Store
@@ -33,8 +31,8 @@ yarn-error.log*
 .env.production.local
 *.env
 *.env.*
-!*.env.example
-!*.env.*.example
+!.env.example
+!infra/.env.example
 
 # Docker
 .docker/
@@ -43,36 +41,6 @@ yarn-error.log*
 .vscode/
 .idea/
 
-# Screenshots
-screenshots/
-
-# Build artifacts
-tsconfig.tsbuildinfo
-*.tsbuildinfo
-
-# Windows artifacts
-nul
-
-# Brand assets (store in cloud/CDN, not git)
-ui components/
-
-# MCP tool configs (contain API tokens)
-mcp-tools/
-
-# GCP / Firebase service account keys (CRITICAL)
-*-service-account-key.json
-*-key.json
-infra/gcp-*.json
-backend/ii-agent/docker/gcp-credentials.json
-
-# Firebase
-.firebase/
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
-
 # A.I.M.S. Specific
 infra/.env
-backend/uef-gateway/.env
 backend/uef-gateway/dist/
-backend/uef-gateway/data/

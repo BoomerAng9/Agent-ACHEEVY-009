@@ -36,8 +36,8 @@
 {
   "totalUsd": 1.25,
   "breakdown": [
-    { "component": "Planning", "usd": 0.10, "model": "claude-sonnet-4.5" },
-    { "component": "Execution", "usd": 1.05, "model": "claude-opus-4.6" }
+    { "component": "Planning", "usd": 0.10, "model": "kimi-k2.5" },
+    { "component": "Execution", "usd": 1.05, "model": "gemini-3-flash-thinking" }
   ],
   "byteRoverDiscountApplied": true
 }
