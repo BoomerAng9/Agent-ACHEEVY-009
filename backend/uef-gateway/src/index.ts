@@ -217,7 +217,7 @@ function buildExecutionPlan(intent: string, _query: string): { steps: string[]; 
         steps: [
           'Analyze build spec via AVVA NOON',
           'Check existing patterns in ByteRover',
-          'Delegate sub-tasks to BoomerAng team',
+          'Delegate sub-tasks to Boomer_Ang team',
           'Execute build via Chicken Hawk',
           'Run ORACLE 7-Gate verification',
           'Package and deploy Plug artifact'
@@ -239,7 +239,7 @@ function buildExecutionPlan(intent: string, _query: string): { steps: string[]; 
         steps: [
           'Parse workflow definition via AVVA NOON',
           'Validate dependencies and ordering',
-          'Provision BoomerAng agents for each stage',
+          'Provision Boomer_Ang agents for each stage',
           'Execute pipeline with LUC metering',
           'Run ORACLE 7-Gate post-flight checks',
           'Deliver final artifacts and settlement'

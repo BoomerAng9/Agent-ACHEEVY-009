@@ -27,7 +27,7 @@ const EXEC_AGENTS = [
   { role: "MarketerAng", status: "Active", tasks: "Growth strategy, content, SEO" },
   { role: "AnalystAng", status: "Standby", tasks: "Market research, competitive intel" },
   { role: "QualityAng", status: "Standby", tasks: "ORACLE verification gates" },
-  { role: "Chicken Hawk", status: "Active", tasks: "Pipeline execution, multi-agent orchestration" },
+  { role: "Chicken Hawk", status: "Active", tasks: "SOP enforcement, throughput regulation, escalation" },
 ];
 
 const SQUADS = [

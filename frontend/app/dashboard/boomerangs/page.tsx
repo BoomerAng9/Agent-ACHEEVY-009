@@ -4,6 +4,18 @@
 import React from "react";
 import { Activity, Zap, Brain, Shield, Code, Megaphone, BarChart3 } from "lucide-react";
 
+/**
+ * Boomer_Angs page — the management-layer agents.
+ *
+ * Corrected canon:
+ *   - Boomer_Angs are MANAGERS — they train, upskill, correct, translate strategy
+ *   - They manage Chicken Hawks (who coordinate Lil_Hawk squads)
+ *   - They are the ONLY layer that speaks to ACHEEVY
+ *   - ACHEEVY never speaks downward except via Boomer_Angs
+ *   - A boomerang (lowercase) is the tool — Boomer_Angs take its digital form
+ *     when depicting task completion. They go and come back with the goods.
+ */
+
 const boomerangs = [
   {
     id: "engineer-ang",
@@ -15,6 +27,7 @@ const boomerangs = [
     successRate: 94,
     specialties: ["React / Next.js", "Node.js APIs", "Cloud Deploy"],
     lastTask: "Built CRM dashboard component",
+    manages: "DevOps Agent, WORKFLOW_SMITH_SQUAD (via Chicken Hawk)",
   },
   {
     id: "marketer-ang",
@@ -26,6 +39,7 @@ const boomerangs = [
     successRate: 91,
     specialties: ["SEO Audits", "Copy Generation", "Campaign Flows"],
     lastTask: "Generated landing page copy variants",
+    manages: "Social Campaign Agent, Social Agent",
   },
   {
     id: "analyst-ang",
@@ -37,6 +51,7 @@ const boomerangs = [
     successRate: 97,
     specialties: ["Market Research", "Data Pipelines", "Visualization"],
     lastTask: "Compiled competitor pricing analysis",
+    manages: "Value Agent, PREP_SQUAD_ALPHA (via Chicken Hawk)",
   },
   {
     id: "quality-ang",
@@ -48,21 +63,41 @@ const boomerangs = [
     successRate: 100,
     specialties: ["7-Gate Checks", "Security Audits", "Code Review"],
     lastTask: "Verified deployment against ORACLE gates",
+    manages: "VISION_SCOUT_SQUAD (via Chicken Hawk)",
   },
 ];
 
 export default function BoomerangsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-amber-50 font-display">
-            BOOMERANGS
-          </h1>
-          <p className="text-sm text-amber-100/70">
-            Your AI agent team. Each BoomerAng specializes in a domain and reports to ACHEEVY.
-          </p>
+      {/* Hero — ACHEEVY Commander with Boomer_Angs */}
+      <section className="relative overflow-hidden rounded-3xl border border-amber-300/20 shadow-[0_0_60px_rgba(251,191,36,0.15)]">
+        <div className="relative min-h-[240px] md:min-h-[320px]">
+          <div className="absolute inset-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/brand/acheevy-commander.png"
+              alt="ACHEEVY commanding Boomer_Angs with task boomerangs"
+              className="h-full w-full object-cover object-top"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+          </div>
+
+          <div className="relative z-10 flex h-full min-h-[240px] md:min-h-[320px] flex-col justify-end p-8 md:p-10">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-amber-50 font-display">
+              BOOMERANGS
+            </h1>
+            <p className="mt-2 text-sm text-amber-100/50 max-w-xl">
+              Your AI agent managers. Each Boomer_Ang trains, corrects, and translates strategy
+              from ACHEEVY into operational rules. They manage Chicken Hawks and are the only layer
+              that interfaces with the orchestrator.
+            </p>
+          </div>
         </div>
+      </section>
+
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-full border border-white/5 bg-black/60 px-4 py-2">
             <Activity size={14} className="text-emerald-400" />
@@ -76,6 +111,17 @@ export default function BoomerangsPage() {
               <span className="font-semibold text-amber-300">{boomerangs.reduce((s, b) => s + b.tasks, 0)}</span> Tasks Completed
             </span>
           </div>
+        </div>
+
+        {/* Chain of command reminder */}
+        <div className="flex items-center gap-2 text-[10px] text-amber-100/30">
+          <span className="text-amber-300/50">ACHEEVY</span>
+          <span>{"\u2190"}</span>
+          <span className="text-amber-50/50 font-semibold">Boomer_Angs</span>
+          <span>{"\u2190"}</span>
+          <span className="text-red-400/50">Chicken Hawk</span>
+          <span>{"\u2190"}</span>
+          <span className="text-emerald-400/50">Lil_Hawks</span>
         </div>
       </header>
 
@@ -129,7 +175,13 @@ export default function BoomerangsPage() {
               ))}
             </div>
 
+            {/* Chain of command */}
             <div className="mt-4 pt-3 border-t border-white/5">
+              <p className="text-[9px] text-amber-100/30 uppercase tracking-wider">Manages</p>
+              <p className="text-[10px] text-amber-100/50 mt-0.5">{ang.manages}</p>
+            </div>
+
+            <div className="mt-2 pt-2 border-t border-white/5">
               <p className="text-[10px] text-amber-100/40 uppercase tracking-wider">Last Task</p>
               <p className="text-xs text-amber-100/70 mt-1">{ang.lastTask}</p>
             </div>
@@ -142,7 +194,7 @@ export default function BoomerangsPage() {
             <Brain size={24} />
           </div>
           <p className="mt-4 text-sm font-handwriting text-lg text-amber-200/50">
-            Spawn a new BoomerAng
+            Spawn a new Boomer_Ang
           </p>
           <p className="mt-1 text-xs text-amber-100/30">
             Define a custom agent with specific skills and routing rules.
