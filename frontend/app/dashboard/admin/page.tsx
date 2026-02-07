@@ -7,10 +7,14 @@ import OwnerGate from "@/components/OwnerGate";
 // ── Data ────────────────────────────────────────────────────────────────────
 
 const MODELS = [
-  { id: "claude-opus-4.6", name: "Claude Opus 4.6", role: "Primary Reasoning" },
-  { id: "claude-sonnet-4.5", name: "Claude Sonnet 4.5", role: "Fast Execution" },
-  { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", role: "Fallback" },
-  { id: "kimi-k2.5", name: "Kimi K2.5", role: "Specialized" },
+  { id: "claude-opus-4.6", name: "Claude Opus 4.6", role: "Primary Reasoning", price: "$5/$25 per 1M", ctx: "1M" },
+  { id: "claude-sonnet-4.5", name: "Claude Sonnet 4.5", role: "Default Agent Model", price: "$3/$15 per 1M", ctx: "1M" },
+  { id: "gpt-5.2", name: "GPT-5.2", role: "Alternative Reasoning", price: "$5/$20 per 1M", ctx: "128K" },
+  { id: "gpt-5.1", name: "GPT-5.1", role: "General Purpose", price: "$3/$12 per 1M", ctx: "128K" },
+  { id: "gemini-3-pro", name: "Gemini 3 Pro", role: "Multimodal", price: "$1.25/$10 per 1M", ctx: "1M" },
+  { id: "claude-haiku-4.5", name: "Claude Haiku 4.5", role: "Fast / High Volume", price: "$0.80/$4 per 1M", ctx: "200K" },
+  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", role: "Economy Speed", price: "$0.30/$2.50 per 1M", ctx: "1M" },
+  { id: "deepseek-v3.2", name: "DeepSeek V3.2", role: "Economy Bulk", price: "$0.30/$0.88 per 1M", ctx: "131K" },
 ];
 
 const CSUITE = [

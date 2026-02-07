@@ -79,56 +79,90 @@ export interface ModelSpec {
 }
 
 export const MODELS: Record<string, ModelSpec> = {
-  'claude-opus': {
-    id: 'anthropic/claude-opus-4',
-    name: 'Claude Opus 4',
+  // ── Premium Tier ─────────────────────────────────────────────────────
+  'claude-opus-4.6': {
+    id: 'anthropic/claude-opus-4.6',
+    name: 'Claude Opus 4.6',
     provider: 'Anthropic',
-    inputPer1M: 15.0,
-    outputPer1M: 75.0,
+    inputPer1M: 5.0,
+    outputPer1M: 25.0,
+    contextWindow: 1000000,
+    tier: 'premium',
+  },
+  'claude-opus-4.5': {
+    id: 'anthropic/claude-opus-4.5',
+    name: 'Claude Opus 4.5',
+    provider: 'Anthropic',
+    inputPer1M: 5.0,
+    outputPer1M: 25.0,
     contextWindow: 200000,
     tier: 'premium',
   },
-  'claude-sonnet': {
-    id: 'anthropic/claude-sonnet-4',
-    name: 'Claude Sonnet 4',
+  'gpt-5.2': {
+    id: 'openai/gpt-5.2',
+    name: 'GPT-5.2',
+    provider: 'OpenAI',
+    inputPer1M: 5.0,
+    outputPer1M: 20.0,
+    contextWindow: 128000,
+    tier: 'premium',
+  },
+
+  // ── Standard Tier ────────────────────────────────────────────────────
+  'claude-sonnet-4.5': {
+    id: 'anthropic/claude-sonnet-4.5',
+    name: 'Claude Sonnet 4.5',
     provider: 'Anthropic',
     inputPer1M: 3.0,
     outputPer1M: 15.0,
-    contextWindow: 200000,
+    contextWindow: 1000000,
     tier: 'standard',
   },
-  'gpt-4o': {
-    id: 'openai/gpt-4o',
-    name: 'GPT-4o',
+  'gpt-5.1': {
+    id: 'openai/gpt-5.1',
+    name: 'GPT-5.1',
     provider: 'OpenAI',
-    inputPer1M: 2.5,
-    outputPer1M: 10.0,
+    inputPer1M: 3.0,
+    outputPer1M: 12.0,
     contextWindow: 128000,
     tier: 'standard',
   },
-  'gemini-2.5-pro': {
-    id: 'google/gemini-2.5-pro-preview',
-    name: 'Gemini 2.5 Pro',
+  'gemini-3-pro': {
+    id: 'google/gemini-3-pro-preview',
+    name: 'Gemini 3 Pro',
     provider: 'Google',
     inputPer1M: 1.25,
     outputPer1M: 10.0,
     contextWindow: 1000000,
     tier: 'standard',
   },
-  'llama-4-maverick': {
-    id: 'meta-llama/llama-4-maverick',
-    name: 'Llama 4 Maverick',
-    provider: 'Meta',
-    inputPer1M: 0.2,
-    outputPer1M: 0.6,
-    contextWindow: 131072,
-    tier: 'economy',
+
+  // ── Fast Tier ────────────────────────────────────────────────────────
+  'claude-haiku-4.5': {
+    id: 'anthropic/claude-haiku-4.5',
+    name: 'Claude Haiku 4.5',
+    provider: 'Anthropic',
+    inputPer1M: 0.80,
+    outputPer1M: 4.0,
+    contextWindow: 200000,
+    tier: 'fast',
   },
-  'deepseek-v3': {
-    id: 'deepseek/deepseek-chat-v3-0324',
-    name: 'DeepSeek V3',
+  'gemini-2.5-flash': {
+    id: 'google/gemini-2.5-flash-preview',
+    name: 'Gemini 2.5 Flash',
+    provider: 'Google',
+    inputPer1M: 0.30,
+    outputPer1M: 2.50,
+    contextWindow: 1050000,
+    tier: 'fast',
+  },
+
+  // ── Economy Tier ─────────────────────────────────────────────────────
+  'deepseek-v3.2': {
+    id: 'deepseek/deepseek-v3.2',
+    name: 'DeepSeek V3.2',
     provider: 'DeepSeek',
-    inputPer1M: 0.3,
+    inputPer1M: 0.30,
     outputPer1M: 0.88,
     contextWindow: 131072,
     tier: 'economy',
@@ -136,7 +170,7 @@ export const MODELS: Record<string, ModelSpec> = {
 };
 
 // Default model used by agents when no preference is set
-export const DEFAULT_MODEL = 'claude-sonnet';
+export const DEFAULT_MODEL = 'claude-sonnet-4.5';
 
 // ---------------------------------------------------------------------------
 // OpenRouter Client
