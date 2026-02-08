@@ -11,6 +11,7 @@
 import { getIIAgentClient, IIAgentClient, IIAgentTask } from '../ii-agent/client';
 import { LUCEngine } from '../luc';
 import { v4 as uuidv4 } from 'uuid';
+import { createPipelinePacket, getN8nClient } from '../n8n';
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -85,6 +86,10 @@ export class AcheevyOrchestrator {
 
       if (routedTo === 'openclaw') {
         return await this.handleOpenClaw(requestId, req);
+      }
+
+      if (routedTo === 'pmo-route' || routedTo.startsWith('pmo:')) {
+        return await this.handlePmoRouting(requestId, req);
       }
 
       // Default: conversational AI via II-Agent
@@ -285,6 +290,53 @@ export class AcheevyOrchestrator {
         requestId,
         status: 'queued',
         reply: 'Clone request received. OpenClaw will begin scaffolding when ready.',
+        taskId: `queued_${requestId}`,
+      };
+    }
+  }
+
+  /**
+   * PMO routing: classifies intent, builds directive, executes via n8n pipeline
+   */
+  private async handlePmoRouting(
+    requestId: string,
+    req: AcheevyExecuteRequest
+  ): Promise<AcheevyExecuteResponse> {
+    const packet = createPipelinePacket(req.userId, req.message);
+    const n8n = getN8nClient();
+
+    console.log(`[ACHEEVY] PMO routing → ${packet.classification.pmoOffice} (${packet.classification.director}), confidence: ${packet.classification.confidence.toFixed(2)}`);
+
+    try {
+      const result = await n8n.executePipeline(packet);
+      return {
+        requestId,
+        status: result.receipt?.allPassed ? 'completed' : 'queued',
+        reply: result.summary || `PMO directive routed to ${packet.classification.director}.`,
+        data: {
+          packetId: packet.packetId,
+          pmoOffice: packet.classification.pmoOffice,
+          director: packet.classification.director,
+          executionLane: packet.classification.executionLane,
+          complexity: packet.classification.complexity,
+          receipt: result.receipt,
+        },
+        lucUsage: {
+          service: 'api_calls',
+          amount: packet.directive?.estimatedLucCost || 1,
+        },
+        taskId: packet.packetId,
+      };
+    } catch {
+      return {
+        requestId,
+        status: 'queued',
+        reply: `Your request has been classified under ${packet.classification.pmoOffice} and assigned to ${packet.classification.director}. Processing will begin shortly.`,
+        data: {
+          packetId: packet.packetId,
+          pmoOffice: packet.classification.pmoOffice,
+          director: packet.classification.director,
+        },
         taskId: `queued_${requestId}`,
       };
     }

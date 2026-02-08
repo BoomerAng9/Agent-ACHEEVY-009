@@ -1,66 +1,25 @@
 'use client';
 
 /**
- * ACHEEVY Chat Page
+ * ACHEEVY Dashboard Chat Page
  *
- * Enhanced chat interface with Deploy Platform integration.
- * Users interact with ACHEEVY, who orchestrates the Chicken_Hawk
- * execution engine and Lil_Hawk workers via the Circuit Box.
- *
- * Built with Vercel AI SDK patterns and A.I.M.S. branding.
+ * Enhanced chat interface with Deploy Platform integration + Live Ops Theater.
+ * Uses Vercel AI SDK (useChat) with PMO classification and shift tracking.
  */
 
+import { useChat } from 'ai/react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
+import { Send, Square, Copy, Check, Mic } from 'lucide-react';
 import { AIMS_CIRCUIT_COLORS, CircuitBoardPattern } from '@/components/ui/CircuitBoard';
 import { LiveOpsTheater } from '@/components/deploy-platform/LiveOpsTheater';
 
 // ─────────────────────────────────────────────────────────────
-// Types
+// Icons (inline SVGs for deploy-specific actions)
 // ─────────────────────────────────────────────────────────────
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: Date;
-  isStreaming?: boolean;
-  shiftId?: string;
-  toolCalls?: ToolCall[];
-}
-
-interface ToolCall {
-  tool: string;
-  status: 'pending' | 'executing' | 'complete' | 'error';
-  result?: string;
-}
-
-// ─────────────────────────────────────────────────────────────
-// Icons
-// ─────────────────────────────────────────────────────────────
-
-const SendIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="22" y1="2" x2="11" y2="13" />
-    <polygon points="22 2 15 22 11 13 2 9 22 2" />
-  </svg>
-);
-
-const StopIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <rect x="6" y="6" width="12" height="12" rx="2" />
-  </svg>
-);
-
-const CopyIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="9" y="9" width="13" height="13" rx="2" />
-    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-  </svg>
-);
 
 const DeployIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -78,14 +37,6 @@ const YardIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const MicIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-    <line x1="12" y1="19" x2="12" y2="23" />
-  </svg>
-);
-
 const SparklesIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M12 3v1m0 16v1m-8-9H3m18 0h-1M5.6 5.6l.7.7m12.1-.7-.7.7m0 11.4.7.7m-12.1-.7-.7.7" />
@@ -94,27 +45,57 @@ const SparklesIcon = ({ className }: { className?: string }) => (
 );
 
 // ─────────────────────────────────────────────────────────────
+// Quick Actions
+// ─────────────────────────────────────────────────────────────
+
+const QUICK_ACTIONS = [
+  { id: 'deploy', label: 'Deploy It', icon: DeployIcon, prompt: 'Deploy my latest changes to staging' },
+  { id: 'guide', label: 'Guide Me', icon: SparklesIcon, prompt: 'Help me plan my next deployment' },
+  { id: 'status', label: 'Check Status', icon: YardIcon, prompt: "What's the status of my current shift?" },
+];
+
+function QuickActions({ onSelect, disabled }: { onSelect: (prompt: string) => void; disabled: boolean }) {
+  return (
+    <div className="flex flex-wrap gap-2 justify-center">
+      {QUICK_ACTIONS.map((action) => (
+        <button
+          key={action.id}
+          onClick={() => onSelect(action.prompt)}
+          disabled={disabled}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-amber-100/70 hover:bg-white/10 hover:text-amber-100 hover:border-amber-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <action.icon className="w-4 h-4" />
+          {action.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
 // Message Component
 // ─────────────────────────────────────────────────────────────
 
 function ChatMessage({
-  message,
-  onCopy,
+  role,
+  content,
+  isStreaming,
+  shiftId,
   onWatchShift,
 }: {
-  message: Message;
-  onCopy: (text: string) => void;
+  role: string;
+  content: string;
+  isStreaming?: boolean;
+  shiftId?: string;
   onWatchShift?: (shiftId: string) => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const isUser = message.role === 'user';
-  const isStreaming = message.isStreaming;
+  const isUser = role === 'user';
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(message.content);
+    navigator.clipboard.writeText(content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    onCopy(message.content);
   };
 
   return (
@@ -138,7 +119,6 @@ function ChatMessage({
               height={40}
               className="w-full h-full object-cover"
               onError={(e) => {
-                // Fallback to letter if image fails
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
             />
@@ -149,12 +129,10 @@ function ChatMessage({
 
       {/* Content */}
       <div className={`flex-1 max-w-[80%] ${isUser ? 'text-right' : ''}`}>
-        {/* Role Label */}
         <div className={`text-xs font-medium mb-1 ${isUser ? 'text-amber-400' : 'text-amber-300'}`}>
           {isUser ? 'You' : 'ACHEEVY'}
         </div>
 
-        {/* Message Bubble */}
         <div
           className={`inline-block rounded-2xl px-4 py-3 ${
             isUser
@@ -163,9 +141,9 @@ function ChatMessage({
           }`}
         >
           {isUser ? (
-            <p className="whitespace-pre-wrap text-[15px]">{message.content}</p>
+            <p className="whitespace-pre-wrap text-[15px]">{content}</p>
           ) : (
-            <div className="prose prose-invert prose-sm max-w-none">
+            <div className="prose prose-invert prose-sm max-w-none prose-code:text-amber-300 prose-code:bg-black/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -197,44 +175,18 @@ function ChatMessage({
                   },
                 }}
               >
-                {message.content}
+                {content}
               </ReactMarkdown>
-
               {isStreaming && (
                 <span className="inline-block w-2 h-5 bg-amber-400 ml-1 animate-pulse" />
               )}
             </div>
           )}
 
-          {/* Tool Calls */}
-          {message.toolCalls && message.toolCalls.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
-              {message.toolCalls.map((call, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs">
-                  <div
-                    className={`w-2 h-2 rounded-full ${
-                      call.status === 'complete'
-                        ? 'bg-green-500'
-                        : call.status === 'executing'
-                        ? 'bg-amber-500 animate-pulse'
-                        : call.status === 'error'
-                        ? 'bg-red-500'
-                        : 'bg-gray-500'
-                    }`}
-                  />
-                  <span className="font-mono text-amber-300">{call.tool}</span>
-                  {call.result && (
-                    <span className="text-gray-500 truncate max-w-xs">{call.result}</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
           {/* Shift Watch Button */}
-          {message.shiftId && onWatchShift && (
+          {shiftId && onWatchShift && (
             <button
-              onClick={() => onWatchShift(message.shiftId!)}
+              onClick={() => onWatchShift(shiftId)}
               className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors text-xs"
             >
               <YardIcon className="w-4 h-4" />
@@ -243,14 +195,11 @@ function ChatMessage({
           )}
         </div>
 
-        {/* Actions */}
-        {!isUser && !isStreaming && message.content && (
+        {/* Copy */}
+        {!isUser && !isStreaming && content && (
           <div className="flex items-center gap-2 mt-2 opacity-0 hover:opacity-100 transition-opacity">
-            <button
-              onClick={handleCopy}
-              className="p-1.5 rounded hover:bg-white/10 text-gray-500 hover:text-amber-300 transition-colors"
-            >
-              {copied ? <span className="text-green-400 text-xs">Copied!</span> : <CopyIcon className="w-4 h-4" />}
+            <button onClick={handleCopy} className="p-1.5 rounded hover:bg-white/10 text-gray-500 hover:text-amber-300 transition-colors">
+              {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
         )}
@@ -260,48 +209,28 @@ function ChatMessage({
 }
 
 // ─────────────────────────────────────────────────────────────
-// Quick Actions
-// ─────────────────────────────────────────────────────────────
-
-const QUICK_ACTIONS = [
-  { id: 'deploy', label: 'Deploy It', icon: DeployIcon, prompt: 'Deploy my latest changes to staging' },
-  { id: 'guide', label: 'Guide Me', icon: SparklesIcon, prompt: 'Help me plan my next deployment' },
-  { id: 'status', label: 'Check Status', icon: YardIcon, prompt: "What's the status of my current shift?" },
-];
-
-function QuickActions({ onSelect, disabled }: { onSelect: (prompt: string) => void; disabled: boolean }) {
-  return (
-    <div className="flex flex-wrap gap-2 justify-center">
-      {QUICK_ACTIONS.map((action) => (
-        <button
-          key={action.id}
-          onClick={() => onSelect(action.prompt)}
-          disabled={disabled}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-amber-100/70 hover:bg-white/10 hover:text-amber-100 hover:border-amber-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <action.icon className="w-4 h-4" />
-          {action.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
 // Main Page Component
 // ─────────────────────────────────────────────────────────────
 
 export default function ACHEEVYChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    stop,
+    setInput,
+  } = useChat({
+    api: '/api/chat',
+  });
+
   const [activeShiftId, setActiveShiftId] = useState<string | null>(null);
   const [showTheater, setShowTheater] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Auto-scroll
   useEffect(() => {
@@ -314,135 +243,34 @@ export default function ACHEEVYChatPage() {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
-  }, [inputValue]);
+  }, [input]);
 
-  // Send message
-  const sendMessage = useCallback(async (text?: string) => {
-    const messageText = text || inputValue;
-    if (!messageText.trim() || isStreaming) return;
-
-    setError(null);
-    setInputValue('');
-
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: messageText,
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, userMessage]);
-
-    // Add assistant placeholder
-    const assistantId = (Date.now() + 1).toString();
-    const assistantMessage: Message = {
-      id: assistantId,
-      role: 'assistant',
-      content: '',
-      timestamp: new Date(),
-      isStreaming: true,
-    };
-    setMessages((prev) => [...prev, assistantMessage]);
-
-    setIsStreaming(true);
-    abortControllerRef.current = new AbortController();
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-          model: 'gemini-3-flash',
-        }),
-        signal: abortControllerRef.current.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
+  // Detect deploy-related messages and create shift IDs
+  useEffect(() => {
+    if (messages.length < 2) return;
+    const lastUser = [...messages].reverse().find(m => m.role === 'user');
+    if (lastUser && (lastUser.content.toLowerCase().includes('deploy') || lastUser.content.toLowerCase().includes('shift'))) {
+      if (!activeShiftId) {
+        setActiveShiftId(`SH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`);
       }
-
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response body');
-
-      const decoder = new TextDecoder();
-      let accumulatedContent = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            if (line.includes('[DONE]')) continue;
-            try {
-              const data = JSON.parse(line.slice(6));
-              if (data.content) {
-                accumulatedContent += data.content;
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === assistantId
-                      ? { ...m, content: accumulatedContent }
-                      : m
-                  )
-                );
-              }
-              if (data.error) {
-                throw new Error(data.error);
-              }
-            } catch (e) {
-              // Skip malformed JSON
-            }
-          }
-        }
-      }
-
-      // Check for deploy-related content and simulate shift creation
-      if (messageText.toLowerCase().includes('deploy') || messageText.toLowerCase().includes('shift')) {
-        const shiftId = `SH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-        setActiveShiftId(shiftId);
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId ? { ...m, shiftId } : m
-          )
-        );
-      }
-
-      // Finalize
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === assistantId ? { ...m, isStreaming: false } : m
-        )
-      );
-    } catch (err: any) {
-      if (err.name === 'AbortError') return;
-      setError(err.message);
-      setMessages((prev) => prev.filter((m) => m.id !== assistantId));
-    } finally {
-      setIsStreaming(false);
     }
-  }, [inputValue, isStreaming, messages]);
+  }, [messages, activeShiftId]);
 
-  // Stop generation
-  const stopGeneration = useCallback(() => {
-    abortControllerRef.current?.abort();
-    setIsStreaming(false);
-    setMessages((prev) =>
-      prev.map((m) => (m.isStreaming ? { ...m, isStreaming: false } : m))
-    );
-  }, []);
+  // Quick action handler
+  const handleQuickAction = useCallback((prompt: string) => {
+    setInput(prompt);
+    setTimeout(() => {
+      const form = document.getElementById('acheevy-form') as HTMLFormElement;
+      form?.requestSubmit();
+    }, 50);
+  }, [setInput]);
 
   // Keyboard handling
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      const form = document.getElementById('acheevy-form') as HTMLFormElement;
+      form?.requestSubmit();
     }
   };
 
@@ -493,18 +321,19 @@ export default function ACHEEVYChatPage() {
                 Your AI executive assistant. I orchestrate deployments through the Circuit Box,
                 commanding the Chicken_Hawk engine and Lil_Hawk workers to execute your requests.
               </p>
-
-              <QuickActions onSelect={sendMessage} disabled={isStreaming} />
+              <QuickActions onSelect={handleQuickAction} disabled={isLoading} />
             </motion.div>
           )}
 
           {/* Message List */}
           <AnimatePresence>
-            {messages.map((message) => (
+            {messages.map((m, i) => (
               <ChatMessage
-                key={message.id}
-                message={message}
-                onCopy={() => {}}
+                key={m.id}
+                role={m.role}
+                content={m.content}
+                isStreaming={isLoading && i === messages.length - 1 && m.role === 'assistant'}
+                shiftId={m.content.toLowerCase().includes('deploy') ? activeShiftId || undefined : undefined}
                 onWatchShift={(shiftId) => {
                   setActiveShiftId(shiftId);
                   setShowTheater(true);
@@ -531,52 +360,58 @@ export default function ACHEEVYChatPage() {
       {/* Input Area */}
       <div className="relative z-10 border-t border-white/5 bg-black/40 backdrop-blur-sm px-4 py-4">
         <div className="max-w-3xl mx-auto">
-          <div className="relative flex items-end gap-3 bg-white/[0.03] border border-white/10 rounded-2xl p-3 focus-within:border-amber-400/30 transition-colors">
-            {/* Mic Button */}
-            <button
-              className="p-3 rounded-xl bg-white/5 text-amber-100/60 hover:bg-white/10 hover:text-amber-100 transition-colors"
-              title="Voice input (coming soon)"
-            >
-              <MicIcon className="w-5 h-5" />
-            </button>
-
-            {/* Text Input */}
-            <textarea
-              ref={textareaRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Message ACHEEVY..."
-              disabled={isStreaming}
-              rows={1}
-              className="flex-1 bg-transparent text-amber-50 placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[200px] py-2"
-            />
-
-            {/* Send/Stop Button */}
-            {isStreaming ? (
+          <form id="acheevy-form" onSubmit={handleSubmit}>
+            <div className="relative flex items-end gap-3 bg-white/[0.03] border border-white/10 rounded-2xl p-3 focus-within:border-amber-400/30 transition-colors">
+              {/* Mic Button */}
               <button
-                onClick={stopGeneration}
-                className="p-3 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                type="button"
+                className="p-3 rounded-xl bg-white/5 text-amber-100/60 hover:bg-white/10 hover:text-amber-100 transition-colors"
+                title="Voice input (coming soon)"
               >
-                <StopIcon className="w-5 h-5" />
+                <Mic className="w-5 h-5" />
               </button>
-            ) : (
-              <button
-                onClick={() => sendMessage()}
-                disabled={!inputValue.trim()}
-                className={`p-3 rounded-xl transition-all ${
-                  inputValue.trim()
-                    ? 'bg-amber-400 text-black hover:bg-amber-300'
-                    : 'bg-white/5 text-amber-100/30 cursor-not-allowed'
-                }`}
-              >
-                <SendIcon className="w-5 h-5" />
-              </button>
-            )}
-          </div>
+
+              {/* Text Input */}
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Message ACHEEVY..."
+                disabled={isLoading}
+                rows={1}
+                className="flex-1 bg-transparent text-amber-50 placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[200px] py-2"
+              />
+
+              {/* Send/Stop */}
+              {isLoading ? (
+                <button
+                  type="button"
+                  onClick={stop}
+                  title="Stop generation"
+                  className="p-3 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                >
+                  <Square className="w-5 h-5" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!input.trim()}
+                  title="Send message"
+                  className={`p-3 rounded-xl transition-all ${
+                    input.trim()
+                      ? 'bg-amber-400 text-black hover:bg-amber-300'
+                      : 'bg-white/5 text-amber-100/30 cursor-not-allowed'
+                  }`}
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </form>
 
           <p className="text-center text-xs text-gray-600 mt-3">
-            ACHEEVY orchestrates via Circuit Box \u2192 Chicken_Hawk \u2192 Lil_Hawks
+            ACHEEVY orchestrates via Circuit Box &rarr; Chicken_Hawk &rarr; Lil_Hawks
           </p>
         </div>
       </div>

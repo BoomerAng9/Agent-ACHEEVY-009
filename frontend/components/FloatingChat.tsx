@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { MessageSquare, X } from 'lucide-react';
+import { MessageSquare, Mic, X } from 'lucide-react';
 
 const AcheevyChat = dynamic(() => import('./AcheevyChat'), { ssr: false });
+const AcheevyAgent = dynamic(() => import('./AcheevyAgent'), { ssr: false });
 
 export default function FloatingChat() {
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<'chat' | 'voice'>('chat');
 
   return (
     <>
@@ -25,19 +27,36 @@ export default function FloatingChat() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-amber-400/10 bg-gradient-to-r from-amber-950/40 to-transparent">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                <span className="text-sm font-semibold text-amber-200 tracking-wide">Chat w/ACHEEVY</span>
+                <span className="text-sm font-semibold text-amber-200 tracking-wide">
+                  {mode === 'chat' ? 'Chat w/ACHEEVY' : 'ACHEEVY Agent'}
+                </span>
               </div>
-              <button
-                onClick={() => setOpen(false)}
-                aria-label="Close Chat"
-                className="p-1 rounded-lg text-amber-200/60 hover:text-amber-200 hover:bg-amber-200/10 transition-colors"
-              >
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-1">
+                {/* Mode toggle */}
+                <button
+                  type="button"
+                  onClick={() => setMode(mode === 'chat' ? 'voice' : 'chat')}
+                  title={mode === 'chat' ? 'Switch to voice agent' : 'Switch to text chat'}
+                  className={`p-1.5 rounded-lg transition-colors ${
+                    mode === 'voice'
+                      ? 'text-amber-300 bg-amber-500/10'
+                      : 'text-amber-200/40 hover:text-amber-200/70'
+                  }`}
+                >
+                  <Mic size={16} />
+                </button>
+                <button
+                  onClick={() => setOpen(false)}
+                  aria-label="Close Chat"
+                  className="p-1 rounded-lg text-amber-200/60 hover:text-amber-200 hover:bg-amber-200/10 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
-            {/* Chat body */}
+            {/* Body */}
             <div className="flex-1 overflow-hidden">
-              <AcheevyChat />
+              {mode === 'chat' ? <AcheevyChat /> : <AcheevyAgent />}
             </div>
           </div>
         </div>
