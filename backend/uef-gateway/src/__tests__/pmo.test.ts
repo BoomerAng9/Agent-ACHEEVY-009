@@ -134,8 +134,8 @@ describe('House of Ang', () => {
     expect(result.profile.definition.endpoint).toBeDefined();
     expect(result.profile.definition.capabilities.length).toBeGreaterThan(0);
     expect(result.profile.persona).toBeDefined();
-    expect(result.profile.skillTier).toBeDefined();
-    expect(result.tierLabel).toBeDefined();
+    expect(result.profile.benchLevel).toBeDefined();
+    expect(result.benchLabel).toBeDefined();
     expect(houseOfAng.getStats().total).toBe(before + 1);
   });
 

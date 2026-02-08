@@ -1,13 +1,18 @@
 /**
- * Boomer_Ang Persona & Skill Tier Types
+ * Boomer_Ang Persona & Bench Level Types
  *
  * Aligned with the canonical BoomerAngDefinition from:
  *   - backend/house-of-ang/src/types.ts
  *   - infra/boomerangs/registry.json (source of truth)
  *
  * A Boomer_Ang IS a service: endpoint, capabilities, quotas, health_check.
- * Persona is ADDITIVE metadata — backstory, traits, communication style.
- * Skill tier reflects the complexity of the task assigned.
+ * Persona is ADDITIVE flavor — backstory, traits, communication style.
+ * Persona ≠ authority. Bench level = authority.
+ *
+ * THREE bench levels only:
+ *   INTERN         (0-30)   — Production muscle. Never strategy.
+ *   INTERMEDIATE   (31-65)  — Skilled operator. Owns workflows, not vision.
+ *   EXPERT         (66-100) — PMO-grade specialist. Owns outcomes.
  *
  * "Activity breeds Activity — shipped beats perfect."
  */
@@ -40,52 +45,71 @@ export interface BoomerAngRegistry {
 }
 
 // ---------------------------------------------------------------------------
-// Skill Tiers — assigned based on task complexity score
+// Bench Levels — THREE levels only, based on task complexity
+//
+// Authority is bench-level-bound. Persona is flavor, not power.
 // ---------------------------------------------------------------------------
 
-export type SkillTier = 'CADET' | 'VETERAN' | 'ELITE' | 'LEGENDARY';
+export type BenchLevel = 'INTERN' | 'INTERMEDIATE' | 'EXPERT';
 
-export interface SkillTierConfig {
-  tier: SkillTier;
+export interface BenchConfig {
+  bench: BenchLevel;
   label: string;
-  complexityRange: [number, number]; // min, max complexity score
-  maxConcurrency: number;
+  complexityRange: [number, number];
+  concurrency: [number, number]; // [min, max] concurrent tasks
+  canMentor: boolean;
+  canGuideInterns: boolean;
+  canLeadSquad: boolean;
+  canInterfaceAcheevy: boolean;
   description: string;
+  jobScope: string;
 }
 
-export const SKILL_TIERS: SkillTierConfig[] = [
+export const BENCH_LEVELS: BenchConfig[] = [
   {
-    tier: 'CADET',
-    label: 'Cadet Ang',
-    complexityRange: [0, 25],
-    maxConcurrency: 1,
-    description: 'Fresh from the forge. Handles simple, single-step tasks.',
+    bench: 'INTERN',
+    label: 'Intern Boomer_Ang',
+    complexityRange: [0, 30],
+    concurrency: [1, 2],
+    canMentor: false,
+    canGuideInterns: false,
+    canLeadSquad: false,
+    canInterfaceAcheevy: false,
+    description: 'Production muscle. Never strategy.',
+    jobScope: 'High-volume generative and assembly work: slides, scripts, images, video gen, formatting, data cleanup.',
   },
   {
-    tier: 'VETERAN',
-    label: 'Veteran Ang',
-    complexityRange: [26, 55],
-    maxConcurrency: 2,
-    description: 'Battle-tested. Handles multi-step tasks with confidence.',
+    bench: 'INTERMEDIATE',
+    label: 'Intermediate Boomer_Ang',
+    complexityRange: [31, 65],
+    concurrency: [2, 4],
+    canMentor: false,
+    canGuideInterns: true,
+    canLeadSquad: false,
+    canInterfaceAcheevy: false,
+    description: 'Skilled operator. Owns workflows, not vision.',
+    jobScope: 'Structured execution, workflow ownership, tool chaining, coordination of Interns, non-destructive integrations.',
   },
   {
-    tier: 'ELITE',
-    label: 'Elite Ang',
-    complexityRange: [56, 80],
-    maxConcurrency: 4,
-    description: 'Top performer. Orchestrates complex pipelines.',
-  },
-  {
-    tier: 'LEGENDARY',
-    label: 'Legendary Ang',
-    complexityRange: [81, 100],
-    maxConcurrency: 6,
-    description: 'The best of the best. Enterprise-grade operations.',
+    bench: 'EXPERT',
+    label: 'Expert Boomer_Ang',
+    complexityRange: [66, 100],
+    concurrency: [4, 6],
+    canMentor: true,
+    canGuideInterns: true,
+    canLeadSquad: true,
+    canInterfaceAcheevy: true,
+    description: 'PMO-grade specialist. Owns outcomes.',
+    jobScope: 'Architecture decisions, cost/quality arbitration, Squad leadership, mentoring, cross-PMO coordination, executive summaries.',
   },
 ];
 
 // ---------------------------------------------------------------------------
 // Persona — backstory, personality, communication style
+//
+// IMPORTANT: Persona = flavor, NOT authority.
+// If an Expert persona is assigned at INTERN bench, the personality stays —
+// the authority does not.
 // ---------------------------------------------------------------------------
 
 export type PersonalityTrait =
@@ -128,22 +152,24 @@ export interface AngPersona {
 }
 
 // ---------------------------------------------------------------------------
-// ForgedAngProfile — BoomerAngDefinition + persona + tier (additive)
+// ForgedAngProfile — BoomerAngDefinition + persona + bench level (additive)
 //
 // This is the output of the AngForge. It wraps an existing (or newly created)
-// BoomerAngDefinition with persona metadata and a complexity-derived tier.
+// BoomerAngDefinition with persona metadata and a complexity-derived bench level.
+//
+// Persona = flavor. Bench level = authority.
 // ---------------------------------------------------------------------------
 
 export interface ForgedAngProfile {
   /** The canonical service definition from the registry. */
   definition: BoomerAngDefinition;
 
-  /** Additive persona metadata. */
+  /** Additive persona metadata. Flavor, NOT authority. */
   persona: AngPersona;
 
-  /** Skill tier based on task complexity. */
-  skillTier: SkillTier;
-  tierConfig: SkillTierConfig;
+  /** Bench level based on task complexity. THIS governs authority. */
+  benchLevel: BenchLevel;
+  benchConfig: BenchConfig;
 
   /** PMO assignment for this forge. */
   assignedPmo: PmoId;
@@ -188,6 +214,6 @@ export interface AngForgeRequest {
 
 export interface AngForgeResult {
   profile: ForgedAngProfile;
-  tierLabel: string;
+  benchLabel: string;
   summary: string;
 }

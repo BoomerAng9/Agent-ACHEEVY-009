@@ -1,22 +1,27 @@
 /**
- * AngForge — Boomer_Ang Resolution & Persona Assignment Engine
+ * AngForge — Boomer_Ang Resolution & Bench Assignment Engine
  *
  * The forge resolves tasks to REAL Boomer_Angs from the canonical registry
- * (infra/boomerangs/registry.json) and layers on persona + skill tier metadata.
+ * (infra/boomerangs/registry.json) and layers on persona + bench level metadata.
  *
  * Resolution flow:
- *   1. Score task complexity → determine skill tier
+ *   1. Score task complexity → determine bench level (INTERN / INTERMEDIATE / EXPERT)
  *   2. Map PMO office → registry Boomer_Ang IDs (via PMO_ANG_ROSTER)
  *   3. Pick the best-fit Boomer_Ang from the capability index
- *   4. Assign persona from the catalog
- *   5. Return ForgedAngProfile = BoomerAngDefinition + persona + tier
+ *   4. Assign persona from the catalog (persona = flavor, NOT authority)
+ *   5. Return ForgedAngProfile = BoomerAngDefinition + persona + bench
+ *
+ * THREE bench levels:
+ *   INTERN         (0-30)   — Production muscle. Never strategy.
+ *   INTERMEDIATE   (31-65)  — Skilled operator. Owns workflows, not vision.
+ *   EXPERT         (66-100) — PMO-grade specialist. Owns outcomes.
  *
  * A Boomer_Ang IS a service. The forge never invents fictional endpoints.
  * It either resolves to an existing registry entry or returns a
  * "pending_provision" placeholder for services not yet deployed.
  *
  * Chain of Command:
- *   User → ACHEEVY → Boomer_Ang (resolved here) → Chicken_Hawk → Squad → Lil_Hawks
+ *   User → ACHEEVY → PMO Manager → Expert/Intermediate Ang → Chicken_Hawk → Lil_Hawks
  *
  * "Activity breeds Activity — shipped beats perfect."
  */
@@ -26,9 +31,9 @@ import path from 'path';
 import logger from '../logger';
 import type { PmoId, DirectorId } from './types';
 import {
-  SkillTier,
-  SkillTierConfig,
-  SKILL_TIERS,
+  BenchLevel,
+  BenchConfig,
+  BENCH_LEVELS,
   AngPersona,
   BoomerAngDefinition,
   BoomerAngRegistry,
@@ -74,7 +79,7 @@ export function reloadRegistry(): void {
 }
 
 // ---------------------------------------------------------------------------
-// Complexity Scorer — analyzes task message to determine skill tier
+// Complexity Scorer — analyzes task message to determine bench level
 // ---------------------------------------------------------------------------
 
 interface ComplexityFactors {
@@ -168,16 +173,20 @@ export function scoreComplexity(message: string): ComplexityFactors {
 }
 
 // ---------------------------------------------------------------------------
-// Tier Resolver — complexity score → skill tier
+// Bench Resolver — complexity score → bench level
+//
+// INTERN:       0-30   — They do, they do not think.
+// INTERMEDIATE: 31-65  — They execute with judgment, but don't set direction.
+// EXPERT:       66-100 — They think, decide, and are accountable.
 // ---------------------------------------------------------------------------
 
-export function resolveTier(complexityScore: number): SkillTierConfig {
-  for (const tier of SKILL_TIERS) {
-    if (complexityScore >= tier.complexityRange[0] && complexityScore <= tier.complexityRange[1]) {
-      return tier;
+export function resolveBench(complexityScore: number): BenchConfig {
+  for (const bench of BENCH_LEVELS) {
+    if (complexityScore >= bench.complexityRange[0] && complexityScore <= bench.complexityRange[1]) {
+      return bench;
     }
   }
-  return SKILL_TIERS[1]; // default VETERAN
+  return BENCH_LEVELS[1]; // default INTERMEDIATE
 }
 
 // ---------------------------------------------------------------------------
@@ -255,42 +264,29 @@ const KEYWORD_CAPABILITY_MAP: Record<string, string[]> = {
   'oracle': ['gate_verification'],
 };
 
-/**
- * Extract matching capabilities from a task message.
- */
 function extractCapabilities(message: string): string[] {
   const lower = message.toLowerCase();
   const caps = new Set<string>();
-
   for (const [keyword, capabilities] of Object.entries(KEYWORD_CAPABILITY_MAP)) {
     if (lower.includes(keyword)) {
       for (const cap of capabilities) caps.add(cap);
     }
   }
-
   return Array.from(caps);
 }
 
-/**
- * Resolve registry Boomer_Angs from extracted capabilities.
- */
 function resolveFromCapabilities(capabilities: string[]): BoomerAngDefinition[] {
   const registry = getRegistry();
   const matchedIds = new Set<string>();
-
   for (const cap of capabilities) {
     const ids = registry.capability_index[cap];
     if (ids) {
       for (const id of ids) matchedIds.add(id);
     }
   }
-
   return registry.boomerangs.filter(b => matchedIds.has(b.id));
 }
 
-/**
- * Resolve registry Boomer_Angs from the PMO office roster.
- */
 function resolveFromPmo(pmoOffice: PmoId): BoomerAngDefinition[] {
   const registry = getRegistry();
   const ids = getAngIdsForOffice(pmoOffice);
@@ -298,7 +294,7 @@ function resolveFromPmo(pmoOffice: PmoId): BoomerAngDefinition[] {
 }
 
 // ---------------------------------------------------------------------------
-// Fallback Persona — when no catalog persona is available
+// Fallback Persona
 // ---------------------------------------------------------------------------
 
 function fallbackPersona(angDef: BoomerAngDefinition): AngPersona {
@@ -324,7 +320,7 @@ function fallbackPersona(angDef: BoomerAngDefinition): AngPersona {
 
 export class AngForge {
   private forgeCount = 0;
-  private forgeLog: Array<{ angId: string; tier: SkillTier; pmo: PmoId; at: string }> = [];
+  private forgeLog: Array<{ angId: string; bench: BenchLevel; pmo: PmoId; at: string }> = [];
 
   /**
    * Forge a Boomer_Ang assignment for a task.
@@ -332,14 +328,14 @@ export class AngForge {
    * Resolution order:
    *   1. Extract capabilities from message → match in registry
    *   2. Fall back to PMO office roster
-   *   3. Assign persona from catalog (or fallback)
-   *   4. Determine skill tier from complexity
+   *   3. Assign persona from catalog (persona = flavor, NOT authority)
+   *   4. Determine bench level from complexity (bench = authority)
    */
   forge(request: AngForgeRequest): AngForgeResult {
     const { message, pmoOffice, director, complexityScore, requestedBy } = request;
 
-    // Resolve tier
-    const tierConfig = resolveTier(complexityScore);
+    // Resolve bench level (THIS governs authority)
+    const benchConfig = resolveBench(complexityScore);
 
     // Step 1: Try capability-based resolution
     const capabilities = extractCapabilities(message);
@@ -350,17 +346,15 @@ export class AngForge {
       matched = resolveFromPmo(pmoOffice);
     }
 
-    // Step 3: Pick best-fit (prefer first match; could be weighted later)
+    // Step 3: Pick best-fit
     let resolvedFromRegistry = true;
     let definition: BoomerAngDefinition;
 
     if (matched.length > 0) {
-      // Prefer Angs that are in the PMO roster when multiple match
       const pmoIds = new Set(getAngIdsForOffice(pmoOffice));
       const pmoFiltered = matched.filter(m => pmoIds.has(m.id));
       definition = pmoFiltered.length > 0 ? pmoFiltered[0] : matched[0];
     } else {
-      // No registry match — create pending_provision placeholder
       resolvedFromRegistry = false;
       const placeholderId = `pending_${pmoOffice.replace('-office', '')}_ang`;
       definition = {
@@ -380,7 +374,7 @@ export class AngForge {
       );
     }
 
-    // Step 4: Assign persona
+    // Step 4: Assign persona (flavor, NOT authority)
     const catalogPersona = getPersonaForAng(definition.id);
     const persona = catalogPersona ?? fallbackPersona(definition);
 
@@ -391,8 +385,8 @@ export class AngForge {
     const profile: ForgedAngProfile = {
       definition,
       persona,
-      skillTier: tierConfig.tier,
-      tierConfig,
+      benchLevel: benchConfig.bench,
+      benchConfig,
       assignedPmo: pmoOffice,
       director,
       forgedAt: now,
@@ -402,21 +396,22 @@ export class AngForge {
       resolvedFromRegistry,
     };
 
-    this.forgeLog.push({ angId: definition.id, tier: tierConfig.tier, pmo: pmoOffice, at: now });
+    this.forgeLog.push({ angId: definition.id, bench: benchConfig.bench, pmo: pmoOffice, at: now });
 
     logger.info(
       {
         angId: definition.id,
         name: definition.name,
         persona: persona.codename,
-        tier: tierConfig.tier,
+        bench: benchConfig.bench,
         pmo: pmoOffice,
         director,
         complexity: complexityScore,
         resolvedFromRegistry,
-        capabilities: definition.capabilities.length,
+        canLeadSquad: benchConfig.canLeadSquad,
+        canMentor: benchConfig.canMentor,
       },
-      '[AngForge] Boomer_Ang resolved and persona assigned',
+      '[AngForge] Boomer_Ang resolved — bench level assigned',
     );
 
     // Build summary
@@ -428,20 +423,24 @@ export class AngForge {
       `Status: ${definition.status}`,
       `Registry: ${resolvedFromRegistry ? 'RESOLVED' : 'PENDING_PROVISION'}`,
       ``,
+      `--- Bench Level ---`,
+      `Bench: ${benchConfig.bench} (${benchConfig.label})`,
+      `Complexity: ${complexityScore}/100`,
+      `Concurrency: ${benchConfig.concurrency[0]}-${benchConfig.concurrency[1]}`,
+      `Authority: Mentor=${benchConfig.canMentor} | Guide=${benchConfig.canGuideInterns} | LeadSquad=${benchConfig.canLeadSquad} | ACHEEVY=${benchConfig.canInterfaceAcheevy}`,
+      `Job scope: ${benchConfig.jobScope}`,
+      ``,
       `--- Assignment ---`,
       `PMO: ${pmoOffice} | Director: ${director}`,
-      `Tier: ${tierConfig.tier} (${tierConfig.label}) — complexity ${complexityScore}/100`,
-      `Concurrency: ${tierConfig.maxConcurrency}`,
       ``,
-      `--- Persona ---`,
+      `--- Persona (flavor only) ---`,
       `Name: ${persona.displayName} (${persona.codename})`,
       `Traits: ${persona.traits.join(', ')}`,
       `Style: ${persona.communicationStyle}`,
       `Catchphrase: "${persona.backstory.catchphrase}"`,
-      `Mentored by: ${persona.backstory.mentoredBy}`,
     ].join('\n');
 
-    return { profile, tierLabel: tierConfig.label, summary };
+    return { profile, benchLabel: benchConfig.label, summary };
   }
 
   /**

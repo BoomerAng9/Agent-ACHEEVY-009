@@ -322,7 +322,7 @@ export function createPipelinePacket(payload: N8nTriggerPayload): PmoPipelinePac
   // Step 1: ACHEEVY classifies intent → PMO office
   const classification = classifyIntent(payload.message);
 
-  // Step 2: Forge — resolve a real Boomer_Ang from registry + assign persona + tier
+  // Step 2: Forge — resolve a real Boomer_Ang from registry + assign bench level
   const complexity = scoreComplexity(payload.message);
   const forgeResult = houseOfAng.forgeForTask(
     payload.message,
@@ -339,10 +339,12 @@ export function createPipelinePacket(payload: N8nTriggerPayload): PmoPipelinePac
       resolvedAng: profile.definition.name,
       angId: profile.definition.id,
       endpoint: profile.definition.endpoint,
-      tier: profile.skillTier,
+      bench: profile.benchLevel,
       complexity: complexity.score,
       persona: profile.persona.codename,
       resolvedFromRegistry: profile.resolvedFromRegistry,
+      canLeadSquad: profile.benchConfig.canLeadSquad,
+      canMentor: profile.benchConfig.canMentor,
     },
     '[PMO Router] Boomer_Ang resolved from registry',
   );

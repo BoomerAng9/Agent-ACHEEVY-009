@@ -326,7 +326,7 @@ export class HouseOfAng {
         id: def.id,
         name: def.name,
         type: 'EXECUTION',
-        title: `${profile.persona.displayName} — ${result.tierLabel}`,
+        title: `${profile.persona.displayName} — ${result.benchLabel}`,
         role: def.description,
         assignedPmo: pmoOffice,
         status: 'DEPLOYED',
@@ -350,7 +350,7 @@ export class HouseOfAng {
       {
         angId: def.id,
         name: def.name,
-        tier: profile.skillTier,
+        bench: profile.benchLevel,
         pmo: pmoOffice,
         resolvedFromRegistry: profile.resolvedFromRegistry,
         endpoint: def.endpoint,
