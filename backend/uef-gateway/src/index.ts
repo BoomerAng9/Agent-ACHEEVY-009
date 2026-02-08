@@ -16,6 +16,7 @@ import { VISION_SQUAD_PROFILES } from './agents/lil-hawks/vision-scout-squad';
 import { PREP_SQUAD_PROFILES, runPrepSquad } from './agents/lil-hawks/prep-squad-alpha';
 import { pmoRegistry } from './pmo/registry';
 import { houseOfAng } from './pmo/house-of-ang';
+import { runCollaborationDemo, renderJSON } from './collaboration';
 import { TIER_CONFIGS, TASK_MULTIPLIERS as BILLING_MULTIPLIERS, PILLAR_CONFIGS, checkAllowance, calculatePillarAddon, checkAgentLimit } from './billing';
 import { openrouter, MODELS as LLM_MODELS } from './llm';
 import { verticalRegistry } from './verticals';
@@ -233,6 +234,28 @@ app.post('/house-of-ang/forge', (req, res) => {
   }
 });
 
+
+// --------------------------------------------------------------------------
+// Collaboration Feed — Live Look-In (Agent Collaboration Transcript)
+// --------------------------------------------------------------------------
+app.post('/collaboration/demo', (req, res) => {
+  try {
+    const { userName, message, projectLabel } = req.body;
+    if (!message || typeof message !== 'string' || message.length > 2000) {
+      res.status(400).json({ error: 'Invalid message: required string, max 2000 chars' });
+      return;
+    }
+    const session = runCollaborationDemo(
+      userName || 'Boss',
+      message,
+      projectLabel,
+    );
+    res.json(renderJSON(session));
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : 'Collaboration demo failed';
+    res.status(500).json({ error: errMessage });
+  }
+});
 
 // --------------------------------------------------------------------------
 // Admin — API Key Status (OWNER-only, called via frontend proxy)

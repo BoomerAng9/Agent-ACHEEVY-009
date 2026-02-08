@@ -328,6 +328,69 @@ async function main() {
             break;
         }
 
+        case 'collab-demo': {
+            const demoMsg = WORKFLOW_NAME;
+            const demoUser = EXTRA_ARG || 'Boss';
+            if (!demoMsg) {
+                console.error("Error: Missing message. Usage: node boomer.mjs collab-demo '<task>' [userName]");
+                console.error("Example: node boomer.mjs collab-demo 'build me a landing page' Boss");
+                process.exit(1);
+            }
+            console.log(`\nRunning collaboration demo as ${demoUser}...\n`);
+            const UEF_URL = process.env.UEF_URL || 'http://localhost:3001';
+            const API_KEY = process.env.INTERNAL_API_KEY || '';
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 30000);
+                const res = await fetch(`${UEF_URL}/collaboration/demo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(API_KEY ? { 'X-API-Key': API_KEY } : {}),
+                    },
+                    body: JSON.stringify({ userName: demoUser, message: demoMsg }),
+                    signal: controller.signal,
+                });
+                clearTimeout(timeout);
+                if (!res.ok) {
+                    const body = await res.text();
+                    console.error(`UEF returned HTTP ${res.status}: ${body}`);
+                    process.exit(1);
+                }
+                const data = await res.json();
+                // Print the collaboration feed
+                console.log(`Session: ${data.session.id} | Status: ${data.session.status}`);
+                console.log(`${'─'.repeat(60)}`);
+                for (const entry of data.feed) {
+                    const indent = '  '.repeat(entry.depth);
+                    const bench = entry.speaker.bench ? ` [${entry.speaker.bench}]` : '';
+                    const kunya = entry.speaker.kunya ? ` "${entry.speaker.kunya}"` : '';
+                    if (entry.type === 'nugget') {
+                        console.log(`${indent}💬 ${entry.speaker.name}${kunya}${bench}`);
+                        console.log(`${indent}   "${entry.message}"`);
+                    } else if (entry.type === 'handoff') {
+                        console.log(`${indent}→ ${entry.speaker.name} [HANDOFF] ${entry.message}`);
+                    } else if (entry.type === 'thinking') {
+                        console.log(`${indent}💭 ${entry.speaker.name}: ${entry.message}`);
+                    } else {
+                        console.log(`${indent}${entry.speaker.name}${kunya}${bench} [${entry.type.toUpperCase()}] ${entry.message}`);
+                    }
+                }
+                console.log(`${'─'.repeat(60)}`);
+                console.log(`Stats: ${data.stats.totalEntries} entries | ${data.stats.agentsSeen.length} agents | ${data.stats.nuggetsDelivered} nuggets`);
+                console.log(`Steps: ${data.stats.stepsCompleted} done, ${data.stats.stepsFailed} failed | ${data.stats.totalDurationMs}ms`);
+            } catch (e) {
+                if (e.name === 'AbortError') {
+                    console.error("Request timed out (30s).");
+                } else {
+                    console.error("Collaboration demo failed:", e.message);
+                    console.error("Make sure UEF Gateway is running (npm run dev in backend/uef-gateway).");
+                }
+                process.exit(1);
+            }
+            break;
+        }
+
         default:
             console.log("Usage:");
             console.log("  node boomer.mjs list-templates          List available workflow templates");
@@ -335,6 +398,7 @@ async function main() {
             console.log("  node boomer.mjs check                   Check n8n connectivity and PMO workflow status");
             console.log("  node boomer.mjs pmo-trigger '<msg>'     Trigger PMO routing for a task via n8n webhook");
             console.log("  node boomer.mjs pmo-classify '<msg>'    Classify a message to see PMO routing (dry-run)");
+            console.log("  node boomer.mjs collab-demo '<msg>'     Run a live collaboration demo with persona voices");
             console.log("");
             console.log("PMO Templates:");
             console.log("  pmo-router   Full chain-of-command workflow (14 nodes)");
@@ -342,7 +406,7 @@ async function main() {
             console.log("  marketer     Twitter/X auto-posting agent");
             console.log("");
             console.log("Chain of Command:");
-            console.log("  User -> ACHEEVY -> Boomer_Ang(CTO/CFO/COO/CMO/CDO/CPO) -> Chicken_Hawk -> Squad -> Lil_Hawks -> Receipt -> ACHEEVY -> User");
+            console.log("  User -> ACHEEVY -> Boomer_Ang(CTO/CFO/COO/CMO/CDO/CPO/Betty-Ann/Astra) -> Chicken_Hawk -> Squad -> Lil_Hawks -> Receipt -> ACHEEVY -> User");
             break;
     }
 }
