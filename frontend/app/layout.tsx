@@ -2,6 +2,7 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import Providers from '@/components/Providers';
 
 // All fonts are local - no Google Fonts dependency
 const doto = localFont({
@@ -49,7 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={`${doto.variable} ${permanentMarker.variable} ${caveat.variable} ${patrickHand.variable} ${nabla.variable} antialiased min-h-screen bg-[#0a0f1a] text-slate-200 font-sans`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
