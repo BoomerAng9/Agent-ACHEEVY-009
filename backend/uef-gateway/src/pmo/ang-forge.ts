@@ -42,6 +42,7 @@ import {
   AngForgeResult,
 } from './persona-types';
 import { getPersonaForAng, getAngIdsForOffice } from './persona-catalog';
+import { getJobsForBench } from './pmo-job-map';
 
 // ---------------------------------------------------------------------------
 // Registry Loader — reads infra/boomerangs/registry.json
@@ -414,6 +415,10 @@ export class AngForge {
       '[AngForge] Boomer_Ang resolved — bench level assigned',
     );
 
+    // Get PMO-specific jobs for this bench level
+    const pmoJobs = getJobsForBench(pmoOffice, benchConfig.bench);
+    const ac = benchConfig.acceptanceCriteria;
+
     // Build summary
     const summary = [
       `--- Boomer_Ang Forged ---`,
@@ -428,7 +433,12 @@ export class AngForge {
       `Complexity: ${complexityScore}/100`,
       `Concurrency: ${benchConfig.concurrency[0]}-${benchConfig.concurrency[1]}`,
       `Authority: Mentor=${benchConfig.canMentor} | Guide=${benchConfig.canGuideInterns} | LeadSquad=${benchConfig.canLeadSquad} | ACHEEVY=${benchConfig.canInterfaceAcheevy}`,
-      `Job scope: ${benchConfig.jobScope}`,
+      ``,
+      `--- PMO Job Scope (${pmoOffice}) ---`,
+      ...pmoJobs.map(j => `  • ${j}`),
+      ``,
+      `--- Quality Gates ---`,
+      ...ac.qualityGates.map(g => `  ${g.metric}: ${g.threshold} — ${g.description}`),
       ``,
       `--- Assignment ---`,
       `PMO: ${pmoOffice} | Director: ${director}`,
