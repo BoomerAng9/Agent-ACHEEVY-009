@@ -41,9 +41,29 @@ const nabla = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'A.I.M.S. | AI Managed Solutions',
-  description: 'Build smarter. Work faster. AI-powered automation platform with ACHEEVY, Model Garden, and Boomer_Ang agents.',
-  keywords: ['AI', 'automation', 'agents', 'ACHEEVY', 'business intelligence'],
+  title: {
+    default: 'A.I.M.S. | AI Managed Solutions',
+    template: '%s | A.I.M.S.',
+  },
+  description: 'Build smarter. Work faster. AI-powered management platform with ACHEEVY orchestrator, 25 Boomer_Ang agents, 8 PMO offices, and the 3-6-9 pricing model.',
+  keywords: ['AI', 'automation', 'agents', 'ACHEEVY', 'Boomer_Ang', 'PMO', 'AI management', 'business intelligence', 'plugs', 'workflow'],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://plugmein.cloud'),
+  openGraph: {
+    type: 'website',
+    siteName: 'A.I.M.S.',
+    title: 'A.I.M.S. | AI Managed Solutions',
+    description: 'AI-powered management platform. ACHEEVY orchestrates 25 agents across 8 PMO offices. Voice-enabled, sandbox-ready.',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'A.I.M.S. | AI Managed Solutions',
+    description: 'AI-powered management platform with ACHEEVY, Boomer_Ang agents, and the 3-6-9 pricing model.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

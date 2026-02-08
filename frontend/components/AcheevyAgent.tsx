@@ -48,6 +48,8 @@ const PMO_OFFICE_ICONS: Record<string, typeof Building2> = {
   'marketing-office': Megaphone,
   'design-office': Palette,
   'publishing-office': BookOpen,
+  'hr-office': Bot,
+  'dtpmo-office': Zap,
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -426,7 +428,7 @@ export default function AcheevyAgent() {
         </div>
 
         <p className="text-center mt-3 text-[9px] font-mono text-white/15 uppercase tracking-[0.2em]">
-          A.I.M.S. Voice Agent &bull; ElevenLabs Conversational AI
+          A.I.M.S. Voice Agent &bull; ElevenLabs + Deepgram Aura-2 + Groq Whisper
         </p>
       </div>
     </div>
