@@ -85,7 +85,7 @@ export default function AcheevyChat() {
               <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-signal-green rounded-full border-2 border-black animate-pulse" />
             </div>
             <div>
-              <h2 className="font-display font-medium text-lg text-white tracking-tight">ACHEEVY</h2>
+              <h2 className="font-display font-medium text-lg text-white tracking-tight">Chat w/ACHEEVY</h2>
               <div className="flex items-center gap-1.5 text-[10px] text-signal-green/90 font-mono uppercase tracking-widest">
                 <Zap className="w-2.5 h-2.5" /> Online
               </div>

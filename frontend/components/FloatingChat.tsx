@@ -25,10 +25,11 @@ export default function FloatingChat() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-amber-400/10 bg-gradient-to-r from-amber-950/40 to-transparent">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                <span className="text-sm font-semibold text-amber-200 tracking-wide">ACHEEVY</span>
+                <span className="text-sm font-semibold text-amber-200 tracking-wide">Chat w/ACHEEVY</span>
               </div>
               <button
                 onClick={() => setOpen(false)}
+                aria-label="Close Chat"
                 className="p-1 rounded-lg text-amber-200/60 hover:text-amber-200 hover:bg-amber-200/10 transition-colors"
               >
                 <X size={18} />
