@@ -1,99 +1,20 @@
 // frontend/components/LogoWallBackground.tsx
 "use client";
 
-import React from "react";
 import clsx from "clsx";
 
 type LogoWallMode = "hero" | "auth" | "form" | "dashboard";
-type LogoColorway = "champagne" | "deepsea";
 
-interface Props {
+type Props = {
   mode?: LogoWallMode;
-  colorway?: LogoColorway;
   children: React.ReactNode;
-}
+};
 
 /**
- * Flowing wave pattern — brand signature from the Logox design.
- * SVG renders smooth S-curve strokes rotated diagonally with a 3D embossed effect,
- * tiled across the entire viewport. Replaces the old diagonal bar pattern.
+ * LogoWallBackground — tiles the real ACHIEVEMOR gold logo as a
+ * repeating background pattern with mode-based opacity and gradient overlay.
  */
-function WavePattern({ colorway }: { colorway: LogoColorway }) {
-  const color = colorway === "champagne"
-    ? { stroke: "#B8962E", highlight: "#D4AF37", shadow: "#6B5B1F" }
-    : { stroke: "#0E7490", highlight: "#22D3EE", shadow: "#064E5C" };
-
-  // S-curve that tiles seamlessly: starts and ends at same y with matching slopes
-  const waveD = "M0,0 C80,-28 160,28 240,0";
-
-  // Waves at varied spacing + widths for organic, premium feel
-  const waves = [
-    { y: 0,   w: 16 },
-    { y: 38,  w: 12 },
-    { y: 72,  w: 20 },
-    { y: 106, w: 14 },
-    { y: 144, w: 18 },
-    { y: 182, w: 12 },
-    { y: 220, w: 16 },
-    { y: 258, w: 14 },
-  ];
-
-  return (
-    <svg
-      className="absolute inset-0 w-full h-full"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <defs>
-        <pattern
-          id="logo-waves"
-          x="0" y="0"
-          width="240" height="300"
-          patternUnits="userSpaceOnUse"
-          patternTransform="rotate(-38)"
-        >
-          {waves.map((wave, i) => (
-            <React.Fragment key={i}>
-              {/* Shadow — depth layer */}
-              <path
-                d={waveD}
-                fill="none"
-                stroke={color.shadow}
-                strokeWidth={wave.w + 2}
-                strokeLinecap="round"
-                opacity={0.5}
-                transform={`translate(1, ${wave.y + 2})`}
-              />
-              {/* Main stroke */}
-              <path
-                d={waveD}
-                fill="none"
-                stroke={color.stroke}
-                strokeWidth={wave.w}
-                strokeLinecap="round"
-                opacity={0.85}
-                transform={`translate(0, ${wave.y})`}
-              />
-              {/* Top-edge highlight */}
-              <path
-                d={waveD}
-                fill="none"
-                stroke={color.highlight}
-                strokeWidth={Math.max(2, wave.w * 0.25)}
-                strokeLinecap="round"
-                opacity={0.35}
-                transform={`translate(-0.5, ${wave.y - 1})`}
-              />
-            </React.Fragment>
-          ))}
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#logo-waves)" />
-    </svg>
-  );
-}
-
-export function LogoWallBackground({ mode = "hero", colorway = "champagne", children }: Props) {
+export function LogoWallBackground({ mode = "hero", children }: Props) {
   const patternOpacity = {
     hero:      "opacity-[0.18]",
     auth:      "opacity-[0.22]",
@@ -110,15 +31,16 @@ export function LogoWallBackground({ mode = "hero", colorway = "champagne", chil
 
   return (
     <div className="relative min-h-screen bg-[#050507] text-amber-50 overflow-hidden">
-      {/* Layer 0: Wave pattern — brand signature flowing curves */}
+      {/* Layer 0: Tiled ACHIEVEMOR gold logo */}
       <div
-        className={clsx("pointer-events-none absolute inset-0 transition-opacity duration-1000", patternOpacity)}
+        className={clsx(
+          "pointer-events-none absolute inset-0 transition-opacity duration-1000 bg-repeat [background-size:220px_220px] [background-image:url('/images/logos/achievemor-gold.png')]",
+          patternOpacity
+        )}
         aria-hidden="true"
-      >
-        <WavePattern colorway={colorway} />
-      </div>
+      />
 
-      {/* Layer 1: Depth gradient — bars recede behind content */}
+      {/* Layer 1: Depth gradient overlay */}
       <div
         className={clsx(
           "pointer-events-none absolute inset-0 bg-gradient-to-br transition-all duration-700",
@@ -127,7 +49,7 @@ export function LogoWallBackground({ mode = "hero", colorway = "champagne", chil
         aria-hidden="true"
       />
 
-      {/* Layer 2: Window layer — content cut into the wall */}
+      {/* Layer 2: Content */}
       <main className={clsx(
         "relative z-10 min-h-screen flex flex-col",
         mode === "hero" || mode === "dashboard" ? "p-4 md:p-8 lg:p-12" : "p-0"

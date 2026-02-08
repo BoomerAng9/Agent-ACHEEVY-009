@@ -115,6 +115,21 @@ export default function SignInPage() {
         </div>
       )}
 
+      {/* Guest tour */}
+      <div className="flex flex-col items-center gap-3 pt-2">
+        <div className="flex items-center gap-3 w-full">
+          <div className="flex-1 border-t border-amber-300/10" />
+          <span className="text-[10px] uppercase tracking-[0.2em] text-amber-100/40">or</span>
+          <div className="flex-1 border-t border-amber-300/10" />
+        </div>
+        <Link
+          href="/dashboard"
+          className="w-full py-3 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-center text-sm font-bold text-black uppercase tracking-wider shadow-[0_0_24px_rgba(251,191,36,0.3)] hover:shadow-[0_0_32px_rgba(251,191,36,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+        >
+          Tour as Guest
+        </Link>
+      </div>
+
       {/* Create account link */}
       <div className="text-center pt-4">
         <span className="text-sm text-amber-100/50">New here? </span>
