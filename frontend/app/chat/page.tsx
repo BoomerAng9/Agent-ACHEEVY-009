@@ -1,11 +1,16 @@
 'use client';
 
 /**
- * Chat w/ACHEEVY — The Definitive Interface
+ * Chat w/ACHEEVY — Command Center
  *
  * Built with Vercel AI SDK (useChat) + n8n PMO pipeline visualization.
  * Streams AI responses via Google Gemini while showing real-time
  * Chain of Command routing (PMO Office → Boomer_Ang Director → Chicken_Hawk).
+ *
+ * Features:
+ * - Conversation threads sidebar (collapsible, localStorage persistence)
+ * - Action feedback status bar below agent shelf
+ * - Toggleable "Activity breeds Activity" MottoBar
  */
 
 import { useChat } from 'ai/react';
@@ -15,14 +20,15 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
 import {
-  Send, Square, Bot, User, Zap, ChevronDown, Copy, Check,
-  Mic, Trophy, Search, Hammer, Layers, Container, Wand2,
+  Send, Square, Bot, User, Zap, Copy, Check,
+  Trophy, Search, Hammer, Layers, Container, Wand2,
   Building2, DollarSign, Activity, Megaphone, Palette, BookOpen,
+  PanelLeftClose, PanelLeftOpen, Plus, MessageSquare, Trash2, Flame,
 } from 'lucide-react';
 import { SiteHeader } from '@/components/SiteHeader';
 
 // ─────────────────────────────────────────────────────────────
-// PMO Classification Types
+// Types
 // ─────────────────────────────────────────────────────────────
 
 interface PmoClassification {
@@ -33,6 +39,13 @@ interface PmoClassification {
   keywords: string[];
   executionLane: 'deploy_it' | 'guide_me';
   complexity: number;
+}
+
+interface Thread {
+  id: string;
+  title: string;
+  createdAt: number;
+  lastMessage?: string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -69,6 +82,26 @@ const BOOMER_ANGS = [
   { id: 'hawk', name: 'Chicken_Hawk', office: 'dispatch', color: 'red' },
 ] as const;
 
+const THREADS_STORAGE_KEY = 'aims_chat_threads';
+const SIDEBAR_STORAGE_KEY = 'aims_chat_sidebar';
+const MOTTOBAR_STORAGE_KEY = 'aims_chat_motto';
+
+// ─────────────────────────────────────────────────────────────
+// Thread Helpers
+// ─────────────────────────────────────────────────────────────
+
+function loadThreads(): Thread[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(THREADS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveThreads(threads: Thread[]) {
+  try { localStorage.setItem(THREADS_STORAGE_KEY, JSON.stringify(threads)); } catch {}
+}
+
 // ─────────────────────────────────────────────────────────────
 // PMO Pipeline Status Bar
 // ─────────────────────────────────────────────────────────────
@@ -86,19 +119,19 @@ function PipelineStatus({ classification }: { classification: PmoClassification 
       exit={{ opacity: 0, height: 0 }}
       className="mx-4 mb-2"
     >
-      <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-amber-500/5 border border-amber-500/10">
+      <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gold/5 border border-gold/10">
         {/* Office */}
         <div className="flex items-center gap-2">
-          <OfficeIcon className="w-4 h-4 text-amber-400" />
-          <span className="text-xs font-medium text-amber-300">{classification.officeLabel}</span>
+          <OfficeIcon className="w-4 h-4 text-gold" />
+          <span className="text-xs font-medium text-gold">{classification.officeLabel}</span>
         </div>
 
-        <div className="w-px h-4 bg-white/10" />
+        <div className="w-px h-4 bg-wireframe-stroke" />
 
         {/* Director */}
-        <span className="text-xs font-mono text-amber-200/70">{classification.director}</span>
+        <span className="text-xs font-mono text-white/60">{classification.director}</span>
 
-        <div className="w-px h-4 bg-white/10" />
+        <div className="w-px h-4 bg-wireframe-stroke" />
 
         {/* Lane */}
         <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-full ${
@@ -113,17 +146,176 @@ function PipelineStatus({ classification }: { classification: PmoClassification 
         <div className="ml-auto flex items-center gap-2">
           <div className="w-16 h-1.5 rounded-full bg-white/5 overflow-hidden">
             <div
-              className="h-full rounded-full bg-amber-400 transition-all"
+              className="h-full rounded-full bg-gold transition-all"
               style={{ width: `${classification.confidence * 100}%` }}
             />
           </div>
-          <span className="text-[10px] text-amber-200/40 font-mono">{Math.round(classification.confidence * 100)}%</span>
+          <span className="text-[10px] text-white/40 font-mono">{Math.round(classification.confidence * 100)}%</span>
         </div>
 
         {/* Complexity */}
-        <span className="text-[10px] text-amber-200/40 font-mono">C:{classification.complexity}</span>
+        <span className="text-[10px] text-white/40 font-mono">C:{classification.complexity}</span>
       </div>
     </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Action Feedback Status Bar
+// ─────────────────────────────────────────────────────────────
+
+function ActionFeedback({ classification, isLoading }: { classification: PmoClassification | null; isLoading: boolean }) {
+  if (!isLoading && !classification) return null;
+
+  return (
+    <div className="mx-4 mb-2">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-wireframe-stroke bg-white/[0.02]">
+        {isLoading ? (
+          <>
+            <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+            <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">
+              Processing request{classification ? ` via ${classification.director}` : ''}...
+            </span>
+          </>
+        ) : classification ? (
+          <>
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">
+              Routed to {classification.officeLabel} &bull; {classification.executionLane === 'deploy_it' ? 'Auto-deploy' : 'Guided'} lane
+            </span>
+          </>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// MottoBar
+// ─────────────────────────────────────────────────────────────
+
+function MottoBar({ visible }: { visible: boolean }) {
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="border-t border-wireframe-stroke bg-gold/[0.03]"
+        >
+          <div className="flex items-center justify-center gap-3 py-2 px-4">
+            <Flame className="w-3 h-3 text-gold/50" />
+            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gold/40">
+              Activity breeds Activity
+            </span>
+            <Flame className="w-3 h-3 text-gold/50" />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Threads Sidebar
+// ─────────────────────────────────────────────────────────────
+
+function ThreadsSidebar({
+  threads,
+  activeThreadId,
+  onSelect,
+  onNew,
+  onDelete,
+  open,
+  onToggle,
+}: {
+  threads: Thread[];
+  activeThreadId: string | null;
+  onSelect: (id: string) => void;
+  onNew: () => void;
+  onDelete: (id: string) => void;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.aside
+          initial={{ width: 0, opacity: 0 }}
+          animate={{ width: 260, opacity: 1 }}
+          exit={{ width: 0, opacity: 0 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          className="flex-shrink-0 overflow-hidden border-r border-wireframe-stroke bg-[#0A0A0A]/60"
+        >
+          <div className="flex flex-col h-full w-[260px]">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-wireframe-stroke">
+              <span className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40 font-mono">
+                Threads
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={onNew}
+                  className="p-1.5 rounded-lg text-white/40 hover:text-gold hover:bg-white/5 transition-colors"
+                  title="New thread"
+                >
+                  <Plus size={14} />
+                </button>
+                <button
+                  onClick={onToggle}
+                  className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+                  title="Close sidebar"
+                >
+                  <PanelLeftClose size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* Thread list */}
+            <div className="flex-1 overflow-y-auto py-2 space-y-0.5">
+              {threads.length === 0 ? (
+                <div className="px-4 py-8 text-center">
+                  <MessageSquare className="w-6 h-6 text-white/10 mx-auto mb-2" />
+                  <p className="text-[10px] text-white/20 font-mono">No threads yet</p>
+                </div>
+              ) : (
+                threads.map(thread => (
+                  <div
+                    key={thread.id}
+                    className={`group flex items-center gap-2 mx-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all ${
+                      activeThreadId === thread.id
+                        ? 'bg-gold/10 border border-gold/20'
+                        : 'border border-transparent hover:bg-white/5'
+                    }`}
+                    onClick={() => onSelect(thread.id)}
+                  >
+                    <MessageSquare size={12} className={activeThreadId === thread.id ? 'text-gold' : 'text-white/30'} />
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs truncate ${activeThreadId === thread.id ? 'text-gold' : 'text-white/60'}`}>
+                        {thread.title}
+                      </p>
+                      {thread.lastMessage && (
+                        <p className="text-[9px] text-white/20 truncate font-mono mt-0.5">
+                          {thread.lastMessage}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDelete(thread.id); }}
+                      className="p-1 rounded opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-all"
+                      title="Delete thread"
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </motion.aside>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -154,11 +346,11 @@ function MessageBubble({ role, content, isStreaming }: {
       {/* Avatar */}
       <div className="flex-shrink-0 mt-1">
         {isUser ? (
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black text-xs font-bold">
-            <User className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center">
+            <User className="w-4 h-4 text-gold" />
           </div>
         ) : (
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-amber-500/10 border border-amber-500/20">
+          <div className="w-8 h-8 rounded-full overflow-hidden bg-gold/10 border border-gold/20">
             <Image
               src="/images/acheevy/acheevy-helmet.png"
               alt="ACHEEVY"
@@ -178,14 +370,14 @@ function MessageBubble({ role, content, isStreaming }: {
         <div
           className={`inline-block rounded-2xl px-4 py-3 text-sm leading-relaxed ${
             isUser
-              ? 'bg-amber-500/20 text-amber-50 rounded-tr-sm'
-              : 'bg-white/[0.03] text-amber-100/90 rounded-tl-sm border border-white/5'
+              ? 'bg-gold/10 text-white rounded-tr-sm border border-gold/20'
+              : 'wireframe-card text-white/90 rounded-tl-sm'
           }`}
         >
           {isUser ? (
             <p className="whitespace-pre-wrap">{content}</p>
           ) : (
-            <div className="prose prose-invert prose-sm max-w-none prose-headings:text-amber-200 prose-a:text-amber-300 prose-strong:text-amber-100 prose-code:text-amber-300 prose-code:bg-black/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded">
+            <div className="prose prose-invert prose-sm max-w-none prose-headings:text-white prose-a:text-gold prose-strong:text-white prose-code:text-gold prose-code:bg-black/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -193,13 +385,13 @@ function MessageBubble({ role, content, isStreaming }: {
                     const isInline = !className;
                     if (isInline) {
                       return (
-                        <code className="bg-black/40 px-1.5 py-0.5 rounded text-amber-300 text-[13px]" {...props}>
+                        <code className="bg-black/40 px-1.5 py-0.5 rounded text-gold text-[13px]" {...props}>
                           {children}
                         </code>
                       );
                     }
                     return (
-                      <pre className="bg-black/60 rounded-lg p-4 overflow-x-auto border border-white/5 my-3">
+                      <pre className="bg-black/60 rounded-lg p-4 overflow-x-auto border border-wireframe-stroke my-3">
                         <code className={`${className} text-[13px]`} {...props}>
                           {children}
                         </code>
@@ -211,7 +403,7 @@ function MessageBubble({ role, content, isStreaming }: {
                 {content}
               </ReactMarkdown>
               {isStreaming && (
-                <span className="inline-block w-2 h-5 bg-amber-400 ml-1 animate-pulse" />
+                <span className="inline-block w-2 h-5 bg-gold ml-1 animate-pulse" />
               )}
             </div>
           )}
@@ -222,9 +414,9 @@ function MessageBubble({ role, content, isStreaming }: {
           <div className="mt-1 opacity-0 hover:opacity-100 transition-opacity inline-flex">
             <button
               onClick={handleCopy}
-              className="p-1 rounded hover:bg-white/10 text-gray-600 hover:text-amber-300 transition-colors"
+              className="p-1 rounded hover:bg-white/10 text-white/30 hover:text-gold transition-colors"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
           </div>
         )}
@@ -256,10 +448,83 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Hydration-safe random verb
+  // Threads
+  const [threads, setThreads] = useState<Thread[]>([]);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mottoVisible, setMottoVisible] = useState(true);
+
+  // Load persisted state
   useEffect(() => {
+    setThreads(loadThreads());
+    try {
+      const savedSidebar = localStorage.getItem(SIDEBAR_STORAGE_KEY);
+      if (savedSidebar === 'true') setSidebarOpen(true);
+      const savedMotto = localStorage.getItem(MOTTOBAR_STORAGE_KEY);
+      if (savedMotto === 'false') setMottoVisible(false);
+    } catch {}
     setCurrentVerb(ACHEEVY_VERBS[Math.floor(Math.random() * ACHEEVY_VERBS.length)]);
   }, []);
+
+  // Persist sidebar state
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen(prev => {
+      const next = !prev;
+      try { localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  // Persist motto state
+  const toggleMotto = useCallback(() => {
+    setMottoVisible(prev => {
+      const next = !prev;
+      try { localStorage.setItem(MOTTOBAR_STORAGE_KEY, String(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  // Thread management
+  const createThread = useCallback(() => {
+    const thread: Thread = {
+      id: `t_${Date.now()}`,
+      title: `Thread ${threads.length + 1}`,
+      createdAt: Date.now(),
+    };
+    const updated = [thread, ...threads];
+    setThreads(updated);
+    saveThreads(updated);
+    setActiveThreadId(thread.id);
+  }, [threads]);
+
+  const deleteThread = useCallback((id: string) => {
+    const updated = threads.filter(t => t.id !== id);
+    setThreads(updated);
+    saveThreads(updated);
+    if (activeThreadId === id) setActiveThreadId(null);
+  }, [threads, activeThreadId]);
+
+  const selectThread = useCallback((id: string) => {
+    setActiveThreadId(id);
+  }, []);
+
+  // Update thread title from first user message
+  useEffect(() => {
+    if (activeThreadId && messages.length > 0) {
+      const firstUserMsg = messages.find(m => m.role === 'user');
+      if (firstUserMsg) {
+        setThreads(prev => {
+          const updated = prev.map(t =>
+            t.id === activeThreadId
+              ? { ...t, title: firstUserMsg.content.slice(0, 40), lastMessage: messages[messages.length - 1].content.slice(0, 60) }
+              : t
+          );
+          saveThreads(updated);
+          return updated;
+        });
+      }
+    }
+  }, [messages, activeThreadId]);
 
   // Auto-scroll
   useEffect(() => {
@@ -274,7 +539,7 @@ export default function ChatPage() {
     }
   }, [input]);
 
-  // PMO Classification — runs when a user message is sent
+  // PMO Classification
   const classifyMessage = useCallback(async (message: string) => {
     try {
       const res = await fetch('/api/chat/classify', {
@@ -288,11 +553,10 @@ export default function ChatPage() {
         setActiveDirector(data.director);
       }
     } catch {
-      // Classification is non-critical; don't block the chat
+      // Classification is non-critical
     }
   }, []);
 
-  // Enhanced submit that also classifies
   const handleEnhancedSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -300,18 +564,15 @@ export default function ChatPage() {
     handleSubmit(e);
   }, [input, isLoading, classifyMessage, handleSubmit]);
 
-  // Quick intent handler
   const handleQuickIntent = useCallback((prompt: string) => {
     setInput(prompt);
     classifyMessage(prompt);
-    // Submit after a tick to let the input state update
     setTimeout(() => {
       const form = document.getElementById('chat-form') as HTMLFormElement;
       form?.requestSubmit();
     }, 50);
   }, [setInput, classifyMessage]);
 
-  // Keyboard handling
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -321,172 +582,216 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0f1a] flex flex-col">
+    <div className="min-h-screen bg-[#0A0A0A] aims-page-bg flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 flex flex-col max-w-5xl w-full mx-auto h-[calc(100vh-64px)]">
-        {/* ── Header Bar ── */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-11 h-11 rounded-xl bg-white/5 border border-amber-500/20 flex items-center justify-center">
-                <Bot className="text-amber-400 w-6 h-6" />
-              </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0a0f1a] animate-pulse" />
-            </div>
-            <div>
-              <h1 className="font-bold text-lg text-white tracking-tight">Chat w/ACHEEVY</h1>
-              <p className="text-[11px] text-amber-300/50">Think It. Prompt It. Let ACHEEVY {currentVerb} it!</p>
-            </div>
-          </div>
+      <div className="flex-1 flex h-[calc(100vh-64px)] overflow-hidden">
+        {/* ── Threads Sidebar ── */}
+        <ThreadsSidebar
+          threads={threads}
+          activeThreadId={activeThreadId}
+          onSelect={selectThread}
+          onNew={createThread}
+          onDelete={deleteThread}
+          open={sidebarOpen}
+          onToggle={toggleSidebar}
+        />
 
-          {/* Agent Shelf */}
-          <div className="hidden md:flex items-center gap-1.5">
-            {BOOMER_ANGS.map(agent => (
-              <div
-                key={agent.id}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all cursor-default ${
-                  activeDirector === agent.name
-                    ? 'border-amber-500/30 bg-amber-500/10'
-                    : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
+        {/* ── Main Chat Area ── */}
+        <main className="flex-1 flex flex-col min-w-0">
+          {/* ── Header Bar ── */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-wireframe-stroke bg-[#0A0A0A]/80 backdrop-blur-xl">
+            <div className="flex items-center gap-3">
+              {/* Sidebar toggle */}
+              {!sidebarOpen && (
+                <button
+                  onClick={toggleSidebar}
+                  className="p-2 rounded-lg text-white/40 hover:text-gold hover:bg-white/5 transition-colors"
+                  title="Open threads"
+                >
+                  <PanelLeftOpen size={18} />
+                </button>
+              )}
+
+              <div className="relative">
+                <div className="w-11 h-11 rounded-xl bg-white/5 border border-gold/20 flex items-center justify-center">
+                  <Bot className="text-gold w-6 h-6" />
+                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0A0A0A] animate-pulse" />
+              </div>
+              <div>
+                <h1 className="font-bold text-lg text-white tracking-tight">Chat w/ACHEEVY</h1>
+                <p className="text-[11px] text-gold/50 font-mono">Think It. Prompt It. Let ACHEEVY {currentVerb} it!</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* MottoBar toggle */}
+              <button
+                onClick={toggleMotto}
+                className={`p-2 rounded-lg transition-colors ${
+                  mottoVisible ? 'text-gold bg-gold/10' : 'text-white/30 hover:text-white/50'
                 }`}
+                title={mottoVisible ? 'Hide motto' : 'Show motto'}
               >
-                <div className={`w-1.5 h-1.5 rounded-full ${
-                  activeDirector === agent.name ? 'bg-amber-400 animate-pulse' : 'bg-white/20'
-                }`} />
-                <span className="text-[10px] font-mono text-white/50 uppercase tracking-wider">
-                  {agent.name.replace('Boomer_', '')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+                <Flame size={16} />
+              </button>
 
-        {/* ── PMO Pipeline Status ── */}
-        <AnimatePresence>
-          {pmoClassification && <PipelineStatus classification={pmoClassification} />}
-        </AnimatePresence>
-
-        {/* ── Chat Messages ── */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth">
-          <div className="max-w-3xl mx-auto space-y-6">
-            {/* Welcome State */}
-            {messages.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center py-16"
-              >
-                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-2xl shadow-amber-500/30">
-                  <span className="text-3xl font-bold text-black">A</span>
-                </div>
-                <h2 className="text-2xl font-bold text-amber-100 mb-2">Chat w/ACHEEVY</h2>
-                <p className="text-amber-100/40 max-w-lg mx-auto mb-10">
-                  Your AI executive orchestrator. I route tasks through the Chain of Command
-                  — Boomer_Ang directors strategize, Chicken_Hawk dispatches, Lil_Hawks execute.
-                </p>
-
-                {/* Quick Intents */}
-                <div className="flex flex-wrap gap-2 justify-center max-w-xl mx-auto">
-                  {QUICK_INTENTS.map(chip => (
-                    <button
-                      key={chip.label}
-                      onClick={() => handleQuickIntent(chip.prompt)}
-                      disabled={isLoading}
-                      className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-zinc-300 hover:bg-amber-500/10 hover:border-amber-500/20 hover:text-amber-300 transition-all disabled:opacity-50"
-                    >
-                      <chip.icon className="w-4 h-4" />
-                      {chip.label}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Messages */}
-            <AnimatePresence>
-              {messages.map((m, i) => (
-                <MessageBubble
-                  key={m.id}
-                  role={m.role}
-                  content={m.content}
-                  isStreaming={isLoading && i === messages.length - 1 && m.role === 'assistant'}
-                />
-              ))}
-            </AnimatePresence>
-
-            {/* Loading indicator (before first token) */}
-            {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex gap-3"
-              >
-                <div className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
-                  <Zap className="w-4 h-4 text-amber-400 animate-pulse" />
-                </div>
-                <div className="px-4 py-3 bg-white/[0.03] rounded-2xl rounded-tl-sm border border-white/5 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce" />
-                </div>
-              </motion.div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-
-        {/* ── Input Area ── */}
-        <div className="border-t border-white/5 bg-black/40 backdrop-blur-sm px-4 py-4">
-          <div className="max-w-3xl mx-auto">
-            <form id="chat-form" onSubmit={handleEnhancedSubmit}>
-              <div className="relative flex items-end gap-2 bg-white/[0.03] border border-white/10 rounded-2xl p-3 focus-within:border-amber-400/30 transition-colors">
-                {/* Textarea */}
-                <textarea
-                  ref={textareaRef}
-                  value={input}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Message ACHEEVY..."
-                  disabled={isLoading}
-                  rows={1}
-                  className="flex-1 bg-transparent text-amber-50 placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[160px] py-2 px-2"
-                />
-
-                {/* Send / Stop */}
-                {isLoading ? (
-                  <button
-                    type="button"
-                    onClick={stop}
-                    title="Stop generation"
-                    className="p-3 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors flex-shrink-0"
-                  >
-                    <Square className="w-5 h-5" />
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={!input.trim()}
-                    title="Send message"
-                    className={`p-3 rounded-xl transition-all flex-shrink-0 ${
-                      input.trim()
-                        ? 'bg-amber-400 text-black hover:bg-amber-300'
-                        : 'bg-white/5 text-amber-100/30 cursor-not-allowed'
+              {/* Agent Shelf */}
+              <div className="hidden md:flex items-center gap-1.5">
+                {BOOMER_ANGS.map(agent => (
+                  <div
+                    key={agent.id}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all cursor-default ${
+                      activeDirector === agent.name
+                        ? 'border-gold/30 bg-gold/10'
+                        : 'border-wireframe-stroke bg-white/[0.02] hover:bg-white/5'
                     }`}
                   >
-                    <Send className="w-5 h-5" />
-                  </button>
-                )}
+                    <div className={`w-1.5 h-1.5 rounded-full ${
+                      activeDirector === agent.name ? 'bg-gold animate-pulse' : 'bg-white/20'
+                    }`} />
+                    <span className="text-[10px] font-mono text-white/50 uppercase tracking-wider">
+                      {agent.name.replace('Boomer_', '')}
+                    </span>
+                  </div>
+                ))}
               </div>
-            </form>
-
-            <p className="text-center text-[10px] font-mono text-white/15 uppercase tracking-[0.2em] mt-3">
-              A.I.M.S. Neural Link v2.0 &bull; Vercel AI SDK &bull; Chain of Command Active
-            </p>
+            </div>
           </div>
-        </div>
-      </main>
+
+          {/* ── Action Feedback ── */}
+          <ActionFeedback classification={pmoClassification} isLoading={isLoading} />
+
+          {/* ── PMO Pipeline Status ── */}
+          <AnimatePresence>
+            {pmoClassification && <PipelineStatus classification={pmoClassification} />}
+          </AnimatePresence>
+
+          {/* ── Chat Messages ── */}
+          <div className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth">
+            <div className="max-w-3xl mx-auto space-y-6">
+              {/* Welcome State */}
+              {messages.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-16"
+                >
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center">
+                    <span className="text-3xl font-bold font-display text-gold">A</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Chat w/ACHEEVY</h2>
+                  <p className="text-white/40 max-w-lg mx-auto mb-10">
+                    Your AI executive orchestrator. I route tasks through the Chain of Command
+                    — Boomer_Ang directors strategize, Chicken_Hawk dispatches, Lil_Hawks execute.
+                  </p>
+
+                  {/* Quick Intents */}
+                  <div className="flex flex-wrap gap-2 justify-center max-w-xl mx-auto">
+                    {QUICK_INTENTS.map(chip => (
+                      <button
+                        key={chip.label}
+                        onClick={() => handleQuickIntent(chip.prompt)}
+                        disabled={isLoading}
+                        className="inline-flex items-center gap-2 wireframe-card px-4 py-2.5 text-sm text-white/60 hover:bg-gold/10 hover:border-gold/20 hover:text-gold transition-all disabled:opacity-50"
+                      >
+                        <chip.icon className="w-4 h-4" />
+                        {chip.label}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Messages */}
+              <AnimatePresence>
+                {messages.map((m, i) => (
+                  <MessageBubble
+                    key={m.id}
+                    role={m.role}
+                    content={m.content}
+                    isStreaming={isLoading && i === messages.length - 1 && m.role === 'assistant'}
+                  />
+                ))}
+              </AnimatePresence>
+
+              {/* Loading indicator */}
+              {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex gap-3"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-4 h-4 text-gold animate-pulse" />
+                  </div>
+                  <div className="px-4 py-3 wireframe-card rounded-2xl rounded-tl-sm flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce" />
+                  </div>
+                </motion.div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {/* ── MottoBar ── */}
+          <MottoBar visible={mottoVisible} />
+
+          {/* ── Input Area ── */}
+          <div className="border-t border-wireframe-stroke bg-[#0A0A0A]/80 backdrop-blur-xl px-4 py-4">
+            <div className="max-w-3xl mx-auto">
+              <form id="chat-form" onSubmit={handleEnhancedSubmit}>
+                <div className="relative flex items-end gap-2 wireframe-card rounded-2xl p-3 focus-within:border-gold/30 transition-colors">
+                  {/* Textarea */}
+                  <textarea
+                    ref={textareaRef}
+                    value={input}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Message ACHEEVY..."
+                    disabled={isLoading}
+                    rows={1}
+                    className="flex-1 bg-transparent text-white placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[160px] py-2 px-2"
+                  />
+
+                  {/* Send / Stop */}
+                  {isLoading ? (
+                    <button
+                      type="button"
+                      onClick={stop}
+                      title="Stop generation"
+                      className="p-3 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors flex-shrink-0"
+                    >
+                      <Square className="w-5 h-5" />
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      disabled={!input.trim()}
+                      title="Send message"
+                      className={`p-3 rounded-xl transition-all flex-shrink-0 ${
+                        input.trim()
+                          ? 'bg-gold text-black hover:bg-gold-light'
+                          : 'bg-white/5 text-white/30 cursor-not-allowed'
+                      }`}
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+              </form>
+
+              <p className="text-center text-[10px] font-mono text-white/15 uppercase tracking-[0.2em] mt-3">
+                A.I.M.S. Neural Link v2.0 &bull; Vercel AI SDK &bull; Chain of Command Active
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

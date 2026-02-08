@@ -59,6 +59,13 @@ export const stagger = {
   slow: 0.12,
 } as const;
 
+// ── Cinematic ──
+
+export const cinematic = {
+  duration: 0.8,
+  ease: [0.16, 1, 0.3, 1] as const,
+};
+
 // ── Reduced Motion ──
 
 export const reducedMotion = {

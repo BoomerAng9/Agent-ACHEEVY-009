@@ -5,6 +5,7 @@ import { FeatureShowcase } from "./compositions/FeatureShowcase";
 import { DeploymentAnimation } from "./compositions/DeploymentAnimation";
 import { PortTransition } from "./compositions/PortTransition";
 import { AcheevyCharacter } from "./compositions/AcheevyCharacter";
+import { PlugMeIn } from "./compositions/PlugMeIn";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -86,6 +87,14 @@ export const RemotionRoot: React.FC = () => {
           variant: "talking",
           message: "Let's build something great together."
         }}
+      />
+      <Composition
+        id="PlugMeIn"
+        component={PlugMeIn}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
       />
     </>
   );

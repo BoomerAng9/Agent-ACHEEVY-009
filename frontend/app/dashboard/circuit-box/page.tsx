@@ -169,7 +169,7 @@ function StatusDot({ status }: { status: string }) {
     sandbox: 'bg-blue-500 shadow-blue-500/50',
     active: 'bg-green-500 shadow-green-500/50',
     inactive: 'bg-gray-500 shadow-gray-500/50',
-    standby: 'bg-amber-500 shadow-amber-500/50',
+    standby: 'bg-gold shadow-gold/50',
     disabled: 'bg-red-500 shadow-red-500/50',
     error: 'bg-red-500 shadow-red-500/50',
   };
@@ -178,7 +178,7 @@ function StatusDot({ status }: { status: string }) {
 
 function ServiceCard({ service }: { service: ServiceStatus }) {
   const typeColors: Record<string, { bg: string; border: string; text: string }> = {
-    core: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400' },
+    core: { bg: 'bg-gold/10', border: 'border-gold/30', text: 'text-gold' },
     agent: { bg: 'bg-blue-500/10', border: 'border-blue-500/30', text: 'text-blue-400' },
     tool: { bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-400' },
     external: { bg: 'bg-green-500/10', border: 'border-green-500/30', text: 'text-green-400' },
@@ -212,7 +212,7 @@ function ServiceCard({ service }: { service: ServiceStatus }) {
 
 function IntegrationRow({ integration }: { integration: Integration }) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/5">
+    <div className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-wireframe-stroke">
       <div className="flex items-center gap-3">
         <StatusDot status={integration.status} />
         <div>
@@ -224,7 +224,7 @@ function IntegrationRow({ integration }: { integration: Integration }) {
         {integration.usageToday !== undefined && (
           <div className="text-right">
             <div className="text-xs text-gray-400">{integration.usageToday.toLocaleString()} tokens</div>
-            {integration.costToday !== undefined && <div className="text-xs text-amber-400">${integration.costToday.toFixed(2)}</div>}
+            {integration.costToday !== undefined && <div className="text-xs text-gold">${integration.costToday.toFixed(2)}</div>}
           </div>
         )}
         <div className="flex items-center gap-2">
@@ -242,10 +242,10 @@ function IntegrationRow({ integration }: { integration: Integration }) {
 
 function BoomerAngCard({ ang }: { ang: BoomerAngConfig }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-xl bg-black/40 border border-white/10">
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-xl bg-black/40 border border-wireframe-stroke">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <BotIcon className="w-5 h-5 text-amber-400" />
+          <BotIcon className="w-5 h-5 text-gold" />
           <h4 className="font-medium text-white">{ang.name}</h4>
         </div>
         <div className="flex items-center gap-2">
@@ -254,13 +254,13 @@ function BoomerAngCard({ ang }: { ang: BoomerAngConfig }) {
         </div>
       </div>
       <div className="text-sm text-gray-400 mb-2">{ang.role}</div>
-      <div className="text-xs text-amber-400/70 mb-3">Model: {ang.model}</div>
+      <div className="text-xs text-gold mb-3">Model: {ang.model}</div>
       <div className="flex flex-wrap gap-1 mb-3">
         {ang.tasks.map((task) => (
-          <span key={task} className="px-2 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-300">{task}</span>
+          <span key={task} className="px-2 py-0.5 rounded text-[10px] bg-gold/10 text-gold">{task}</span>
         ))}
       </div>
-      <div className="flex items-center justify-between pt-3 border-t border-white/5">
+      <div className="flex items-center justify-between pt-3 border-t border-wireframe-stroke">
         <div className="flex items-center gap-1">
           {ang.sandboxed && <span className="flex items-center gap-1 text-xs text-blue-400"><ShieldIcon className="w-3 h-3" />Sandboxed</span>}
         </div>
@@ -325,7 +325,7 @@ export default function CircuitBoxPage() {
               <div className="text-xs text-gray-400">Services Online</div>
             </div>
             <div className="p-4 rounded-xl" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}>
-              <div className="text-2xl font-bold text-amber-400">{activeIntegrations}</div>
+              <div className="text-2xl font-bold text-gold">{activeIntegrations}</div>
               <div className="text-xs text-gray-400">Active Integrations</div>
             </div>
             <div className="p-4 rounded-xl" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}>
@@ -390,7 +390,7 @@ export default function CircuitBoxPage() {
                   {INTEGRATIONS.filter((i) => i.type !== 'ai_model').map((integration) => <IntegrationRow key={integration.id} integration={integration} />)}
                 </div>
               </div>
-              <button className="w-full p-4 rounded-xl border border-dashed border-white/20 text-gray-400 hover:border-amber-500/50 hover:text-amber-400 transition-all">+ Add New Integration</button>
+              <button className="w-full p-4 rounded-xl border border-dashed border-white/20 text-gray-400 hover:border-gold/20 hover:text-gold transition-all">+ Add New Integration</button>
             </motion.div>
           )}
 
@@ -399,7 +399,7 @@ export default function CircuitBoxPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {BOOMERANGS.map((ang) => <BoomerAngCard key={ang.id} ang={ang} />)}
               </div>
-              <button className="w-full mt-4 p-4 rounded-xl border border-dashed border-white/20 text-gray-400 hover:border-amber-500/50 hover:text-amber-400 transition-all">+ Spawn New Boomer_Ang</button>
+              <button className="w-full mt-4 p-4 rounded-xl border border-dashed border-white/20 text-gray-400 hover:border-gold/20 hover:text-gold transition-all">+ Spawn New Boomer_Ang</button>
             </motion.div>
           )}
 

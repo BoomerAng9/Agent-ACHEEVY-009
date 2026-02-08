@@ -90,36 +90,15 @@ export default function AcheevyChat() {
   const selectedIntent = INTENT_OPTIONS.find(i => i.value === intent) || INTENT_OPTIONS[0];
 
   return (
-    <div className="flex flex-col h-full relative overflow-hidden bg-[#0a0a0a] text-white font-sans">
-
-      {/* Background pattern */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              linear-gradient(335deg, rgba(255,255,255,0.05) 23px, transparent 23px),
-              linear-gradient(155deg, rgba(255,255,255,0.05) 23px, transparent 23px),
-              linear-gradient(335deg, rgba(255,255,255,0.05) 23px, transparent 23px),
-              linear-gradient(155deg, rgba(255,255,255,0.05) 23px, transparent 23px)
-            `,
-            backgroundSize: '58px 58px',
-            backgroundPosition: '0px 2px, 4px 35px, 29px 31px, 34px 6px'
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{ backgroundImage: 'radial-gradient(circle, #D4AF37 1px, transparent 1px)', backgroundSize: '32px 32px' }}
-        />
-      </div>
+    <div className="flex flex-col h-full relative overflow-hidden bg-[#0A0A0A] aims-page-bg text-white font-sans">
 
       {/* Header */}
-      <div className="relative z-10 border-b border-white/10 bg-black/80 backdrop-blur-xl">
+      <div className="relative z-10 border-b border-wireframe-stroke bg-[#0A0A0A]/80 backdrop-blur-xl">
         <div className="flex items-center justify-between px-4 py-2.5">
           <div className="flex items-center gap-2">
             <div className="relative">
-              <div className="w-8 h-8 rounded-lg bg-white/5 border border-amber-500/20 flex items-center justify-center">
-                <Bot className="text-amber-400 w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-white/5 border border-gold/20 flex items-center justify-center">
+                <Bot className="text-gold w-4 h-4" />
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full border border-black animate-pulse" />
             </div>
@@ -135,24 +114,24 @@ export default function AcheevyChat() {
           <div className="relative">
             <button
               onClick={() => setShowIntentPicker(!showIntentPicker)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-amber-500/30 transition-all text-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-wireframe-stroke hover:border-gold/30 transition-all text-xs"
             >
-              <selectedIntent.icon className="w-3.5 h-3.5 text-amber-400" />
+              <selectedIntent.icon className="w-3.5 h-3.5 text-gold" />
               <span className="text-white/80">{selectedIntent.label}</span>
             </button>
             {showIntentPicker && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-black/95 border border-white/10 rounded-xl p-1.5 backdrop-blur-3xl shadow-2xl z-50">
+              <div className="absolute right-0 top-full mt-1 w-48 bg-[#0A0A0A]/95 border border-wireframe-stroke rounded-xl p-1.5 backdrop-blur-xl shadow-2xl z-50">
                 {INTENT_OPTIONS.map(opt => (
                   <button
                     key={opt.value}
                     onClick={() => { setIntent(opt.value); setShowIntentPicker(false); }}
                     className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all text-xs ${
-                      intent === opt.value ? 'bg-amber-500/10 border border-amber-500/20' : 'hover:bg-white/5 border border-transparent'
+                      intent === opt.value ? 'bg-gold/10 border border-gold/20' : 'hover:bg-white/5 border border-transparent'
                     }`}
                   >
-                    <opt.icon className={`w-3.5 h-3.5 ${intent === opt.value ? 'text-amber-400' : 'text-white/40'}`} />
+                    <opt.icon className={`w-3.5 h-3.5 ${intent === opt.value ? 'text-gold' : 'text-white/40'}`} />
                     <div>
-                      <div className={`font-medium ${intent === opt.value ? 'text-amber-400' : 'text-white/80'}`}>{opt.label}</div>
+                      <div className={`font-medium ${intent === opt.value ? 'text-gold' : 'text-white/80'}`}>{opt.label}</div>
                       <div className="text-[9px] text-white/30 font-mono">{opt.desc}</div>
                     </div>
                   </button>
@@ -166,10 +145,10 @@ export default function AcheevyChat() {
         <div className="px-4 pb-2 flex gap-1.5 overflow-x-auto no-scrollbar">
           {BOOMER_ANGS.map(agent => (
             <div key={agent.id} className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border transition-colors cursor-default ${
-              pmo?.director?.includes(agent.name.split('_')[0]) ? 'border-amber-500/20 bg-amber-500/5' : 'border-white/5 bg-white/[0.02]'
+              pmo?.director?.includes(agent.name.split('_')[0]) ? 'border-gold/20 bg-gold/5' : 'border-wireframe-stroke bg-white/[0.02]'
             }`}>
               <div className={`w-1.5 h-1.5 rounded-full ${
-                pmo?.director?.includes(agent.name.split('_')[0]) ? 'bg-amber-400 animate-pulse' : 'bg-white/20'
+                pmo?.director?.includes(agent.name.split('_')[0]) ? 'bg-gold animate-pulse' : 'bg-white/20'
               }`} />
               <span className="text-[9px] font-mono text-white/50 uppercase tracking-wider">{agent.name}</span>
             </div>
@@ -179,10 +158,10 @@ export default function AcheevyChat() {
 
       {/* PMO routing pill */}
       {pmo && (
-        <div className="relative z-10 mx-3 mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/5 border border-amber-500/10 text-[10px]">
-          <span className="text-amber-300 font-medium">{pmo.officeLabel}</span>
+        <div className="relative z-10 mx-3 mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gold/5 border border-gold/10 text-[10px]">
+          <span className="text-gold font-medium">{pmo.officeLabel}</span>
           <span className="text-white/20">|</span>
-          <span className="text-amber-200/60 font-mono">{pmo.director}</span>
+          <span className="text-white/60 font-mono">{pmo.director}</span>
           <span className={`ml-auto px-1.5 py-0.5 rounded-full font-mono uppercase ${
             pmo.executionLane === 'deploy_it' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'
           }`}>{pmo.executionLane === 'deploy_it' ? 'DEPLOY' : 'GUIDE'}</span>
@@ -194,28 +173,28 @@ export default function AcheevyChat() {
         {messages.map((m, i) => (
           <div key={m.id} className={`flex gap-3 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {m.role === 'assistant' && (
-              <div className="w-7 h-7 rounded-lg bg-white/5 border border-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Bot className="w-3.5 h-3.5 text-amber-400/80" />
+              <div className="w-7 h-7 rounded-lg bg-white/5 border border-gold/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Bot className="w-3.5 h-3.5 text-gold/80" />
               </div>
             )}
             <div className={`relative px-4 py-3 rounded-2xl text-sm leading-relaxed max-w-[85%] ${
               m.role === 'user'
-                ? 'bg-amber-500/20 text-amber-50 rounded-tr-sm'
-                : 'bg-white/[0.03] text-white/90 rounded-tl-sm border border-white/5'
+                ? 'bg-gold/10 text-white rounded-tr-sm border border-gold/20'
+                : 'wireframe-card text-white/90 rounded-tl-sm'
             }`}>
               {m.role === 'user' ? (
                 m.content
               ) : (
-                <div className="prose prose-invert prose-sm max-w-none prose-code:text-amber-300 prose-code:bg-black/40 prose-code:px-1 prose-code:rounded">
+                <div className="prose prose-invert prose-sm max-w-none prose-code:text-gold prose-code:bg-black/40 prose-code:px-1 prose-code:rounded">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
                   {isLoading && i === messages.length - 1 && (
-                    <span className="inline-block w-1.5 h-4 bg-amber-400 ml-0.5 animate-pulse" />
+                    <span className="inline-block w-1.5 h-4 bg-gold ml-0.5 animate-pulse" />
                   )}
                 </div>
               )}
             </div>
             {m.role === 'user' && (
-              <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-lg bg-white/5 border border-wireframe-stroke flex items-center justify-center flex-shrink-0 mt-0.5">
                 <User className="w-3.5 h-3.5 text-white/50" />
               </div>
             )}
@@ -223,13 +202,13 @@ export default function AcheevyChat() {
         ))}
         {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
           <div className="flex gap-3">
-            <div className="w-7 h-7 rounded-lg bg-white/5 border border-amber-500/10 flex items-center justify-center flex-shrink-0">
-              <Zap className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            <div className="w-7 h-7 rounded-lg bg-white/5 border border-gold/10 flex items-center justify-center flex-shrink-0">
+              <Zap className="w-3.5 h-3.5 text-gold animate-pulse" />
             </div>
-            <div className="px-4 py-3 bg-white/[0.03] rounded-2xl rounded-tl-sm flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce [animation-delay:-0.3s]" />
-              <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce [animation-delay:-0.15s]" />
-              <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce" />
+            <div className="px-4 py-3 wireframe-card rounded-2xl rounded-tl-sm flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce" />
             </div>
           </div>
         )}
@@ -237,14 +216,14 @@ export default function AcheevyChat() {
       </div>
 
       {/* Input */}
-      <div className="relative z-20 p-3 bg-black/80 backdrop-blur-xl border-t border-white/10">
+      <div className="relative z-20 p-3 bg-[#0A0A0A]/80 backdrop-blur-xl border-t border-wireframe-stroke">
         <form onSubmit={handleEnhancedSubmit} className="relative">
           <input
             value={input}
             onChange={handleInputChange}
             placeholder="Direct the swarm..."
             disabled={isLoading}
-            className="w-full bg-white/5 hover:bg-white/10 focus:bg-black border border-white/10 focus:border-amber-500/50 rounded-xl py-3 pl-4 pr-12 text-white text-sm placeholder:text-white/20 transition-all outline-none"
+            className="w-full bg-white/5 hover:bg-white/10 focus:bg-black border border-wireframe-stroke focus:border-gold/40 rounded-xl py-3 pl-4 pr-12 text-white text-sm placeholder:text-white/20 transition-all outline-none"
           />
           {isLoading ? (
             <button
@@ -258,7 +237,7 @@ export default function AcheevyChat() {
             <button
               type="submit"
               disabled={!input.trim()}
-              className="absolute right-2 top-1.5 p-2 bg-amber-500/10 hover:bg-amber-400 text-amber-400 hover:text-black rounded-lg transition-all disabled:opacity-30"
+              className="absolute right-2 top-1.5 p-2 bg-gold/10 hover:bg-gold text-gold hover:text-black rounded-lg transition-all disabled:opacity-30"
             >
               <Send className="w-4 h-4" />
             </button>

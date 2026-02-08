@@ -17,8 +17,8 @@ export default function NewLandingPage() {
         <section className="w-full pt-12 pb-24 text-center relative z-10">
            <div className="container px-4 md:px-6 flex flex-col items-center">
               
-              <div className="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-sm font-medium text-amber-400 mb-8 backdrop-blur-md">
-                 <span className="flex h-2 w-2 rounded-full bg-amber-500 mr-2 animate-pulse"></span>
+              <div className="inline-flex items-center rounded-full border border-gold/20 bg-gold/10 px-3 py-1 text-sm font-medium text-gold mb-8 backdrop-blur-md">
+                 <span className="flex h-2 w-2 rounded-full bg-gold mr-2 animate-pulse"></span>
                  System Online
               </div>
               

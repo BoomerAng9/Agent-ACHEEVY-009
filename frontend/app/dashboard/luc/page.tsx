@@ -461,7 +461,7 @@ function IndustryPresetSelector({
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedCategory === cat.id
-                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                  ? 'bg-gold/10 text-gold border border-gold/30'
                   : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:bg-gray-700/50'
               }`}
             >
@@ -478,7 +478,7 @@ function IndustryPresetSelector({
                 key={preset.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 rounded-xl text-left transition-all hover:ring-2 hover:ring-amber-500/50"
+                className="p-4 rounded-xl text-left transition-all hover:ring-2 hover:ring-gold/50"
                 style={{ backgroundColor: '#0f172a', border: '1px solid #2d3a4d' }}
                 onClick={() => onSelect(preset.id)}
               >
@@ -539,7 +539,7 @@ function UsageHistoryPanel({
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <HistoryIcon className="w-6 h-6 text-amber-400" />
+            <HistoryIcon className="w-6 h-6 text-gold" />
             <h2 className="text-xl font-bold text-white">Usage History</h2>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white">
@@ -694,7 +694,7 @@ function ImportExportPanel({
             style={{ backgroundColor: '#0f172a', border: '1px solid #2d3a4d' }}
           >
             <div className="flex items-center gap-2 mb-3">
-              <DownloadIcon className="w-5 h-5 text-amber-400" />
+              <DownloadIcon className="w-5 h-5 text-gold" />
               <h3 className="text-white font-medium">Export Data</h3>
             </div>
             <p className="text-xs text-gray-400 mb-3">
@@ -734,7 +734,7 @@ function ImportExportPanel({
             style={{ backgroundColor: '#0f172a', border: '1px solid #2d3a4d' }}
           >
             <div className="flex items-center gap-2 mb-3">
-              <UploadIcon className="w-5 h-5 text-amber-400" />
+              <UploadIcon className="w-5 h-5 text-gold" />
               <h3 className="text-white font-medium">Import Data</h3>
             </div>
             <p className="text-xs text-gray-400 mb-3">
@@ -953,7 +953,7 @@ export default function LUCWorkspacePage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-12 h-12 border-4 border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-gold/30 border-t-gold rounded-full animate-spin" />
           </div>
         ) : summary ? (
           <>
@@ -1012,7 +1012,7 @@ export default function LUCWorkspacePage() {
                 style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <ChartIcon className="w-5 h-5 text-amber-400" />
+                  <ChartIcon className="w-5 h-5 text-gold" />
                   <h3 className="text-white font-medium">Usage Statistics</h3>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1022,7 +1022,7 @@ export default function LUCWorkspacePage() {
                   </div>
                   <div>
                     <div className="text-xs text-gray-400">Total Cost</div>
-                    <div className="text-lg font-bold text-amber-400">${stats.totalCost.toFixed(2)}</div>
+                    <div className="text-lg font-bold text-gold">${stats.totalCost.toFixed(2)}</div>
                   </div>
                   {stats.topServices.length > 0 && (
                     <div className="col-span-2">

@@ -91,7 +91,7 @@ function MessageBubble({ message, onSpeak }: MessageBubbleProps) {
       <div
         className={`
           flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
-          border ${isUser ? 'border-zinc-700 bg-zinc-800' : 'border-amber-500/30 bg-amber-500/10'}
+          border ${isUser ? 'border-zinc-700 bg-zinc-800' : 'border-gold/30 bg-gold/10'}
         `}
       >
         {isUser ? (
@@ -105,7 +105,7 @@ function MessageBubble({ message, onSpeak }: MessageBubbleProps) {
       <div className={`flex-1 max-w-[80%] ${isUser ? 'text-right' : ''}`}>
         <LEDPanel showScrews={false} className={`inline-block ${isUser ? 'bg-zinc-800/50' : ''}`}>
           {isUser ? (
-            <p className="text-amber-100/90 text-[15px] leading-relaxed whitespace-pre-wrap">
+            <p className="text-white/80 text-[15px] leading-relaxed whitespace-pre-wrap">
               {message.content}
             </p>
           ) : (
@@ -453,8 +453,8 @@ export function AIMSChat({ userName = 'User' }: AIMSChatProps) {
                 disabled={isStreaming}
                 rows={1}
                 className="w-full px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl
-                         text-amber-100/90 placeholder:text-zinc-600 resize-none outline-none
-                         focus:border-amber-500/30 transition-colors"
+                         text-white/80 placeholder:text-zinc-600 resize-none outline-none
+                         focus:border-gold/30 transition-colors"
                 style={{ minHeight: 48, maxHeight: 120 }}
               />
             </div>
@@ -466,7 +466,7 @@ export function AIMSChat({ userName = 'User' }: AIMSChatProps) {
               className={`
                 w-12 h-12 rounded-xl flex items-center justify-center transition-all
                 ${inputValue.trim()
-                  ? 'bg-amber-500 text-black hover:bg-amber-400'
+                  ? 'bg-gold text-black hover:bg-gold-light'
                   : 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
                 }
               `}

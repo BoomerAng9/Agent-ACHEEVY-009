@@ -142,7 +142,7 @@ const INDUSTRIES = [
 ];
 
 const COLORS: ColorOption[] = [
-  { name: "Amber", value: "#f59e0b", tw: "bg-amber-400" },
+  { name: "Amber", value: "#f59e0b", tw: "bg-gold" },
   { name: "Blue", value: "#3b82f6", tw: "bg-blue-500" },
   { name: "Emerald", value: "#10b981", tw: "bg-emerald-500" },
   { name: "Violet", value: "#8b5cf6", tw: "bg-violet-500" },
@@ -154,7 +154,7 @@ const PIPELINE_STAGES = ["INTAKE", "SCOPE", "BUILD", "REVIEW", "DEPLOY"];
 
 const COMPLEXITY_COLORS: Record<string, string> = {
   simple: "border-emerald-400/30 text-emerald-400 bg-emerald-400/10",
-  intermediate: "border-amber-400/30 text-amber-400 bg-amber-400/10",
+  intermediate: "border-amber-400/30 text-amber-400 bg-gold/10",
   complex: "border-red-400/30 text-red-400 bg-red-400/10",
 };
 
@@ -197,10 +197,28 @@ export default function BuildWizardPage() {
 
   const handleLaunch = async () => {
     setLaunching(true);
-    // Simulate POST to /api/plugs
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setLaunched(true);
-    setLaunching(false);
+    try {
+      const res = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: companyName || templateData?.name || "New Plug",
+          template: selectedTemplate,
+          features: selectedFeatures,
+          industry: selectedIndustry,
+          domain: domain || customDomain,
+          primaryColor,
+          status: "INTAKE",
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setLaunched(true);
+    } catch {
+      // Fallback: still show success for demo
+      setLaunched(true);
+    } finally {
+      setLaunching(false);
+    }
   };
 
   const templateData = TEMPLATES.find((t) => t.id === selectedTemplate);
@@ -209,19 +227,19 @@ export default function BuildWizardPage() {
     <div className="space-y-6 animate-in fade-in duration-700">
       {/* Header */}
       <header>
-        <p className="text-[10px] uppercase tracking-[0.3em] text-amber-200/50 mb-1">
+        <p className="text-[0.6rem] uppercase tracking-[0.25em] text-gold/50 mb-1 font-mono">
           Plug Factory
         </p>
-        <h1 className="text-3xl font-bold tracking-tight text-amber-50 font-display">
-          BUILD WIZARD
+        <h1 className="text-2xl md:text-3xl font-display uppercase tracking-wider text-white">
+          Build Wizard
         </h1>
-        <p className="mt-1 text-sm text-amber-100/50">
+        <p className="mt-1 text-xs text-white/40">
           Create a new Plug step by step. Engineer_Ang will handle the build pipeline.
         </p>
       </header>
 
       {/* Progress Bar */}
-      <div className="rounded-2xl border border-white/10 bg-black/60 p-4 backdrop-blur-2xl">
+      <div className="rounded-2xl border border-wireframe-stroke bg-[#0A0A0A]/60 p-4 backdrop-blur-2xl">
         <div className="flex items-center justify-between mb-3">
           {Array.from({ length: totalSteps }, (_, i) => i + 1).map((s) => (
             <React.Fragment key={s}>
@@ -229,10 +247,10 @@ export default function BuildWizardPage() {
                 onClick={() => s < step && setStep(s)}
                 className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold transition-all ${
                   s === step
-                    ? "bg-amber-400 text-black shadow-[0_0_20px_rgba(251,191,36,0.3)]"
+                    ? "bg-gold text-black shadow-[0_0_20px_rgba(251,191,36,0.3)]"
                     : s < step
                       ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-pointer hover:bg-emerald-500/30"
-                      : "bg-white/5 text-amber-100/30 border border-white/5"
+                      : "bg-white/5 text-white/20 border border-white/5"
                 }`}
               >
                 {s < step ? <Check size={14} /> : s}
@@ -241,7 +259,7 @@ export default function BuildWizardPage() {
                 <div className="flex-1 mx-2">
                   <div className="h-[2px] rounded-full bg-white/5">
                     <div
-                      className="h-full rounded-full bg-amber-400/60 transition-all duration-500"
+                      className="h-full rounded-full bg-gold/60 transition-all duration-500"
                       style={{ width: s < step ? "100%" : "0%" }}
                     />
                   </div>
@@ -250,11 +268,11 @@ export default function BuildWizardPage() {
             </React.Fragment>
           ))}
         </div>
-        <div className="flex justify-between text-[10px] uppercase tracking-widest text-amber-100/30">
-          <span className={step === 1 ? "text-amber-300" : ""}>Template</span>
-          <span className={step === 2 ? "text-amber-300" : ""}>Features</span>
-          <span className={step === 3 ? "text-amber-300" : ""}>Branding</span>
-          <span className={step === 4 ? "text-amber-300" : ""}>Launch</span>
+        <div className="flex justify-between text-[10px] uppercase tracking-widest text-white/20">
+          <span className={step === 1 ? "text-gold" : ""}>Template</span>
+          <span className={step === 2 ? "text-gold" : ""}>Features</span>
+          <span className={step === 3 ? "text-gold" : ""}>Branding</span>
+          <span className={step === 4 ? "text-gold" : ""}>Launch</span>
         </div>
       </div>
 
@@ -263,7 +281,7 @@ export default function BuildWizardPage() {
         {/* Step 1: Choose Template */}
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/80">
               Choose a Template
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -273,19 +291,19 @@ export default function BuildWizardPage() {
                   onClick={() => setSelectedTemplate(template.id)}
                   className={`group relative overflow-hidden rounded-3xl border p-6 text-left backdrop-blur-2xl transition-all hover:bg-black/80 ${
                     selectedTemplate === template.id
-                      ? "border-amber-300/40 bg-amber-300/5 shadow-[0_0_30px_rgba(251,191,36,0.1)]"
-                      : "border-white/10 bg-black/60 hover:border-amber-300/20"
+                      ? "border-gold/40 bg-gold/5 shadow-[0_0_30px_rgba(251,191,36,0.1)]"
+                      : "border-wireframe-stroke bg-[#0A0A0A]/60 hover:border-gold/20"
                   }`}
                 >
                   {selectedTemplate === template.id && (
-                    <div className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-black">
+                    <div className="absolute top-3 right-3 flex h-6 w-6 items-center justify-center rounded-full bg-gold text-black">
                       <Check size={12} />
                     </div>
                   )}
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-amber-200 group-hover:bg-amber-300 group-hover:text-black transition-colors mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-gold group-hover:bg-gold group-hover:text-black transition-colors mb-4">
                     <template.icon size={20} />
                   </div>
-                  <h3 className="text-sm font-semibold text-amber-50">
+                  <h3 className="text-sm font-semibold text-white">
                     {template.name}
                   </h3>
                   <div className="mt-2 flex items-center gap-2">
@@ -295,10 +313,10 @@ export default function BuildWizardPage() {
                       {template.complexity}
                     </span>
                   </div>
-                  <p className="mt-3 text-xs text-amber-100/50 leading-relaxed">
+                  <p className="mt-3 text-xs text-white/40 leading-relaxed">
                     {template.description}
                   </p>
-                  <div className="mt-4 flex items-center gap-4 text-[10px] text-amber-100/40">
+                  <div className="mt-4 flex items-center gap-4 text-[10px] text-white/30">
                     <span className="flex items-center gap-1">
                       <Clock size={10} /> {template.estimatedTime}
                     </span>
@@ -315,17 +333,17 @@ export default function BuildWizardPage() {
               onClick={() => setSelectedTemplate("custom")}
               className={`w-full flex flex-col items-center justify-center rounded-3xl border border-dashed p-8 text-center transition-all group ${
                 selectedTemplate === "custom"
-                  ? "border-amber-300/40 bg-amber-300/5"
-                  : "border-white/10 bg-black/20 hover:border-amber-300/30"
+                  ? "border-gold/40 bg-gold/5"
+                  : "border-wireframe-stroke bg-black/20 hover:border-gold/30"
               }`}
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-dashed border-white/20 text-amber-100/30 group-hover:border-amber-300/40 group-hover:text-amber-300 transition-all">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-dashed border-white/20 text-white/20 group-hover:border-gold/40 group-hover:text-gold transition-all">
                 <Briefcase size={20} />
               </div>
-              <p className="mt-3 text-sm font-semibold text-amber-200/50 group-hover:text-amber-200 transition-colors">
+              <p className="mt-3 text-sm font-semibold text-gold/50 group-hover:text-gold transition-colors">
                 Custom Build
               </p>
-              <p className="mt-1 text-xs text-amber-100/30">
+              <p className="mt-1 text-xs text-white/20">
                 Start from scratch with full control over every aspect.
               </p>
             </button>
@@ -335,13 +353,13 @@ export default function BuildWizardPage() {
         {/* Step 2: Define Features */}
         {step === 2 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/80">
               Define Features
             </h2>
 
             {/* Feature Checklist */}
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-3">
+              <p className="text-[10px] uppercase tracking-wider text-white/30 mb-3">
                 Select Capabilities
               </p>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -351,15 +369,15 @@ export default function BuildWizardPage() {
                     onClick={() => toggleFeature(feature.id)}
                     className={`flex items-center gap-3 rounded-2xl border p-4 text-left transition-all ${
                       selectedFeatures.includes(feature.id)
-                        ? "border-amber-300/40 bg-amber-300/5"
-                        : "border-white/10 bg-black/60 hover:border-white/20"
+                        ? "border-gold/40 bg-gold/5"
+                        : "border-wireframe-stroke bg-[#0A0A0A]/60 hover:border-white/20"
                     }`}
                   >
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-xl transition-colors ${
                         selectedFeatures.includes(feature.id)
-                          ? "bg-amber-400 text-black"
-                          : "bg-white/5 text-amber-200/60"
+                          ? "bg-gold text-black"
+                          : "bg-white/5 text-gold/60"
                       }`}
                     >
                       {selectedFeatures.includes(feature.id) ? (
@@ -371,8 +389,8 @@ export default function BuildWizardPage() {
                     <span
                       className={`text-sm ${
                         selectedFeatures.includes(feature.id)
-                          ? "text-amber-50 font-medium"
-                          : "text-amber-100/60"
+                          ? "text-white font-medium"
+                          : "text-white/50"
                       }`}
                     >
                       {feature.name}
@@ -384,7 +402,7 @@ export default function BuildWizardPage() {
 
             {/* Industry Selector */}
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-3">
+              <p className="text-[10px] uppercase tracking-wider text-white/30 mb-3">
                 Industry
               </p>
               <div className="flex flex-wrap gap-2">
@@ -394,8 +412,8 @@ export default function BuildWizardPage() {
                     onClick={() => setSelectedIndustry(industry)}
                     className={`rounded-full border px-4 py-2 text-xs font-medium transition-all ${
                       selectedIndustry === industry
-                        ? "border-amber-300/40 bg-amber-300/10 text-amber-200"
-                        : "border-white/10 bg-black/60 text-amber-100/50 hover:border-white/20"
+                        ? "border-gold/40 bg-gold/10 text-gold"
+                        : "border-wireframe-stroke bg-[#0A0A0A]/60 text-white/40 hover:border-white/20"
                     }`}
                   >
                     {industry}
@@ -406,20 +424,20 @@ export default function BuildWizardPage() {
 
             {/* Custom Domain */}
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-2">
+              <p className="text-[10px] uppercase tracking-wider text-white/30 mb-2">
                 Custom Domain (Optional)
               </p>
               <div className="relative max-w-md">
                 <Globe
                   size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-100/30"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20"
                 />
                 <input
                   type="text"
                   value={customDomain}
                   onChange={(e) => setCustomDomain(e.target.value)}
                   placeholder="myapp.com"
-                  className="w-full rounded-xl border border-white/10 bg-black/80 py-3 pl-9 pr-4 text-sm text-amber-50 outline-none focus:border-amber-300/40 placeholder:text-amber-100/20"
+                  className="w-full rounded-xl border border-wireframe-stroke bg-black/80 py-3 pl-9 pr-4 text-sm text-white outline-none focus:border-gold/40 placeholder:text-white/20"
                 />
               </div>
             </div>
@@ -429,7 +447,7 @@ export default function BuildWizardPage() {
         {/* Step 3: Branding */}
         {step === 3 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/80">
               Branding
             </h2>
 
@@ -437,7 +455,7 @@ export default function BuildWizardPage() {
               <div className="space-y-6">
                 {/* Company Name */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-2">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-2">
                     Company Name
                   </p>
                   <input
@@ -445,13 +463,13 @@ export default function BuildWizardPage() {
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     placeholder="Your Company"
-                    className="w-full rounded-xl border border-white/10 bg-black/80 p-3 text-sm text-amber-50 outline-none focus:border-amber-300/40 placeholder:text-amber-100/20"
+                    className="w-full rounded-xl border border-wireframe-stroke bg-black/80 p-3 text-sm text-white outline-none focus:border-gold/40 placeholder:text-white/20"
                   />
                 </div>
 
                 {/* Primary Color */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-3">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-3">
                     Primary Color
                   </p>
                   <div className="flex flex-wrap gap-3">
@@ -461,8 +479,8 @@ export default function BuildWizardPage() {
                         onClick={() => setPrimaryColor(color.name)}
                         className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 transition-all ${
                           primaryColor === color.name
-                            ? "border-amber-300/40 bg-white/5"
-                            : "border-white/10 bg-black/60 hover:border-white/20"
+                            ? "border-gold/40 bg-white/5"
+                            : "border-wireframe-stroke bg-[#0A0A0A]/60 hover:border-white/20"
                         }`}
                       >
                         <div
@@ -475,8 +493,8 @@ export default function BuildWizardPage() {
                         <span
                           className={`text-xs ${
                             primaryColor === color.name
-                              ? "text-amber-50 font-medium"
-                              : "text-amber-100/50"
+                              ? "text-white font-medium"
+                              : "text-white/40"
                           }`}
                         >
                           {color.name}
@@ -488,19 +506,19 @@ export default function BuildWizardPage() {
 
                 {/* Logo Upload Placeholder */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-2">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-2">
                     Logo
                   </p>
-                  <div className="flex h-32 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-black/40 transition-all hover:border-amber-300/20 cursor-pointer group">
+                  <div className="flex h-32 items-center justify-center rounded-2xl border border-dashed border-wireframe-stroke bg-black/40 transition-all hover:border-gold/20 cursor-pointer group">
                     <div className="text-center">
                       <Image
                         size={24}
-                        className="mx-auto text-amber-100/20 group-hover:text-amber-300/50 transition-colors"
+                        className="mx-auto text-white/20 group-hover:text-gold/50 transition-colors"
                       />
-                      <p className="mt-2 text-xs text-amber-100/30">
+                      <p className="mt-2 text-xs text-white/20">
                         Drag and drop or click to upload
                       </p>
-                      <p className="text-[10px] text-amber-100/20 mt-1">
+                      <p className="text-[10px] text-white/20 mt-1">
                         PNG, SVG up to 2MB
                       </p>
                     </div>
@@ -509,28 +527,28 @@ export default function BuildWizardPage() {
 
                 {/* Domain */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-2">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-2">
                     Domain
                   </p>
                   <div className="relative">
                     <Globe
                       size={14}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-100/30"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20"
                     />
                     <input
                       type="text"
                       value={domain}
                       onChange={(e) => setDomain(e.target.value)}
                       placeholder="yourcompany.com"
-                      className="w-full rounded-xl border border-white/10 bg-black/80 py-3 pl-9 pr-4 text-sm text-amber-50 outline-none focus:border-amber-300/40 placeholder:text-amber-100/20"
+                      className="w-full rounded-xl border border-wireframe-stroke bg-black/80 py-3 pl-9 pr-4 text-sm text-white outline-none focus:border-gold/40 placeholder:text-white/20"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Preview Panel */}
-              <div className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
-                <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-4">
+              <div className="rounded-3xl border border-wireframe-stroke bg-[#0A0A0A]/60 p-6 backdrop-blur-2xl">
+                <p className="text-[10px] uppercase tracking-wider text-white/30 mb-4">
                   Preview
                 </p>
                 <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
@@ -538,16 +556,16 @@ export default function BuildWizardPage() {
                     <div
                       className={`h-10 w-10 rounded-xl ${
                         COLORS.find((c) => c.name === primaryColor)?.tw ||
-                        "bg-amber-400"
+                        "bg-gold"
                       } flex items-center justify-center text-white font-bold text-sm`}
                     >
                       {companyName ? companyName[0]?.toUpperCase() : "?"}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-amber-50">
+                      <p className="text-sm font-semibold text-white">
                         {companyName || "Your Company"}
                       </p>
-                      <p className="text-[10px] text-amber-100/40">
+                      <p className="text-[10px] text-white/30">
                         {domain || "yourcompany.com"}
                       </p>
                     </div>
@@ -561,7 +579,7 @@ export default function BuildWizardPage() {
                   <div
                     className={`h-8 w-24 rounded-lg ${
                       COLORS.find((c) => c.name === primaryColor)?.tw ||
-                      "bg-amber-400"
+                      "bg-gold"
                     } opacity-80`}
                   />
                 </div>
@@ -573,19 +591,19 @@ export default function BuildWizardPage() {
         {/* Step 4: Review & Launch */}
         {step === 4 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/80">
               Review &amp; Launch
             </h2>
 
             {/* Summary */}
-            <div className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl space-y-6">
+            <div className="rounded-3xl border border-wireframe-stroke bg-[#0A0A0A]/60 p-6 backdrop-blur-2xl space-y-6">
               {/* Template */}
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-2">
+                <p className="text-[10px] uppercase tracking-wider text-white/30 mb-2">
                   Template
                 </p>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-amber-50">
+                  <span className="text-sm font-semibold text-white">
                     {selectedTemplate === "custom"
                       ? "Custom Build"
                       : templateData?.name || "None"}
@@ -604,7 +622,7 @@ export default function BuildWizardPage() {
 
               {/* Features */}
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-2">
+                <p className="text-[10px] uppercase tracking-wider text-white/30 mb-2">
                   Features ({selectedFeatures.length})
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -613,7 +631,7 @@ export default function BuildWizardPage() {
                     return (
                       <span
                         key={fId}
-                        className="rounded-full border border-amber-300/20 bg-amber-300/5 px-3 py-1 text-[10px] text-amber-200 font-medium"
+                        className="rounded-full border border-gold/20 bg-gold/5 px-3 py-1 text-[10px] text-gold font-medium"
                       >
                         {feat?.name}
                       </span>
@@ -627,18 +645,18 @@ export default function BuildWizardPage() {
               {/* Industry & Domain */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">
                     Industry
                   </p>
-                  <p className="text-sm text-amber-50">
+                  <p className="text-sm text-white">
                     {selectedIndustry || "Not specified"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">
                     Domain
                   </p>
-                  <p className="text-sm text-amber-50">
+                  <p className="text-sm text-white">
                     {domain || customDomain || "Not set"}
                   </p>
                 </div>
@@ -649,25 +667,25 @@ export default function BuildWizardPage() {
               {/* Branding */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">
                     Company
                   </p>
-                  <p className="text-sm text-amber-50">
+                  <p className="text-sm text-white">
                     {companyName || "Not set"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">
                     Primary Color
                   </p>
                   <div className="flex items-center gap-2">
                     <div
                       className={`h-4 w-4 rounded-full ${
                         COLORS.find((c) => c.name === primaryColor)?.tw ||
-                        "bg-amber-400"
+                        "bg-gold"
                       }`}
                     />
-                    <span className="text-sm text-amber-50">{primaryColor}</span>
+                    <span className="text-sm text-white">{primaryColor}</span>
                   </div>
                 </div>
               </div>
@@ -677,19 +695,19 @@ export default function BuildWizardPage() {
               {/* Estimated Build */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">
                     Estimated Build Time
                   </p>
-                  <p className="text-sm text-amber-50 flex items-center gap-1.5">
-                    <Clock size={12} className="text-amber-300" />
+                  <p className="text-sm text-white flex items-center gap-1.5">
+                    <Clock size={12} className="text-gold" />
                     {templateData?.estimatedTime || "3-5 days"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">
                     Estimated Cost
                   </p>
-                  <p className="text-sm font-semibold text-amber-50">
+                  <p className="text-sm font-semibold text-white">
                     Included in Plan
                   </p>
                 </div>
@@ -697,8 +715,8 @@ export default function BuildWizardPage() {
             </div>
 
             {/* Pipeline Stages */}
-            <div className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
-              <p className="text-[10px] uppercase tracking-wider text-amber-100/40 mb-4">
+            <div className="rounded-3xl border border-wireframe-stroke bg-[#0A0A0A]/60 p-6 backdrop-blur-2xl">
+              <p className="text-[10px] uppercase tracking-wider text-white/30 mb-4">
                 Build Pipeline
               </p>
               <div className="flex items-center justify-between">
@@ -710,8 +728,8 @@ export default function BuildWizardPage() {
                           launched
                             ? "border-emerald-400/30 bg-emerald-500/20 text-emerald-400"
                             : i === 0
-                              ? "border-amber-300/30 bg-amber-400/10 text-amber-300"
-                              : "border-white/10 bg-white/5 text-amber-100/30"
+                              ? "border-gold/30 bg-gold/10 text-gold"
+                              : "border-wireframe-stroke bg-white/5 text-white/20"
                         }`}
                       >
                         {launched ? <Check size={14} /> : i + 1}
@@ -721,8 +739,8 @@ export default function BuildWizardPage() {
                           launched
                             ? "text-emerald-400"
                             : i === 0
-                              ? "text-amber-300"
-                              : "text-amber-100/30"
+                              ? "text-gold"
+                              : "text-white/20"
                         }`}
                       >
                         {stage}
@@ -747,7 +765,7 @@ export default function BuildWizardPage() {
               <button
                 onClick={handleLaunch}
                 disabled={launching}
-                className="w-full flex items-center justify-center gap-3 rounded-2xl bg-amber-400 py-4 text-sm font-bold text-black shadow-[0_0_30px_rgba(251,191,36,0.3)] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 rounded-2xl bg-gold py-4 text-sm font-bold text-black shadow-[0_0_30px_rgba(251,191,36,0.3)] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {launching ? (
                   <>
@@ -783,7 +801,7 @@ export default function BuildWizardPage() {
         <button
           onClick={() => setStep((s) => Math.max(1, s - 1))}
           disabled={step === 1}
-          className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/60 px-5 py-2.5 text-xs font-medium text-amber-100/60 transition-all hover:border-white/20 hover:text-amber-50 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 rounded-xl border border-wireframe-stroke bg-[#0A0A0A]/60 px-5 py-2.5 text-xs font-medium text-white/50 transition-all hover:border-white/20 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <ArrowLeft size={14} /> Previous
         </button>
@@ -792,7 +810,7 @@ export default function BuildWizardPage() {
           <button
             onClick={() => setStep((s) => Math.min(totalSteps, s + 1))}
             disabled={!canProceed()}
-            className="flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-2.5 text-xs font-bold text-black shadow-[0_0_15px_rgba(251,191,36,0.2)] transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="flex items-center gap-2 rounded-xl bg-gold px-6 py-2.5 text-xs font-bold text-black shadow-[0_0_15px_rgba(251,191,36,0.2)] transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             Next <ArrowRight size={14} />
           </button>

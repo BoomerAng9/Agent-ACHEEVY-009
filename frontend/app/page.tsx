@@ -19,10 +19,11 @@ import { AppShowcase, BuildPrompts } from '@/components/landing/AppShowcase';
 import { Footer } from '@/components/landing/Footer';
 import { SiteHeader } from '@/components/SiteHeader';
 import FloatingChat from '@/components/FloatingChat';
+import { DelayedSignUpModal } from '@/components/DelayedSignUpModal';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#0a0f1a]">
+    <main className="min-h-screen bg-[#0A0A0A]">
       <SiteHeader />
       <Hero />
       <HeroAcheevy />
@@ -32,6 +33,7 @@ export default function HomePage() {
       <BuildPrompts />
       <Footer />
       <FloatingChat />
+      <DelayedSignUpModal />
     </main>
   );
 }

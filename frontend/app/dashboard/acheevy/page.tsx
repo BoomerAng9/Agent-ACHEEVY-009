@@ -14,7 +14,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
 import { Send, Square, Copy, Check, Mic } from 'lucide-react';
-import { AIMS_CIRCUIT_COLORS, CircuitBoardPattern } from '@/components/ui/CircuitBoard';
 import { LiveOpsTheater } from '@/components/deploy-platform/LiveOpsTheater';
 
 // ─────────────────────────────────────────────────────────────
@@ -62,7 +61,7 @@ function QuickActions({ onSelect, disabled }: { onSelect: (prompt: string) => vo
           key={action.id}
           onClick={() => onSelect(action.prompt)}
           disabled={disabled}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-amber-100/70 hover:bg-white/10 hover:text-amber-100 hover:border-amber-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-wireframe-stroke text-white/60 hover:bg-white/10 hover:text-white hover:border-gold/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <action.icon className="w-4 h-4" />
           {action.label}
@@ -107,11 +106,11 @@ function ChatMessage({
       {/* Avatar */}
       <div className="flex-shrink-0">
         {isUser ? (
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black font-bold">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center text-black font-bold">
             U
           </div>
         ) : (
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-amber-500/20 to-amber-600/20 border border-amber-500/30">
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-gold/20 to-gold-dark/20 border border-gold/30">
             <Image
               src="/images/acheevy/acheevy-helmet.png"
               alt="ACHEEVY"
@@ -122,28 +121,28 @@ function ChatMessage({
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
             />
-            <span className="flex items-center justify-center w-full h-full text-amber-400 font-bold">A</span>
+            <span className="flex items-center justify-center w-full h-full text-gold font-bold">A</span>
           </div>
         )}
       </div>
 
       {/* Content */}
       <div className={`flex-1 max-w-[80%] ${isUser ? 'text-right' : ''}`}>
-        <div className={`text-xs font-medium mb-1 ${isUser ? 'text-amber-400' : 'text-amber-300'}`}>
+        <div className={`text-xs font-medium mb-1 ${isUser ? 'text-gold' : 'text-white/60'}`}>
           {isUser ? 'You' : 'ACHEEVY'}
         </div>
 
         <div
           className={`inline-block rounded-2xl px-4 py-3 ${
             isUser
-              ? 'bg-amber-500/20 text-amber-50 rounded-tr-sm'
-              : 'bg-white/[0.03] text-amber-100/90 rounded-tl-sm border border-white/5'
+              ? 'bg-gold/10 text-white rounded-tr-sm border border-gold/20'
+              : 'wireframe-card text-white/90 rounded-tl-sm'
           }`}
         >
           {isUser ? (
             <p className="whitespace-pre-wrap text-[15px]">{content}</p>
           ) : (
-            <div className="prose prose-invert prose-sm max-w-none prose-code:text-amber-300 prose-code:bg-black/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded">
+            <div className="prose prose-invert prose-sm max-w-none prose-code:text-gold prose-code:bg-black/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -151,14 +150,14 @@ function ChatMessage({
                     const isInline = !className;
                     if (isInline) {
                       return (
-                        <code className="bg-black/40 px-1.5 py-0.5 rounded text-amber-300 text-[13px]" {...props}>
+                        <code className="bg-black/40 px-1.5 py-0.5 rounded text-gold text-[13px]" {...props}>
                           {children}
                         </code>
                       );
                     }
                     return (
                       <div className="relative group my-3">
-                        <pre className="bg-black/60 rounded-lg p-4 overflow-x-auto border border-white/5">
+                        <pre className="bg-black/60 rounded-lg p-4 overflow-x-auto border border-wireframe-stroke">
                           <code className={`${className} text-[13px]`} {...props}>
                             {children}
                           </code>
@@ -168,7 +167,7 @@ function ChatMessage({
                   },
                   a({ href, children }) {
                     return (
-                      <a href={href} target="_blank" rel="noopener noreferrer" className="text-amber-300 hover:text-amber-200 underline">
+                      <a href={href} target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold-light underline">
                         {children}
                       </a>
                     );
@@ -178,7 +177,7 @@ function ChatMessage({
                 {content}
               </ReactMarkdown>
               {isStreaming && (
-                <span className="inline-block w-2 h-5 bg-amber-400 ml-1 animate-pulse" />
+                <span className="inline-block w-2 h-5 bg-gold ml-1 animate-pulse" />
               )}
             </div>
           )}
@@ -187,7 +186,7 @@ function ChatMessage({
           {shiftId && onWatchShift && (
             <button
               onClick={() => onWatchShift(shiftId)}
-              className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors text-xs"
+              className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-gold/10 border border-gold/20 text-gold hover:bg-gold/20 transition-colors text-xs"
             >
               <YardIcon className="w-4 h-4" />
               Watch Shift in Live Ops Theater
@@ -198,7 +197,7 @@ function ChatMessage({
         {/* Copy */}
         {!isUser && !isStreaming && content && (
           <div className="flex items-center gap-2 mt-2 opacity-0 hover:opacity-100 transition-opacity">
-            <button onClick={handleCopy} className="p-1.5 rounded hover:bg-white/10 text-gray-500 hover:text-amber-300 transition-colors">
+            <button type="button" onClick={handleCopy} className="p-1.5 rounded hover:bg-white/10 text-white/30 hover:text-gold transition-colors">
               {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
@@ -227,7 +226,7 @@ export default function ACHEEVYChatPage() {
 
   const [activeShiftId, setActiveShiftId] = useState<string | null>(null);
   const [showTheater, setShowTheater] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -275,36 +274,33 @@ export default function ACHEEVYChatPage() {
   };
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-64px)] overflow-hidden" style={{ backgroundColor: AIMS_CIRCUIT_COLORS.background }}>
-      {/* Background Pattern */}
-      <CircuitBoardPattern density="sparse" animated glowIntensity={0.15} />
-
+    <div className="relative flex flex-col h-[calc(100vh-6rem)] overflow-hidden bg-[#0A0A0A] aims-page-bg rounded-2xl border border-wireframe-stroke">
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/5">
+      <div className="relative z-10 flex items-center justify-between px-6 py-3 border-b border-wireframe-stroke bg-black/60 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
-            <span className="text-xl font-bold text-black">A</span>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center shadow-lg shadow-gold/20">
+            <span className="text-lg font-bold text-black">A</span>
           </div>
           <div>
-            <h1 className="text-lg font-bold text-amber-100">ACHEEVY</h1>
-            <p className="text-xs text-gray-500">AI Executive Assistant</p>
+            <h1 className="text-sm font-bold text-white">Chat w/ACHEEVY</h1>
+            <p className="text-[0.6rem] text-white/40 font-mono uppercase tracking-wider">AI Executive Assistant</p>
           </div>
         </div>
 
         {activeShiftId && (
           <button
             onClick={() => setShowTheater(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/10 border border-gold/20 text-gold hover:bg-gold/20 transition-colors"
           >
             <YardIcon className="w-4 h-4" />
             <span className="text-sm">Live Ops Theater</span>
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           </button>
         )}
       </div>
 
       {/* Messages */}
-      <div className="relative z-10 flex-1 overflow-y-auto px-4 py-6">
+      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Welcome State */}
           {messages.length === 0 && (
@@ -313,11 +309,11 @@ export default function ACHEEVYChatPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-center py-12"
             >
-              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-2xl shadow-amber-500/30">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center shadow-2xl shadow-gold/30">
                 <span className="text-3xl font-bold text-black">A</span>
               </div>
-              <h2 className="text-2xl font-bold text-amber-100 mb-2">Hello! I'm ACHEEVY</h2>
-              <p className="text-amber-100/50 max-w-md mx-auto mb-8">
+              <h2 className="text-2xl font-bold text-white mb-2">Chat w/ACHEEVY</h2>
+              <p className="text-white/50 max-w-md mx-auto mb-8">
                 Your AI executive assistant. I orchestrate deployments through the Circuit Box,
                 commanding the Chicken_Hawk engine and Lil_Hawk workers to execute your requests.
               </p>
@@ -358,14 +354,14 @@ export default function ACHEEVYChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="relative z-10 border-t border-white/5 bg-black/40 backdrop-blur-sm px-4 py-4">
+      <div className="relative z-10 border-t border-wireframe-stroke bg-black/60 px-4 py-3">
         <div className="max-w-3xl mx-auto">
           <form id="acheevy-form" onSubmit={handleSubmit}>
-            <div className="relative flex items-end gap-3 bg-white/[0.03] border border-white/10 rounded-2xl p-3 focus-within:border-amber-400/30 transition-colors">
+            <div className="relative flex items-end gap-3 wireframe-card p-3 focus-within:border-gold/30 transition-colors">
               {/* Mic Button */}
               <button
                 type="button"
-                className="p-3 rounded-xl bg-white/5 text-amber-100/60 hover:bg-white/10 hover:text-amber-100 transition-colors"
+                className="p-3 rounded-xl bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-colors"
                 title="Voice input (coming soon)"
               >
                 <Mic className="w-5 h-5" />
@@ -380,7 +376,7 @@ export default function ACHEEVYChatPage() {
                 placeholder="Message ACHEEVY..."
                 disabled={isLoading}
                 rows={1}
-                className="flex-1 bg-transparent text-amber-50 placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[200px] py-2"
+                className="flex-1 bg-transparent text-white placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[200px] py-2"
               />
 
               {/* Send/Stop */}
@@ -400,8 +396,8 @@ export default function ACHEEVYChatPage() {
                   title="Send message"
                   className={`p-3 rounded-xl transition-all ${
                     input.trim()
-                      ? 'bg-amber-400 text-black hover:bg-amber-300'
-                      : 'bg-white/5 text-amber-100/30 cursor-not-allowed'
+                      ? 'bg-gold text-black hover:bg-gold-light'
+                      : 'bg-white/5 text-white/30 cursor-not-allowed'
                   }`}
                 >
                   <Send className="w-5 h-5" />
@@ -410,7 +406,7 @@ export default function ACHEEVYChatPage() {
             </div>
           </form>
 
-          <p className="text-center text-xs text-gray-600 mt-3">
+          <p className="text-center text-[0.6rem] text-white/30 mt-2 font-mono uppercase tracking-wider">
             ACHEEVY orchestrates via Circuit Box &rarr; Chicken_Hawk &rarr; Lil_Hawks
           </p>
         </div>

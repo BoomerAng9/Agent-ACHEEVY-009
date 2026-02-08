@@ -17,7 +17,7 @@ export function HeroAcheevy() {
           <button className="rounded-full bg-gold px-8 py-3 text-sm font-semibold text-black shadow-neon-gold transition-all transform hover:scale-105 active:scale-95 hover:bg-gold-light">
             Start my project
           </button>
-          <button className="rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm text-amber-100 backdrop-blur-sm hover:bg-white/10 transition-colors">
+          <button className="rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm text-white backdrop-blur-sm hover:bg-white/10 transition-colors">
             Watch ACHEEVY in action
           </button>
         </div>
@@ -26,7 +26,7 @@ export function HeroAcheevy() {
       <div className="flex-1 flex justify-center">
         <div className="relative group">
           {/* Subtle floor glow */}
-          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-10 bg-amber-400/20 blur-[60px] rounded-full group-hover:bg-amber-400/30 transition-all duration-700" />
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-10 bg-gold/20 blur-[60px] rounded-full group-hover:bg-gold/30 transition-all duration-700" />
           
           <img
             src="/images/acheevy/acheevy-office-plug.png"

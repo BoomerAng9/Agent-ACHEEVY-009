@@ -85,7 +85,7 @@ function PlanetMarker({ planet, onClick }: { planet: Planet; onClick: () => void
       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-black/90 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
         <p className="font-bold text-white">{planet.name}</p>
         <p className="text-gray-400">{planet.distance} LY away</p>
-        {planet.owner && <p className="text-amber-400">👤 {planet.owner}</p>}
+        {planet.owner && <p className="text-gold">👤 {planet.owner}</p>}
       </div>
     </motion.button>
   );
@@ -101,13 +101,13 @@ function NavigationHUD({ fuel, onOpenGalaxyMap }: { fuel: number; onOpenGalaxyMa
       {/* Left: Coordinates */}
       <div className="pointer-events-auto bg-black/60 backdrop-blur-xl border border-white/10 rounded-xl px-4 py-2">
         <p className="text-[10px] text-gray-500 uppercase tracking-wider">Location</p>
-        <p className="text-sm text-amber-300 font-mono">Sector 7-Alpha</p>
+        <p className="text-sm text-gold font-mono">Sector 7-Alpha</p>
       </div>
 
       {/* Center: Galaxy Map Button */}
       <button
         onClick={onOpenGalaxyMap}
-        className="pointer-events-auto px-6 py-2 bg-amber-500/20 border border-amber-500/30 rounded-full text-sm text-amber-300 hover:bg-amber-500/30 transition-colors"
+        className="pointer-events-auto px-6 py-2 bg-gold/20 border border-gold/30 rounded-full text-sm text-gold hover:bg-gold/30 transition-colors"
       >
         🗺️ Galaxy Map
       </button>
@@ -116,7 +116,7 @@ function NavigationHUD({ fuel, onOpenGalaxyMap }: { fuel: number; onOpenGalaxyMa
       <div className="pointer-events-auto bg-black/60 backdrop-blur-xl border border-white/10 rounded-xl px-4 py-2 flex gap-6">
         <div>
           <p className="text-[10px] text-gray-500 uppercase tracking-wider">Fuel</p>
-          <p className="text-sm text-amber-400 font-mono">{fuel} LUC</p>
+          <p className="text-sm text-gold font-mono">{fuel} LUC</p>
         </div>
         <div>
           <p className="text-[10px] text-gray-500 uppercase tracking-wider">Range</p>
@@ -164,7 +164,7 @@ function PlanetDetail({ planet, onClose, onTravel }: { planet: Planet; onClose: 
             <h2 className="text-xl font-bold text-white">{planet.name}</h2>
             <p className="text-sm text-gray-400">{planet.distance} Light Years</p>
             {planet.owner && (
-              <p className="text-sm text-amber-400">👤 Owned by {planet.owner}</p>
+              <p className="text-sm text-gold">👤 Owned by {planet.owner}</p>
             )}
           </div>
         </div>
@@ -185,10 +185,10 @@ function PlanetDetail({ planet, onClose, onTravel }: { planet: Planet; onClose: 
         </div>
 
         {/* Cost */}
-        <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg mb-6">
+        <div className="p-4 bg-gold/10 border border-gold/20 rounded-lg mb-6">
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-300">Travel Cost</span>
-            <span className="text-lg font-bold text-amber-400">{planet.distance * 10} LUC</span>
+            <span className="text-lg font-bold text-gold">{planet.distance * 10} LUC</span>
           </div>
         </div>
 
@@ -202,7 +202,7 @@ function PlanetDetail({ planet, onClose, onTravel }: { planet: Planet; onClose: 
           </button>
           <button
             onClick={onTravel}
-            className="flex-1 py-3 rounded-xl bg-amber-500 text-black font-medium hover:bg-amber-400 transition-colors"
+            className="flex-1 py-3 rounded-xl bg-gold text-black font-medium hover:bg-gold-light transition-colors"
           >
             🚀 Launch
           </button>

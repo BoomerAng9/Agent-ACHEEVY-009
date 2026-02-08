@@ -114,7 +114,7 @@ function MessageBubble({ message, onSpeak, onCopy, isLast }: MessageBubbleProps)
       <div
         className={`
           flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-          ${isUser ? 'bg-amber-400 text-black' : 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white'}
+          ${isUser ? 'bg-gold/20 border border-gold/30 text-gold' : 'bg-gold/10 border border-gold/20 text-gold'}
         `}
       >
         {isUser ? 'U' : 'A'}
@@ -126,8 +126,8 @@ function MessageBubble({ message, onSpeak, onCopy, isLast }: MessageBubbleProps)
           className={`
             inline-block rounded-2xl px-4 py-3 text-[15px] leading-relaxed
             ${isUser
-              ? 'bg-amber-400/20 text-amber-50 rounded-tr-sm'
-              : 'bg-white/[0.03] text-amber-100/90 rounded-tl-sm border border-white/5'
+              ? 'bg-gold/10 text-white rounded-tr-sm border border-gold/20'
+              : 'wireframe-card text-white/90 rounded-tl-sm'
             }
           `}
         >
@@ -143,14 +143,14 @@ function MessageBubble({ message, onSpeak, onCopy, isLast }: MessageBubbleProps)
                     const isInline = !className;
                     if (isInline) {
                       return (
-                        <code className="bg-black/40 px-1.5 py-0.5 rounded text-amber-300 text-[13px]" {...props}>
+                        <code className="bg-black/40 px-1.5 py-0.5 rounded text-gold text-[13px]" {...props}>
                           {children}
                         </code>
                       );
                     }
                     return (
                       <div className="relative group my-3">
-                        <pre className="bg-black/60 rounded-lg p-4 overflow-x-auto border border-white/5">
+                        <pre className="bg-black/60 rounded-lg p-4 overflow-x-auto border border-wireframe-stroke">
                           <code className={`${className} text-[13px]`} {...props}>
                             {children}
                           </code>
@@ -167,7 +167,7 @@ function MessageBubble({ message, onSpeak, onCopy, isLast }: MessageBubbleProps)
                   // Links
                   a({ href, children }) {
                     return (
-                      <a href={href} target="_blank" rel="noopener noreferrer" className="text-amber-300 hover:text-amber-200 underline">
+                      <a href={href} target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold underline">
                         {children}
                       </a>
                     );
@@ -179,7 +179,7 @@ function MessageBubble({ message, onSpeak, onCopy, isLast }: MessageBubbleProps)
 
               {/* Streaming cursor */}
               {isStreaming && (
-                <span className="inline-block w-2 h-5 bg-amber-400 ml-1 animate-pulse" />
+                <span className="inline-block w-2 h-5 bg-gold ml-1 animate-pulse" />
               )}
             </div>
           )}
@@ -190,7 +190,7 @@ function MessageBubble({ message, onSpeak, onCopy, isLast }: MessageBubbleProps)
           <div className="flex items-center gap-2 mt-2 opacity-0 hover:opacity-100 transition-opacity">
             <button
               onClick={handleCopy}
-              className="p-1.5 rounded hover:bg-white/10 text-amber-100/40 hover:text-amber-100/80 transition-colors"
+              className="p-1.5 rounded hover:bg-white/10 text-white/30 hover:text-white/70 transition-colors"
               title="Copy"
             >
               {copied ? (
@@ -201,7 +201,7 @@ function MessageBubble({ message, onSpeak, onCopy, isLast }: MessageBubbleProps)
             </button>
             <button
               onClick={() => onSpeak?.(message.content)}
-              className="p-1.5 rounded hover:bg-white/10 text-amber-100/40 hover:text-amber-100/80 transition-colors"
+              className="p-1.5 rounded hover:bg-white/10 text-white/30 hover:text-white/70 transition-colors"
               title="Read aloud"
             >
               <SpeakerIcon className="w-4 h-4" />
@@ -234,7 +234,7 @@ function VoiceInputButton({ isListening, isProcessing, audioLevel, onStart, onSt
         relative p-3 rounded-xl transition-all
         ${isListening
           ? 'bg-red-500/20 text-red-400'
-          : 'bg-white/5 text-amber-100/60 hover:bg-white/10 hover:text-amber-100'
+          : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'
         }
         ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}
       `}
@@ -248,7 +248,7 @@ function VoiceInputButton({ isListening, isProcessing, audioLevel, onStart, onSt
       )}
 
       {isProcessing ? (
-        <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-gold border-t-transparent rounded-full animate-spin" />
       ) : (
         <MicIcon className="w-5 h-5" />
       )}
@@ -484,7 +484,7 @@ export function ChatInterface({
   };
 
   return (
-    <div className="relative flex flex-col h-full bg-gradient-to-b from-[#0A0A0A] to-[#111]">
+    <div className="relative flex flex-col h-full bg-[#0A0A0A] aims-page-bg">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto space-y-6">
@@ -495,11 +495,11 @@ export function ChatInterface({
               animate={{ opacity: 1, y: 0 }}
               className="text-center py-12"
             >
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-                <span className="text-2xl font-bold text-black">A</span>
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center">
+                <span className="text-2xl font-bold font-display text-gold">A</span>
               </div>
-              <h2 className="text-xl font-medium text-amber-50 mb-2">ACHEEVY</h2>
-              <p className="text-amber-100/50 max-w-md mx-auto">{welcomeMessage}</p>
+              <h2 className="text-xl font-medium text-white mb-2">Chat w/ACHEEVY</h2>
+              <p className="text-white/40 max-w-md mx-auto">{welcomeMessage}</p>
             </motion.div>
           )}
 
@@ -531,14 +531,14 @@ export function ChatInterface({
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-white/5 bg-black/40 backdrop-blur-sm px-4 py-4">
+      <div className="border-t border-wireframe-stroke bg-[#0A0A0A]/80 backdrop-blur-xl px-4 py-4">
         <div className="max-w-3xl mx-auto">
           {/* Regenerate button (when there are messages) */}
           {messages.length > 0 && !isStreaming && (
             <div className="flex justify-center mb-3">
               <button
                 onClick={regenerate}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-amber-100/50 hover:text-amber-100 hover:bg-white/5 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-white/40 hover:text-white hover:bg-white/5 transition-colors"
               >
                 <RegenerateIcon className="w-4 h-4" />
                 Regenerate response
@@ -547,7 +547,7 @@ export function ChatInterface({
           )}
 
           {/* Input Container */}
-          <div className="relative flex items-end gap-3 bg-white/[0.03] border border-white/10 rounded-2xl p-3 focus-within:border-amber-300/30 transition-colors">
+          <div className="relative flex items-end gap-3 wireframe-card rounded-2xl p-3 focus-within:border-gold/30 transition-colors">
             {/* Voice Input */}
             <VoiceInputButton
               isListening={voiceInput.isListening}
@@ -566,14 +566,14 @@ export function ChatInterface({
               placeholder={placeholder}
               disabled={isStreaming}
               rows={1}
-              className="flex-1 bg-transparent text-amber-50 placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[200px] py-2"
+              className="flex-1 bg-transparent text-white placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[200px] py-2"
             />
 
             {/* Department Board Toggle */}
             {showOrchestration && (
               <button
                 onClick={() => setShowBoard(true)}
-                className="p-3 rounded-xl bg-white/5 text-amber-100/60 hover:bg-white/10 hover:text-amber-100 transition-colors"
+                className="p-3 rounded-xl bg-white/5 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
                 title="View Department Board"
               >
                 <BoardIcon className="w-5 h-5" />
@@ -595,8 +595,8 @@ export function ChatInterface({
                 className={`
                   p-3 rounded-xl transition-all
                   ${inputValue.trim()
-                    ? 'bg-amber-400 text-black hover:bg-amber-300'
-                    : 'bg-white/5 text-amber-100/30 cursor-not-allowed'
+                    ? 'bg-gold text-black hover:bg-gold-light'
+                    : 'bg-white/5 text-white/20 cursor-not-allowed'
                   }
                 `}
               >
@@ -611,12 +611,12 @@ export function ChatInterface({
 
           {/* Voice Output Status */}
           {voiceOutput.isPlaying && (
-            <div className="flex items-center justify-center gap-2 mt-3 text-sm text-amber-100/50">
+            <div className="flex items-center justify-center gap-2 mt-3 text-sm text-white/40">
               <div className="flex gap-1">
                 {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="w-1 h-3 bg-amber-400 rounded-full animate-pulse"
+                    className="w-1 h-3 bg-gold rounded-full animate-pulse"
                     style={{ animationDelay: `${i * 150}ms` }}
                   />
                 ))}
@@ -624,7 +624,7 @@ export function ChatInterface({
               <span>Speaking...</span>
               <button
                 onClick={voiceOutput.stop}
-                className="text-amber-300 hover:text-amber-200"
+                className="text-gold hover:text-gold"
               >
                 Stop
               </button>
@@ -632,7 +632,7 @@ export function ChatInterface({
           )}
 
           {/* Footer */}
-          <p className="text-center text-xs text-amber-100/30 mt-3">
+          <p className="text-center text-xs text-white/20 mt-3">
             ACHEEVY may produce inaccurate information. Voice powered by ElevenLabs.
           </p>
         </div>
@@ -687,9 +687,9 @@ export function ChatInterface({
 
       {/* Change Order Cost Tracker (bottom-left) */}
       {changeOrder.totalCost > 0 && (
-        <div className="fixed bottom-4 left-4 px-3 py-2 bg-black/80 border border-white/10 rounded-lg text-xs z-40">
-          <p className="text-amber-100/50">Change Orders</p>
-          <p className="text-amber-300 font-medium">
+        <div className="fixed bottom-4 left-4 px-3 py-2 wireframe-card text-xs z-40">
+          <p className="text-white/40">Change Orders</p>
+          <p className="text-gold font-mono font-medium">
             {formatCurrency(changeOrder.totalCost)} ({changeOrder.totalTokensUsed.toLocaleString()} tokens)
           </p>
         </div>

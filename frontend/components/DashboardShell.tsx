@@ -14,71 +14,77 @@ type Props = {
 export function DashboardShell({ children }: Props) {
   return (
     <LogoWallBackground mode="dashboard">
-      <div className="flex min-h-screen">
-        {/* Left rail */}
-        <aside className="hidden w-64 border-r border-amber-50/8 bg-black/40/60 px-3 py-4 backdrop-blur-xl lg:block">
-          <div className="mb-6 px-2">
-            <p className="text-[0.7rem] uppercase tracking-[0.22em] text-amber-200/70">
-              AI Managed Solutions
-            </p>
-            <p className="mt-1 text-xs text-amber-100/65">
+      <div className="flex max-h-screen overflow-hidden">
+        {/* Left rail — wireframe glass sidebar */}
+        <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-wireframe-stroke bg-black/60 backdrop-blur-xl lg:flex">
+          <div className="px-4 py-5">
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-display text-sm uppercase tracking-wider text-amber-50">
+                A.I.M.S.
+              </span>
+              <span className="text-[0.55rem] uppercase tracking-[0.12em] text-white/40">
+                by ACHIEVEMOR
+              </span>
+            </div>
+            <p className="mt-1 text-[0.65rem] text-white/40">
               ACHEEVY command center
             </p>
           </div>
 
-          <DashboardNav />
+          {/* Navigation — scrollable */}
+          <div className="flex-1 overflow-y-auto px-2 pb-3">
+            <DashboardNav />
+          </div>
 
-          <div className="mt-8 rounded-2xl border border-amber-50/10 bg-gradient-to-br from-amber-500/10 via-black/60 to-black/90 px-3 py-3 text-[0.75rem] text-amber-100/80">
-            <p className="text-[0.65rem] uppercase tracking-[0.18em] text-amber-200/70">
+          {/* Live status card */}
+          <div className="mx-3 mb-3 wireframe-card px-3 py-3 text-[0.75rem] text-white/70">
+            <p className="text-[0.6rem] uppercase tracking-[0.18em] text-gold/60 font-mono">
               Live status
             </p>
             <p className="mt-1">
               ACHEEVY is online and ready to orchestrate Boomer_Angs.
             </p>
-            <p className="mt-1 text-amber-100/60">
+            <p className="mt-1 text-white/50">
               LUC tracking:{" "}
-              <span className="font-semibold text-amber-200">
-                real-time
-              </span>
-              .
+              <span className="font-semibold text-gold">real-time</span>.
             </p>
           </div>
 
-          {/* Dynamic tagline — soft billboard */}
-          <div className="mt-6">
+          {/* Dynamic tagline */}
+          <div className="px-3 pb-4">
             <DynamicTagline compact />
           </div>
         </aside>
 
         {/* Main column */}
-        <div className="flex min-h-screen flex-1 flex-col">
+        <div className="flex flex-1 flex-col max-h-screen overflow-hidden">
           {/* Top bar */}
-          <header className="flex items-center justify-between border-b border-amber-50/8 bg-black/50 px-4 py-3 backdrop-blur-xl">
+          <header className="flex items-center justify-between border-b border-wireframe-stroke bg-[#0A0A0A]/80 px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8 xl:px-12">
             <div className="flex flex-col">
-              <span className="text-[0.7rem] uppercase tracking-[0.18em] text-amber-200/70">
+              <span className="text-[0.65rem] uppercase tracking-[0.18em] text-gold/60 font-mono">
                 Dashboard
               </span>
-              <span className="text-sm text-amber-50">
+              <span className="text-sm text-white/80">
                 Think it. Prompt it. Let ACHEEVY manage it.
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* LUC pill */}
-              <div className="hidden items-center gap-2 rounded-full border border-amber-50/15 bg-black/60 px-3 py-1.5 text-xs text-amber-100/80 sm:flex">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(74,222,128,0.8)]" />
-                <span>LUC: live estimate</span>
-                <span className="text-amber-200 font-semibold">$0.00</span>
+              <div className="hidden items-center gap-2 rounded-lg border border-wireframe-stroke bg-black/60 px-3 py-1.5 text-xs text-white/60 sm:flex">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
+                <span className="font-mono text-[0.65rem]">LUC</span>
+                <span className="text-gold font-semibold">$0.00</span>
               </div>
-              {/* User chip placeholder */}
-              <button className="flex items-center gap-2 rounded-full border border-amber-50/15 bg-black/60 px-2.5 py-1.5 text-xs text-amber-100/85">
-                <span className="h-6 w-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-700 shadow-[0_0_15px_rgba(251,191,36,0.9)]" />
+              {/* User chip */}
+              <button className="flex items-center gap-2 rounded-lg border border-wireframe-stroke bg-black/60 px-2.5 py-1.5 text-xs text-white/70 hover:border-white/20 transition-colors">
+                <span className="h-6 w-6 rounded-full bg-gradient-to-br from-gold to-gold-dark" />
                 <span>My account</span>
               </button>
             </div>
           </header>
 
           {/* Scrollable content */}
-          <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6">
+          <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8 xl:px-12">
             <div className="mx-auto max-w-6xl space-y-4 sm:space-y-6">
               {children}
             </div>

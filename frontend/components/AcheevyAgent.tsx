@@ -226,8 +226,8 @@ export default function AcheevyAgent() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-amber-500/20 flex items-center justify-center">
-                <Bot className="text-amber-400 w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-white/5 border border-gold/20 flex items-center justify-center">
+                <Bot className="text-gold w-5 h-5" />
               </div>
               <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#0a0a0a] ${
                 isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-gray-500'
@@ -239,7 +239,7 @@ export default function AcheevyAgent() {
                 {isConnected ? (
                   <span className="text-emerald-400"><Zap className="w-2.5 h-2.5 inline" /> Live</span>
                 ) : isConnecting ? (
-                  <span className="text-amber-400 animate-pulse">Connecting...</span>
+                  <span className="text-gold animate-pulse">Connecting...</span>
                 ) : (
                   <span className="text-gray-500">Offline</span>
                 )}
@@ -253,7 +253,7 @@ export default function AcheevyAgent() {
             onClick={() => setTextMode(!textMode)}
             title={textMode ? 'Switch to voice' : 'Switch to text'}
             className={`p-2 rounded-lg transition-colors ${
-              textMode ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-white/50 hover:text-white/80'
+              textMode ? 'bg-gold/10 text-gold' : 'bg-white/5 text-white/50 hover:text-white/80'
             }`}
           >
             <MessageSquare className="w-4 h-4" />
@@ -263,11 +263,11 @@ export default function AcheevyAgent() {
 
       {/* PMO Routing Pill */}
       {pmo && (
-        <div className="mx-3 mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/5 border border-amber-500/10 text-[10px]">
-          <OfficeIcon className="w-3.5 h-3.5 text-amber-400" />
-          <span className="text-amber-300 font-medium">{pmo.officeLabel}</span>
+        <div className="mx-3 mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gold/5 border border-gold/10 text-[10px]">
+          <OfficeIcon className="w-3.5 h-3.5 text-gold" />
+          <span className="text-gold font-medium">{pmo.officeLabel}</span>
           <span className="text-white/20">|</span>
-          <span className="text-amber-200/60 font-mono">{pmo.director}</span>
+          <span className="text-gold font-mono">{pmo.director}</span>
           <span className={`ml-auto px-1.5 py-0.5 rounded-full font-mono uppercase ${
             pmo.executionLane === 'deploy_it' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'
           }`}>
@@ -280,11 +280,11 @@ export default function AcheevyAgent() {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {transcript.length === 0 && !isConnected && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gold to-gold flex items-center justify-center">
               <span className="text-2xl font-bold text-black">A</span>
             </div>
-            <h3 className="text-lg font-bold text-amber-100 mb-2">ACHEEVY Voice Agent</h3>
-            <p className="text-amber-100/40 text-sm max-w-sm mx-auto">
+            <h3 className="text-lg font-bold text-white mb-2">ACHEEVY Voice Agent</h3>
+            <p className="text-white/30 text-sm max-w-sm mx-auto">
               Start a session to speak with ACHEEVY in real-time.
               Your tasks will be routed through the Chain of Command.
             </p>
@@ -298,7 +298,7 @@ export default function AcheevyAgent() {
           >
             <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
               entry.role === 'user'
-                ? 'bg-amber-500/20 text-amber-50 rounded-tr-sm'
+                ? 'bg-gold/20 text-white rounded-tr-sm'
                 : 'bg-white/[0.03] text-white/90 rounded-tl-sm border border-white/5'
             }`}>
               {entry.text}
@@ -309,9 +309,9 @@ export default function AcheevyAgent() {
         {isConnected && conversation.isSpeaking && (
           <div className="flex gap-3">
             <div className="px-4 py-2.5 bg-white/[0.03] rounded-2xl rounded-tl-sm border border-white/5 flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce [animation-delay:-0.3s]" />
-              <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce [animation-delay:-0.15s]" />
-              <div className="w-1.5 h-1.5 bg-amber-400/50 rounded-full animate-bounce" />
+              <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce" />
             </div>
           </div>
         )}
@@ -352,14 +352,14 @@ export default function AcheevyAgent() {
               onChange={e => setTextInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSendText()}
               placeholder="Type a message..."
-              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/20 outline-none focus:border-amber-500/30"
+              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/20 outline-none focus:border-gold/30"
             />
             <button
               type="button"
               onClick={handleSendText}
               disabled={!textInput.trim()}
               title="Send text message"
-              className="px-3 py-2 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-400 hover:text-black transition-all disabled:opacity-30"
+              className="px-3 py-2 rounded-lg bg-gold/10 text-gold hover:bg-gold hover:text-black transition-all disabled:opacity-30"
             >
               Send
             </button>
@@ -404,8 +404,8 @@ export default function AcheevyAgent() {
               title={!AGENT_ID ? 'No agent ID configured' : 'Start voice session'}
               className={`p-4 rounded-full transition-all shadow-lg ${
                 isConnecting
-                  ? 'bg-amber-500/50 text-black animate-pulse'
-                  : 'bg-amber-400 text-black hover:bg-amber-300 shadow-amber-500/30'
+                  ? 'bg-gold/50 text-black animate-pulse'
+                  : 'bg-gold text-black hover:bg-gold-light shadow-gold/30'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               <Phone className="w-6 h-6" />

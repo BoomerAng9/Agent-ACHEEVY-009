@@ -75,8 +75,8 @@ function MessageBubble({ message }: { message: Message }) {
       <div
         className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
           isUser
-            ? 'bg-amber-500 text-black rounded-br-sm'
-            : 'bg-white/10 text-amber-50 rounded-bl-sm'
+            ? 'bg-gold text-black rounded-br-sm'
+            : 'bg-white/10 text-white rounded-bl-sm'
         }`}
       >
         {isUser ? (
@@ -85,7 +85,7 @@ function MessageBubble({ message }: { message: Message }) {
           <div className="prose prose-invert prose-sm max-w-none">
             <ReactMarkdown>{message.content}</ReactMarkdown>
             {message.isStreaming && (
-              <span className="inline-block w-1.5 h-4 bg-amber-400 ml-0.5 animate-pulse" />
+              <span className="inline-block w-1.5 h-4 bg-gold ml-0.5 animate-pulse" />
             )}
           </div>
         )}
@@ -256,15 +256,15 @@ export function FloatingACHEEVY() {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/50">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-gold to-gold flex items-center justify-center">
                   <span className="text-xs font-bold text-black">A</span>
                 </div>
-                <span className="text-sm font-medium text-amber-100">ACHEEVY</span>
+                <span className="text-sm font-medium text-white">ACHEEVY</span>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={goToFullChat}
-                  className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-amber-300 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-gold transition-colors"
                   title="Open full chat"
                 >
                   <ExpandIcon className="w-4 h-4" />
@@ -282,10 +282,10 @@ export function FloatingACHEEVY() {
             <div className="h-80 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center mb-3">
-                    <SparkleIcon className="w-6 h-6 text-amber-400" />
+                  <div className="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center mb-3">
+                    <SparkleIcon className="w-6 h-6 text-gold" />
                   </div>
-                  <p className="text-sm text-amber-100/70">Ask me anything</p>
+                  <p className="text-sm text-white/70">Ask me anything</p>
                   <p className="text-xs text-gray-500 mt-1">I'm here to help</p>
                 </div>
               ) : (
@@ -301,7 +301,7 @@ export function FloatingACHEEVY() {
                   <button
                     key={action}
                     onClick={() => setInputValue(action)}
-                    className="text-xs px-2 py-1 rounded-full bg-white/5 text-amber-100/60 hover:bg-white/10 hover:text-amber-100 transition-colors"
+                    className="text-xs px-2 py-1 rounded-full bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-colors"
                   >
                     {action}
                   </button>
@@ -318,9 +318,9 @@ export function FloatingACHEEVY() {
           animate={{
             width: isFocused || inputValue ? 320 : 200,
           }}
-          className="flex items-center gap-2 bg-[#1a1a1a] border border-white/10 rounded-full px-4 py-2.5 shadow-lg hover:border-amber-500/30 transition-colors"
+          className="flex items-center gap-2 bg-[#1a1a1a] border border-white/10 rounded-full px-4 py-2.5 shadow-lg hover:border-gold/30 transition-colors"
         >
-          <div className="w-5 h-5 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center flex-shrink-0">
+          <div className="w-5 h-5 rounded-md bg-gradient-to-br from-gold to-gold flex items-center justify-center flex-shrink-0">
             <span className="text-[10px] font-bold text-black">A</span>
           </div>
 
@@ -334,7 +334,7 @@ export function FloatingACHEEVY() {
             onKeyDown={handleKeyDown}
             placeholder="Ask ACHEEVY..."
             disabled={isStreaming}
-            className="flex-1 bg-transparent text-sm text-amber-50 placeholder:text-gray-500 outline-none min-w-0"
+            className="flex-1 bg-transparent text-sm text-white placeholder:text-gray-500 outline-none min-w-0"
           />
 
           <AnimatePresence>
@@ -345,7 +345,7 @@ export function FloatingACHEEVY() {
                 exit={{ opacity: 0, scale: 0.8 }}
                 onClick={sendMessage}
                 disabled={isStreaming}
-                className="p-1.5 rounded-full bg-amber-500 text-black hover:bg-amber-400 transition-colors disabled:opacity-50"
+                className="p-1.5 rounded-full bg-gold text-black hover:bg-gold transition-colors disabled:opacity-50"
               >
                 <SendIcon className="w-3.5 h-3.5" />
               </motion.button>

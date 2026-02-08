@@ -14,7 +14,7 @@ export default function OnboardingPage() {
           <Link href="/auth/sign-in" className="text-zinc-400 hover:text-white transition-colors">
              <ArrowLeft className="h-6 w-6" />
           </Link>
-          <Link href="/" className="font-display text-amber-50 uppercase tracking-widest">A.I.M.S. Home</Link>
+          <Link href="/" className="font-display text-white uppercase tracking-widest">A.I.M.S. Home</Link>
        </div>
 
        <div className="flex flex-1 items-center justify-center p-4 relative">
@@ -64,7 +64,7 @@ export default function OnboardingPage() {
 
                 <div className="space-y-2">
                    <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">Primary Objective</label>
-                   <select className="flex h-11 w-full rounded-md border border-white/10 bg-black/50 px-3 py-2 text-sm text-amber-50 focus:ring-2 focus:ring-cyan-500/50 outline-none">
+                   <select className="flex h-11 w-full rounded-md border border-white/10 bg-black/50 px-3 py-2 text-sm text-white focus:ring-2 focus:ring-cyan-500/50 outline-none">
                       <option>Deploying internal tools</option>
                       <option>Managed AI Hosting</option>
                       <option>Reselling A.I.M.S. infrastructure</option>

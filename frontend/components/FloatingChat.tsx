@@ -31,22 +31,22 @@ export default function FloatingChat() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/50 sm:hidden"
+              className="absolute inset-0 bg-black/60 sm:hidden"
               onClick={() => setOpen(false)}
             />
-            {/* Chat window */}
+            {/* Chat window — wireframe-card panel */}
             <motion.div
               variants={scaleFade}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="relative z-10 flex flex-col w-full sm:w-[480px] h-[85vh] sm:h-[700px] max-h-[85vh] rounded-2xl border border-amber-400/20 bg-[#0a0a0a] shadow-2xl shadow-amber-900/20 overflow-hidden"
+              className="relative z-10 flex flex-col w-full sm:w-[480px] h-[85vh] sm:h-[700px] max-h-[85vh] wireframe-card overflow-hidden"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-amber-400/10 bg-gradient-to-r from-amber-950/40 to-transparent">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-wireframe-stroke bg-[#0A0A0A]/80 backdrop-blur-xl">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                  <span className="text-sm font-semibold text-amber-200 tracking-wide">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-sm font-semibold text-white tracking-wide">
                     {mode === 'chat' ? 'Chat w/ACHEEVY' : 'ACHEEVY Agent'}
                   </span>
                 </div>
@@ -58,8 +58,8 @@ export default function FloatingChat() {
                     title={mode === 'chat' ? 'Switch to voice agent' : 'Switch to text chat'}
                     className={`p-1.5 rounded-lg transition-colors ${
                       mode === 'voice'
-                        ? 'text-amber-300 bg-amber-500/10'
-                        : 'text-amber-200/40 hover:text-amber-200/70'
+                        ? 'text-gold bg-gold/10'
+                        : 'text-white/40 hover:text-white/70'
                     }`}
                   >
                     <Mic size={16} />
@@ -67,7 +67,7 @@ export default function FloatingChat() {
                   <button
                     onClick={() => setOpen(false)}
                     aria-label="Close Chat"
-                    className="p-1 rounded-lg text-amber-200/60 hover:text-amber-200 hover:bg-amber-200/10 transition-colors"
+                    className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
                   >
                     <X size={18} />
                   </button>
@@ -82,7 +82,7 @@ export default function FloatingChat() {
         )}
       </AnimatePresence>
 
-      {/* Floating button */}
+      {/* Floating button — gold FAB with wireframe ring hover */}
       <AnimatePresence>
         {!open && (
           <motion.button
@@ -94,7 +94,7 @@ export default function FloatingChat() {
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setOpen(true)}
-            className="fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-lg shadow-amber-900/40 hover:shadow-amber-500/50 transition-shadow"
+            className="fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-gold text-black shadow-lg shadow-gold/20 ring-2 ring-transparent hover:ring-gold/40 hover:shadow-gold/30 transition-all"
             aria-label="Open ACHEEVY Chat"
           >
             <MessageSquare size={24} />

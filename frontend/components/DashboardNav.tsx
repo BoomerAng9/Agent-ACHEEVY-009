@@ -10,7 +10,7 @@ const navItems = [
   { href: "/dashboard/your-space", label: "Your Space" },
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/acheevy", label: "ACHEEVY", highlight: true },
-  { href: "/dashboard/chat", label: "Chat (Legacy)" },
+  { href: "/dashboard/chat", label: "Chat w/ACHEEVY" },
   { href: "/dashboard/plan", label: "Plan" },
   { href: "/dashboard/ai-plugs", label: "aiPlugs" },
   { href: "/dashboard/boomerangs", label: "Boomer_Angs" },
@@ -36,8 +36,8 @@ export function DashboardNav() {
   const role = (session?.user as Record<string, unknown> | undefined)?.role;
 
   return (
-    <nav className="flex flex-col gap-1 text-sm text-amber-100/80">
-      <p className="px-3 pb-2 pt-1 text-[0.7rem] uppercase tracking-[0.18em] text-amber-200/60">
+    <nav className="flex flex-col gap-0.5 text-sm">
+      <p className="px-3 pb-2 pt-1 text-[0.6rem] uppercase tracking-[0.2em] text-white/30 font-mono">
         Workspace
       </p>
       {navItems.map((item) => {
@@ -51,20 +51,28 @@ export function DashboardNav() {
             key={item.href}
             href={item.href}
             className={clsx(
-              "mx-1 flex items-center gap-2 rounded-full px-3 py-2 transition-colors",
+              "mx-1 flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors border",
               active
-                ? "bg-amber-300 text-black shadow-[0_0_20px_rgba(250,204,21,0.45)]"
+                ? "border-gold/40 bg-gold/5 text-gold"
                 : isHighlight
-                ? "bg-amber-500/20 text-amber-200 hover:bg-amber-500/30 border border-amber-500/30"
-                : "text-amber-100/75 hover:bg-amber-100/10 hover:text-amber-50"
+                ? "border-gold/20 bg-gold/5 text-gold/80 hover:bg-gold/10"
+                : "border-transparent text-white/60 hover:bg-white/5 hover:border-white/10 hover:text-white/80"
             )}
           >
             <span className={clsx(
-              "h-1.5 w-1.5 rounded-full",
-              isHighlight ? "bg-amber-400 animate-pulse" : "bg-amber-300/80"
+              "h-1.5 w-1.5 rounded-full flex-shrink-0",
+              active
+                ? "bg-gold"
+                : isHighlight
+                ? "bg-gold/60 animate-pulse"
+                : "bg-white/20"
             )} />
-            <span>{item.label}</span>
-            {isHighlight && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-200">NEW</span>}
+            <span className="truncate">{item.label}</span>
+            {isHighlight && (
+              <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded border border-gold/20 bg-gold/10 text-gold/80 font-mono uppercase">
+                New
+              </span>
+            )}
           </Link>
         );
       })}
@@ -76,10 +84,10 @@ export function DashboardNav() {
           <Link
             href="/dashboard/admin"
             className={clsx(
-              "mx-1 flex items-center gap-2 rounded-full px-3 py-2 transition-colors",
+              "mx-1 flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors border",
               pathname === "/dashboard/admin"
-                ? "bg-red-500/20 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
-                : "text-red-400/60 hover:bg-red-500/10 hover:text-red-300"
+                ? "border-red-500/30 bg-red-500/10 text-red-300"
+                : "border-transparent text-red-400/50 hover:bg-red-500/5 hover:border-red-500/15 hover:text-red-300"
             )}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-red-400/80" />

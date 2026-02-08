@@ -121,3 +121,49 @@ export const pulseGlow: Variants = {
     transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
   },
 };
+
+// ── Shelf Slide (for Arsenal horizontal carousel) ──
+
+export const shelfSlide: Variants = {
+  hidden: { opacity: 0, x: 60 },
+  visible: { opacity: 1, x: 0, transition: spring.gentle },
+  exit: { opacity: 0, x: -40, transition: transition.exit },
+};
+
+// ── Card Lift (hover effect for wireframe cards) ──
+
+export const cardLift = {
+  whileHover: { y: -4, boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)" },
+  whileTap: { y: 0 },
+  transition: transition.fast,
+};
+
+// ── Connector Pulse (slow pulse for circuit connector lines) ──
+
+export const connectorPulse: Variants = {
+  idle: { opacity: 0.3 },
+  active: {
+    opacity: [0.3, 0.6, 0.3],
+    transition: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+  },
+};
+
+// ── Hero Stagger (extended stagger for hero elements) ──
+
+export const heroStagger: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+// ── Hero Item (child of heroStagger) ──
+
+export const heroItem: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+};

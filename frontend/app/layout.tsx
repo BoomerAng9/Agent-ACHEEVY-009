@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${doto.variable} ${permanentMarker.variable} ${caveat.variable} ${patrickHand.variable} ${nabla.variable} antialiased min-h-screen bg-[#0a0f1a] text-slate-200 font-sans`}>
+      <body className={`${doto.variable} ${permanentMarker.variable} ${caveat.variable} ${patrickHand.variable} ${nabla.variable} antialiased min-h-screen bg-[#0A0A0A] text-white font-sans`}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -11,52 +11,53 @@ type Props = {
 };
 
 /**
- * LogoWallBackground — tiles the real ACHIEVEMOR gold logo as a
- * repeating background pattern with mode-based opacity and gradient overlay.
+ * LogoWallBackground — Edge-only gold treatment with technical
+ * dot-matrix + grid pattern. Gold ACHIEVEMOR logo appears only
+ * as a subtle corner stamp, never tiled across the page.
  */
 export function LogoWallBackground({ mode = "hero", children }: Props) {
-  const patternOpacity = {
-    hero:      "opacity-[0.18]",
-    auth:      "opacity-[0.22]",
-    form:      "opacity-[0.10]",
-    dashboard: "opacity-[0.08]",
+  // Full dot-matrix + grid for hero/auth; lighter grid-only for dashboard/form
+  const bgClass = {
+    hero:      "aims-page-bg",
+    auth:      "aims-page-bg",
+    form:      "bg-[#0A0A0A]",
+    dashboard: "bg-[#0A0A0A]",
   }[mode];
 
-  const overlayClass = {
-    hero:      "from-black/40 via-black/60 to-black/80",
-    auth:      "from-black/30 via-black/50 to-black/70",
-    form:      "from-black/70 via-black/85 to-black/95",
-    dashboard: "from-black/55 via-black/75 to-black/90",
+  // Gold edge rail for hero/auth modes
+  const edgeClass = {
+    hero:      "gold-edge-rail",
+    auth:      "gold-edge-rail",
+    form:      "",
+    dashboard: "",
   }[mode];
 
   return (
-    <div className="relative min-h-screen bg-[#050507] text-amber-50 overflow-hidden">
-      {/* Layer 0: Tiled ACHIEVEMOR gold logo */}
-      <div
-        className={clsx(
-          "pointer-events-none absolute inset-0 transition-opacity duration-1000 bg-repeat [background-size:220px_220px] [background-image:url('/images/logos/achievemor-gold.png')]",
-          patternOpacity
-        )}
-        aria-hidden="true"
-      />
+    <div className={clsx("relative min-h-screen text-amber-50 overflow-hidden", bgClass, edgeClass)}>
+      {/* Subtle grid overlay for dashboard/form (lighter than aims-page-bg) */}
+      {(mode === "dashboard" || mode === "form") && (
+        <div
+          className="pointer-events-none absolute inset-0 opacity-40 bg-grid-fine [background-size:48px_48px]"
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Layer 1: Depth gradient overlay */}
-      <div
-        className={clsx(
-          "pointer-events-none absolute inset-0 bg-gradient-to-br transition-all duration-700",
-          overlayClass
-        )}
-        aria-hidden="true"
-      />
+      {/* Corner logo stamp — bottom-right, very subtle */}
+      {(mode === "hero" || mode === "auth") && (
+        <div
+          className="pointer-events-none absolute bottom-4 right-4 w-12 h-12 opacity-[0.05] bg-contain bg-no-repeat bg-center z-0 [background-image:url('/images/logos/achievemor-gold.png')]"
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Layer 2: Content */}
+      {/* Content */}
       <main className={clsx(
         "relative z-10 min-h-screen flex flex-col",
-        mode === "hero" || mode === "dashboard" ? "p-4 md:p-8 lg:p-12" : "p-0"
+        mode === "hero" || mode === "dashboard" ? "p-4 md:p-6 lg:p-8 xl:p-12" : "p-0"
       )}>
         <div className={clsx(
           "flex-1 flex flex-col w-full",
-          (mode === "hero" || mode === "dashboard") && "rounded-[32px] border border-white/5 bg-black/20 backdrop-blur-[2px] shadow-2xl"
+          (mode === "hero" || mode === "dashboard") && "rounded-[24px] border border-wireframe-stroke bg-black/20 shadow-wireframe-inner"
         )}>
           {children}
         </div>

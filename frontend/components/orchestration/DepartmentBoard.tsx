@@ -31,7 +31,7 @@ import { DEPARTMENTS, ACHEEVY } from '@/lib/orchestration/types';
 const STATUS_STYLES: Record<BoomerAngStatus, string> = {
   idle: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
   queued: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  working: 'bg-amber-500/20 text-amber-400 border-amber-500/30 animate-pulse',
+  working: 'bg-amber-500/20 text-gold border-amber-500/30 animate-pulse',
   blocked: 'bg-red-500/20 text-red-400 border-red-500/30',
   waiting_on_user: 'bg-orange-500/20 text-orange-400 border-orange-500/30 animate-pulse',
   complete: 'bg-green-500/20 text-green-400 border-green-500/30',
@@ -78,7 +78,7 @@ function AgentNode({ agent, isActive, onClick }: {
       className={`
         w-full p-3 rounded-xl border text-left transition-all
         ${isActive
-          ? 'bg-amber-400/10 border-amber-400/30'
+          ? 'bg-gold/10 border-gold/30'
           : 'bg-white/[0.02] border-white/5 hover:border-white/10'
         }
       `}
