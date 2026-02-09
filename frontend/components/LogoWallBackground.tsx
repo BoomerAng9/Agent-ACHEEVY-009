@@ -50,6 +50,19 @@ export function LogoWallBackground({ mode = "hero", children }: Props) {
         />
       )}
 
+      {/* Dashboard gold watermark — centered, ambient */}
+      {mode === "dashboard" && (
+        <div
+          className="pointer-events-none absolute inset-0 flex items-center justify-center z-0"
+          aria-hidden="true"
+        >
+          <div
+            className="w-[400px] h-[400px] opacity-[0.03] bg-contain bg-no-repeat bg-center"
+            style={{ backgroundImage: "url('/images/logos/achievemor-gold.png')" }}
+          />
+        </div>
+      )}
+
       {/* Content */}
       <main className={clsx(
         "relative z-10 min-h-screen flex flex-col",

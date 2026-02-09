@@ -182,7 +182,7 @@ export default function DashboardPage() {
             Executive Console
           </p>
           <h1 className="text-2xl md:text-3xl font-display uppercase tracking-wider text-white">
-            A.I.M.S. More Plugs
+            Dashboard
           </h1>
         </div>
         <div className="flex items-center gap-2">

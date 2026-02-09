@@ -186,25 +186,25 @@ function ServiceCard({ service }: { service: ServiceStatus }) {
   const typeStyle = typeColors[service.type];
 
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={`p-4 rounded-xl border ${typeStyle.border} ${typeStyle.bg}`}>
+    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={`p-5 rounded-xl border ${typeStyle.border} ${typeStyle.bg} hover:ring-2 hover:ring-white/10 transition-all cursor-default`}>
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <StatusDot status={service.status} />
-          <h3 className="font-medium text-white">{service.name}</h3>
+          <h3 className="text-lg font-semibold text-white">{service.name}</h3>
         </div>
-        <span className={`text-xs px-2 py-1 rounded ${typeStyle.bg} ${typeStyle.text}`}>{service.type.toUpperCase()}</span>
+        <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${typeStyle.bg} ${typeStyle.text}`}>{service.type.toUpperCase()}</span>
       </div>
-      <div className="text-xs text-gray-400 mb-2 font-mono">{service.endpoint}</div>
+      <div className="text-sm text-gray-400 mb-3 font-mono">{service.endpoint}</div>
       {service.features && (
-        <div className="flex flex-wrap gap-1 mb-2">
+        <div className="flex flex-wrap gap-1.5 mb-3">
           {service.features.map((feature) => (
-            <span key={feature} className="px-1.5 py-0.5 rounded text-[10px] bg-black/40 text-gray-300">{feature}</span>
+            <span key={feature} className="px-2 py-1 rounded-lg text-xs bg-black/40 text-gray-300">{feature}</span>
           ))}
         </div>
       )}
-      <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="flex items-center justify-between text-sm text-gray-500 pt-2 border-t border-white/5">
         <span>v{service.version}</span>
-        <span className="capitalize">{service.status}</span>
+        <span className="capitalize font-medium">{service.status}</span>
       </div>
     </motion.div>
   );
@@ -212,28 +212,28 @@ function ServiceCard({ service }: { service: ServiceStatus }) {
 
 function IntegrationRow({ integration }: { integration: Integration }) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-wireframe-stroke">
+    <div className="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-wireframe-stroke hover:border-white/15 transition-all">
       <div className="flex items-center gap-3">
         <StatusDot status={integration.status} />
         <div>
-          <div className="text-sm font-medium text-white">{integration.name}</div>
-          <div className="text-xs text-gray-500">{integration.provider}</div>
+          <div className="text-base font-medium text-white">{integration.name}</div>
+          <div className="text-sm text-gray-500">{integration.provider}</div>
         </div>
       </div>
       <div className="flex items-center gap-4">
         {integration.usageToday !== undefined && (
           <div className="text-right">
-            <div className="text-xs text-gray-400">{integration.usageToday.toLocaleString()} tokens</div>
-            {integration.costToday !== undefined && <div className="text-xs text-gold">${integration.costToday.toFixed(2)}</div>}
+            <div className="text-sm text-gray-400">{integration.usageToday.toLocaleString()} tokens</div>
+            {integration.costToday !== undefined && <div className="text-sm text-gold font-mono">${integration.costToday.toFixed(2)}</div>}
           </div>
         )}
         <div className="flex items-center gap-2">
           {integration.apiKeySet ? (
-            <span className="flex items-center gap-1 text-xs text-green-400"><LockIcon className="w-3 h-3" />Set</span>
+            <span className="flex items-center gap-1.5 text-sm text-green-400"><LockIcon className="w-4 h-4" />Set</span>
           ) : (
-            <span className="text-xs text-red-400">No Key</span>
+            <span className="text-sm text-red-400 font-medium">No Key</span>
           )}
-          <button className="p-1 rounded hover:bg-white/10"><SettingsIcon className="w-4 h-4 text-gray-400" /></button>
+          <button type="button" className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"><SettingsIcon className="w-4 h-4 text-gray-400" /></button>
         </div>
       </div>
     </div>
@@ -242,31 +242,31 @@ function IntegrationRow({ integration }: { integration: Integration }) {
 
 function BoomerAngCard({ ang }: { ang: BoomerAngConfig }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-xl bg-black/40 border border-wireframe-stroke">
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-5 rounded-xl bg-black/40 border border-wireframe-stroke hover:border-gold/20 transition-all">
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <BotIcon className="w-5 h-5 text-gold" />
-          <h4 className="font-medium text-white">{ang.name}</h4>
+        <div className="flex items-center gap-2.5">
+          <BotIcon className="w-6 h-6 text-gold" />
+          <h4 className="text-lg font-semibold text-white">{ang.name}</h4>
         </div>
         <div className="flex items-center gap-2">
           <StatusDot status={ang.status} />
-          <span className="text-xs text-gray-400 capitalize">{ang.status}</span>
+          <span className="text-sm text-gray-400 capitalize font-medium">{ang.status}</span>
         </div>
       </div>
-      <div className="text-sm text-gray-400 mb-2">{ang.role}</div>
-      <div className="text-xs text-gold mb-3">Model: {ang.model}</div>
-      <div className="flex flex-wrap gap-1 mb-3">
+      <div className="text-base text-gray-400 mb-2">{ang.role}</div>
+      <div className="text-sm text-gold mb-3 font-mono">Model: {ang.model}</div>
+      <div className="flex flex-wrap gap-1.5 mb-3">
         {ang.tasks.map((task) => (
-          <span key={task} className="px-2 py-0.5 rounded text-[10px] bg-gold/10 text-gold">{task}</span>
+          <span key={task} className="px-2.5 py-1 rounded-lg text-xs bg-gold/10 text-gold font-medium">{task}</span>
         ))}
       </div>
       <div className="flex items-center justify-between pt-3 border-t border-wireframe-stroke">
-        <div className="flex items-center gap-1">
-          {ang.sandboxed && <span className="flex items-center gap-1 text-xs text-blue-400"><ShieldIcon className="w-3 h-3" />Sandboxed</span>}
+        <div className="flex items-center gap-1.5">
+          {ang.sandboxed && <span className="flex items-center gap-1.5 text-sm text-blue-400"><ShieldIcon className="w-4 h-4" />Sandboxed</span>}
         </div>
         <div className="flex gap-2">
-          <button className="p-1.5 rounded bg-white/5 hover:bg-white/10"><SettingsIcon className="w-4 h-4 text-gray-400" /></button>
-          <button className="p-1.5 rounded bg-white/5 hover:bg-white/10"><PowerIcon className="w-4 h-4 text-gray-400" /></button>
+          <button type="button" className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"><SettingsIcon className="w-4 h-4 text-gray-400" /></button>
+          <button type="button" className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"><PowerIcon className="w-4 h-4 text-gray-400" /></button>
         </div>
       </div>
     </motion.div>
@@ -291,20 +291,25 @@ export default function CircuitBoxPage() {
   const activeAngs = BOOMERANGS.filter((a) => a.status === 'active').length;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#0a0f1a' }}>
+    <div className="min-h-screen relative" style={{ backgroundColor: '#0a0f1a' }}>
       <CircuitBoardPattern density="sparse" animated={false} glowIntensity={0.1} />
 
-      <div className="relative max-w-7xl mx-auto px-6 py-8">
+      {/* Ambient logo watermark */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-0" aria-hidden="true">
+        <div className="w-[500px] h-[500px] opacity-[0.03] bg-contain bg-no-repeat bg-center" style={{ backgroundImage: "url('/images/logos/achievemor-gold.png')" }} />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <header className="mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${AIMS_CIRCUIT_COLORS.primary}, ${AIMS_CIRCUIT_COLORS.accent})`, boxShadow: `0 0 20px ${AIMS_CIRCUIT_COLORS.glow}` }}>
-                <CircuitIcon className="w-6 h-6 text-black" />
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${AIMS_CIRCUIT_COLORS.primary}, ${AIMS_CIRCUIT_COLORS.accent})`, boxShadow: `0 0 24px ${AIMS_CIRCUIT_COLORS.glow}` }}>
+                <CircuitIcon className="w-7 h-7 text-black" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold" style={{ color: AIMS_CIRCUIT_COLORS.secondary }}>Circuit Box</h1>
-                <p className="text-gray-400">Central Integration Hub</p>
+                <h1 className="text-4xl font-bold" style={{ color: AIMS_CIRCUIT_COLORS.secondary }}>Circuit Box</h1>
+                <p className="text-gray-400 text-lg">Central Integration Hub</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -319,25 +324,25 @@ export default function CircuitBoxPage() {
           </div>
 
           {/* Stats Bar */}
-          <div className="grid grid-cols-4 gap-4 mt-6">
-            <div className="p-4 rounded-xl" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}>
-              <div className="text-2xl font-bold text-green-400">{onlineServices}/{SERVICES.length}</div>
-              <div className="text-xs text-gray-400">Services Online</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <div className="p-5 rounded-xl cursor-pointer hover:ring-2 hover:ring-green-400/30 transition-all" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }} onClick={() => setActiveTab('services')}>
+              <div className="text-3xl font-bold text-green-400">{onlineServices}/{SERVICES.length}</div>
+              <div className="text-sm text-gray-400 mt-1">Services Online</div>
             </div>
-            <div className="p-4 rounded-xl" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}>
-              <div className="text-2xl font-bold text-gold">{activeIntegrations}</div>
-              <div className="text-xs text-gray-400">Active Integrations</div>
+            <div className="p-5 rounded-xl cursor-pointer hover:ring-2 hover:ring-gold/30 transition-all" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }} onClick={() => setActiveTab('integrations')}>
+              <div className="text-3xl font-bold text-gold">{activeIntegrations}</div>
+              <div className="text-sm text-gray-400 mt-1">Active Integrations</div>
             </div>
-            <div className="p-4 rounded-xl" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}>
-              <div className="text-2xl font-bold text-blue-400">{activeAngs}</div>
-              <div className="text-xs text-gray-400">Active Boomer_Angs</div>
+            <div className="p-5 rounded-xl cursor-pointer hover:ring-2 hover:ring-blue-400/30 transition-all" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }} onClick={() => setActiveTab('boomerangs')}>
+              <div className="text-3xl font-bold text-blue-400">{activeAngs}</div>
+              <div className="text-sm text-gray-400 mt-1">Active Boomer_Angs</div>
             </div>
-            <div className="p-4 rounded-xl" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }}>
+            <div className="p-5 rounded-xl cursor-pointer hover:ring-2 hover:ring-green-400/30 transition-all" style={{ backgroundColor: '#1a2234', border: '1px solid #2d3a4d' }} onClick={() => setActiveTab('security')}>
               <div className="flex items-center gap-2">
-                <ShieldIcon className="w-6 h-6 text-green-400" />
-                <span className="text-lg font-bold text-green-400">SECURE</span>
+                <ShieldIcon className="w-7 h-7 text-green-400" />
+                <span className="text-xl font-bold text-green-400">SECURE</span>
               </div>
-              <div className="text-xs text-gray-400">Payment Isolation Active</div>
+              <div className="text-sm text-gray-400 mt-1">Payment Isolation Active</div>
             </div>
           </div>
         </header>

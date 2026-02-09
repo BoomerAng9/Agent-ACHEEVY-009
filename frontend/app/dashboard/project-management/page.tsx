@@ -65,6 +65,30 @@ const PMO_OFFICES: PMOOffice[] = [
     kpis: ["Publishing cadence", "Engagement rate", "Audience growth", "Content quality"],
     status: "ACTIVE",
   },
+  {
+    id: "hr-office", code: "HR OFFICE", fullName: "Chief Human Resources Office",
+    mission: "Manage talent acquisition, team culture, performance reviews, and agent workforce planning.",
+    director: { name: "Boomer_CHRO", title: "Chief Human Resources Officer", scope: "Talent strategy, workforce planning, agent onboarding" },
+    departmentalAgent: { name: "Talent Agent", role: "Recruitment automation, skill matching, onboarding workflows" },
+    kpis: ["Agent utilization", "Onboarding speed", "Skill coverage", "Team satisfaction"],
+    status: "ACTIVE",
+  },
+  {
+    id: "sales-office", code: "SALES OFFICE", fullName: "Chief Sales Office",
+    mission: "Drive revenue growth, manage sales pipelines, and optimize conversion funnels.",
+    director: { name: "Boomer_CSO", title: "Chief Sales Officer", scope: "Revenue targets, pipeline management, deal closing" },
+    departmentalAgent: { name: "Deal Closer Agent", role: "Lead qualification, proposal generation, follow-up automation" },
+    kpis: ["Revenue growth", "Pipeline velocity", "Conversion rate", "Deal size"],
+    status: "ACTIVE",
+  },
+  {
+    id: "digital-transformation-office", code: "DIGITAL TRANSFORMATION", fullName: "Chief Digital Transformation Office",
+    mission: "Lead innovation initiatives, digital strategy, and modernization of legacy processes.",
+    director: { name: "Boomer_CDTO", title: "Chief Digital Transformation Officer", scope: "Innovation strategy, process automation, digital roadmap" },
+    departmentalAgent: { name: "Innovation Agent", role: "Process analysis, automation opportunities, technology scouting" },
+    kpis: ["Automation rate", "Process efficiency", "Innovation pipeline", "Digital adoption"],
+    status: "ACTIVE",
+  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -97,7 +121,7 @@ export default function ProjectManagementPage() {
             PROJECT MANAGEMENT
           </h1>
           <p className="text-sm text-amber-100/60 mt-2 max-w-lg">
-            PMO Offices &mdash; 6 C-Suite Boomer_Ang directors governing all operations.
+            PMO Offices &mdash; 9 C-Suite Boomer_Ang directors governing all operations.
             Every request flows through the command chain before reaching execution.
           </p>
         </div>

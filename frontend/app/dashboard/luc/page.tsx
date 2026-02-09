@@ -861,13 +861,13 @@ export default function LUCWorkspacePage() {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden"
                 style={{
                   background: `linear-gradient(135deg, ${AIMS_CIRCUIT_COLORS.primary}, ${AIMS_CIRCUIT_COLORS.accent})`,
                   boxShadow: `0 0 20px ${AIMS_CIRCUIT_COLORS.glow}`,
                 }}
               >
-                <CalculatorIcon className="w-6 h-6 text-black" />
+                <img src="/images/luc/luc-logo.png" alt="LUC" className="w-10 h-10 object-contain" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold" style={{ color: AIMS_CIRCUIT_COLORS.secondary }}>
