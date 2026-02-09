@@ -35,6 +35,10 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
+# Seed LUC data (Docker named volume will copy on first mount)
+COPY --from=builder /app/.luc-data ./.luc-data
+RUN chown -R node:node ./.luc-data
+
 EXPOSE 3000
 
 USER node

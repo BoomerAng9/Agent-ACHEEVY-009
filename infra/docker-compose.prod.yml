@@ -86,6 +86,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    volumes:
+      - luc-data:/app/.luc-data
     restart: always
     networks:
       - aims-network
@@ -441,6 +443,7 @@ volumes:
   openclaw-workspace:
   agent-zero-data:
   n8n-data:
+  luc-data:
 
 networks:
   aims-network:
