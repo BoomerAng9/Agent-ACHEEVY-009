@@ -5,10 +5,13 @@ import { useState, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { DashboardNav } from "./DashboardNav";
+import { DemoBanner } from "./DemoBanner";
 import { LogoWallBackground } from "./LogoWallBackground";
 import { DynamicTagline } from "./DynamicTagline";
 import { MottoBar } from "./MottoBar";
 import { LucUsageWidget } from "./LucUsageWidget";
+
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
 // ── Inline hooks ────────────────────────────────────────────
 
@@ -146,7 +149,10 @@ export function DashboardShell({ children }: Props) {
 
   return (
     <LogoWallBackground mode="dashboard">
-      <div className="flex max-h-screen overflow-hidden">
+      {/* Demo banner — only visible when NEXT_PUBLIC_DEMO_MODE=true */}
+      <DemoBanner />
+
+      <div className={`flex max-h-screen overflow-hidden ${IS_DEMO ? "pt-9" : ""}`}>
         {/* Left rail — wireframe glass sidebar */}
         <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-wireframe-stroke bg-black/60 backdrop-blur-xl lg:flex">
           <div className="px-4 py-5">

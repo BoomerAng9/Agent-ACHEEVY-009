@@ -21,6 +21,7 @@ const userNavItems = [
   { href: "/dashboard/lab", label: "Workbench" },
   { href: "/dashboard/luc", label: "LUC" },
   { href: "/dashboard/make-it-mine", label: "Make It Mine" },
+  { href: "/dashboard/research", label: "R&D Hub" },
   { href: "/dashboard/model-garden", label: "Model Garden" },
   { href: "/dashboard/settings", label: "Settings" },
 ];

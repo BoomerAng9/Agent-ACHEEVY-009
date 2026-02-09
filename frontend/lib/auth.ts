@@ -14,8 +14,11 @@
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+import GithubProvider from 'next-auth/providers/github';
 
-export type UserRole = 'OWNER' | 'USER';
+export type UserRole = 'OWNER' | 'USER' | 'DEMO_USER';
+
+const IS_DEMO = process.env.DEMO_MODE === 'true';
 
 /**
  * Owner email whitelist — comma-separated in OWNER_EMAILS env var.
@@ -46,7 +49,17 @@ export const authOptions: NextAuthOptions = {
         ]
       : []),
 
-    // Credentials — email/password (fallback / dev)
+    // GitHub OAuth — for social integration + sign-in
+    ...(process.env.GITHUB_CLIENT_ID
+      ? [
+          GithubProvider({
+            clientId: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+          }),
+        ]
+      : []),
+
+    // Credentials — email/password (fallback / dev / demo)
     CredentialsProvider({
       name: 'Email',
       credentials: {
@@ -55,6 +68,16 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
+
+        // Demo mode — allow any login with DEMO_USER role
+        if (IS_DEMO && credentials.email.endsWith('@demo.plugmein.cloud')) {
+          return {
+            id: `demo-${Date.now()}`,
+            name: 'Demo Explorer',
+            email: credentials.email,
+            image: null,
+          };
+        }
 
         // Owner bypass — allows platform owner to sign in with any password
         // until a real user DB is wired up
@@ -68,8 +91,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Non-owner credentials require a real DB (not yet wired)
-        // TODO: Replace with DB lookup when persistence layer is connected
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === 'production' && !IS_DEMO) {
           return null;
         }
 
@@ -90,14 +112,18 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: IS_DEMO ? 4 * 60 * 60 : 30 * 24 * 60 * 60, // 4h demo, 30d production
   },
 
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.userId = user.id;
-        token.role = isOwnerEmail(user.email) ? 'OWNER' : 'USER';
+        if (IS_DEMO && !isOwnerEmail(user.email)) {
+          token.role = 'DEMO_USER';
+        } else {
+          token.role = isOwnerEmail(user.email) ? 'OWNER' : 'USER';
+        }
       }
       return token;
     },

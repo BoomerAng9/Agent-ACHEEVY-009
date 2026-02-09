@@ -14,9 +14,13 @@ import { NextRequest, NextResponse } from 'next/server';
 // ─────────────────────────────────────────────────────────────
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const IS_DEMO = process.env.DEMO_MODE === 'true';
 
 const ALLOWED_ORIGINS = IS_PRODUCTION
   ? [
+      'https://plugmein.cloud',
+      'https://www.plugmein.cloud',
+      'https://demo.plugmein.cloud',
       'https://aims.plugmein.cloud',
       'https://www.aims.plugmein.cloud',
       'https://api.aims.plugmein.cloud',
@@ -235,6 +239,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // 0. Demo mode: auto-redirect root to /dashboard or /api/auth/demo-session
+  if (IS_DEMO && pathname === '/') {
+    const hasSession = request.cookies.has('next-auth.session-token') || request.cookies.has('__Secure-next-auth.session-token');
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = hasSession ? '/dashboard' : '/api/auth/demo-session';
+    return NextResponse.redirect(redirectUrl);
+  }
+
   // 1. Honeypot check (block bots probing for vulnerabilities)
   if (isHoneypot(pathname)) {
     console.warn(`[SECURITY] Honeypot triggered: ${ip} -> ${pathname}`);
@@ -269,13 +281,14 @@ export function middleware(request: NextRequest) {
   // 6. Rate limiting for API routes (tiered by endpoint sensitivity)
   // In development, use much higher limits to allow rapid testing
   if (pathname.startsWith('/api')) {
-    let limit = IS_PRODUCTION ? 100 : 1000;
+    const demoFactor = IS_DEMO ? 0.5 : 1; // 50% rate limits in demo mode
+    let limit = IS_PRODUCTION ? Math.floor(100 * demoFactor) : 1000;
     if (pathname.includes('/chat') || pathname.includes('/acheevy')) {
-      limit = IS_PRODUCTION ? 30 : 500; // Stricter for AI endpoints in prod
+      limit = IS_PRODUCTION ? Math.floor(30 * demoFactor) : 500;
     } else if (pathname.includes('/luc')) {
-      limit = IS_PRODUCTION ? 60 : 600; // Medium for billing
+      limit = IS_PRODUCTION ? Math.floor(60 * demoFactor) : 600;
     } else if (pathname.includes('/transcribe') || pathname.includes('/tts')) {
-      limit = IS_PRODUCTION ? 20 : 200; // Strictest for media processing
+      limit = IS_PRODUCTION ? Math.floor(20 * demoFactor) : 200;
     }
     const windowMs = 60 * 1000; // 1 minute
 
