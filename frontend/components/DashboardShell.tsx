@@ -1,8 +1,9 @@
 // frontend/components/DashboardShell.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { DashboardNav } from "./DashboardNav";
 import { LogoWallBackground } from "./LogoWallBackground";
 import { DynamicTagline } from "./DynamicTagline";
@@ -135,6 +136,13 @@ type Props = {
 export function DashboardShell({ children }: Props) {
   const health = useHealthCheck();
   const { balance } = useLucBalance();
+  const mainRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
+
+  // Scroll to top when navigating between pages
+  useEffect(() => {
+    mainRef.current?.scrollTo(0, 0);
+  }, [pathname]);
 
   return (
     <LogoWallBackground mode="dashboard">
@@ -214,7 +222,7 @@ export function DashboardShell({ children }: Props) {
           </header>
 
           {/* Scrollable content */}
-          <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8 xl:px-12">
+          <main ref={mainRef} className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8 xl:px-12">
             <div className="mx-auto max-w-6xl space-y-4 sm:space-y-6">
               {children}
             </div>

@@ -134,13 +134,13 @@ const SERVICES: ServiceStatus[] = [
   { id: 'uef-gateway', name: 'UEF Gateway', type: 'core', status: 'online', endpoint: 'http://uef-gateway:3001', version: '1.0.0', features: ['ACP', 'UCP', 'Orchestration'] },
   { id: 'acheevy', name: 'ACHEEVY', type: 'core', status: 'online', endpoint: 'http://acheevy:3003', version: '1.0.0', features: ['Intent Analysis', 'Payment Processing', 'Executive Control'] },
   { id: 'house-of-ang', name: 'House of Ang', type: 'core', status: 'online', endpoint: 'http://house-of-ang:3002', version: '1.0.0', features: ['Agent Registry', 'Routing', 'Task Assignment'] },
-  { id: 'openclaw', name: 'OpenClaw', type: 'agent', status: 'sandbox', endpoint: 'http://openclaw:8001', version: '2026.2.3', features: ['Multi-model', 'KIMI K2.5', 'Tool Execution'] },
+  { id: 'openclaw', name: 'OpenClaw', type: 'tool', status: 'sandbox', endpoint: 'http://openclaw:18789', version: '2026.2.3', features: ['Multi-model', 'KIMI K2.5', 'Tool Execution'] },
   { id: 'agent-bridge', name: 'Agent Bridge', type: 'core', status: 'online', endpoint: 'http://agent-bridge:3010', version: '1.0.0', features: ['Security Gateway', 'Rate Limiting', 'Payment Blocking'] },
   { id: 'n8n', name: 'n8n Automation', type: 'tool', status: 'sandbox', endpoint: 'http://n8n:5678', version: 'latest', features: ['Workflows', 'Webhooks', 'Integrations'] },
 ];
 
 const INTEGRATIONS: Integration[] = [
-  { id: 'claude', name: 'Claude Opus 4.5', provider: 'Anthropic', type: 'ai_model', status: 'active', apiKeySet: true, usageToday: 12500, costToday: 0.45 },
+  { id: 'claude', name: 'Claude Opus 4.6', provider: 'Anthropic', type: 'ai_model', status: 'active', apiKeySet: true, usageToday: 12500, costToday: 0.45 },
   { id: 'kimi', name: 'KIMI K2.5', provider: 'Moonshot', type: 'ai_model', status: 'active', apiKeySet: true, usageToday: 8200, costToday: 0.12 },
   { id: 'deepseek', name: 'DeepSeek V3.2', provider: 'DeepSeek', type: 'ai_model', status: 'active', apiKeySet: true, usageToday: 5400, costToday: 0.08 },
   { id: 'openrouter', name: 'OpenRouter', provider: 'OpenRouter', type: 'ai_model', status: 'active', apiKeySet: true },
@@ -150,11 +150,11 @@ const INTEGRATIONS: Integration[] = [
 ];
 
 const BOOMERANGS: BoomerAngConfig[] = [
-  { id: 'engineer-ang', name: 'EngineerAng', role: 'Software Development', status: 'active', model: 'claude-opus-4.5', tasks: ['Code Generation', 'Refactoring', 'Bug Fixes'], permissions: ['read', 'write', 'execute'], sandboxed: true },
-  { id: 'researcher-ang', name: 'ResearcherAng', role: 'Research & Analysis', status: 'active', model: 'kimi-k2.5', tasks: ['Web Search', 'Data Analysis', 'Summarization'], permissions: ['read', 'search'], sandboxed: true },
-  { id: 'marketer-ang', name: 'MarketerAng', role: 'Marketing & Content', status: 'standby', model: 'claude-sonnet-4.5', tasks: ['Content Generation', 'SEO', 'Social Media'], permissions: ['read', 'write'], sandboxed: true },
-  { id: 'seller-ang', name: 'SellerAng', role: 'E-commerce', status: 'active', model: 'deepseek-v3.2', tasks: ['Listing Optimization', 'Market Research', 'Pricing'], permissions: ['read', 'analyze'], sandboxed: true },
-  { id: 'quality-ang', name: 'QualityAng', role: 'Quality Assurance', status: 'standby', model: 'claude-opus-4.5', tasks: ['ORACLE Verification', 'Testing', 'Code Review'], permissions: ['read', 'test'], sandboxed: true },
+  { id: 'engineer-ang', name: 'Engineer_Ang', role: 'Software Development', status: 'active', model: 'claude-opus-4.6', tasks: ['Code Generation', 'Refactoring', 'Bug Fixes'], permissions: ['read', 'write', 'execute'], sandboxed: true },
+  { id: 'researcher-ang', name: 'Researcher_Ang', role: 'Research & Analysis', status: 'active', model: 'kimi-k2.5', tasks: ['Web Search', 'Data Analysis', 'Summarization'], permissions: ['read', 'search'], sandboxed: true },
+  { id: 'marketer-ang', name: 'Marketer_Ang', role: 'Marketing & Content', status: 'standby', model: 'claude-sonnet-4.5', tasks: ['Content Generation', 'SEO', 'Social Media'], permissions: ['read', 'write'], sandboxed: true },
+  { id: 'seller-ang', name: 'Seller_Ang', role: 'E-commerce', status: 'active', model: 'deepseek-v3.2', tasks: ['Listing Optimization', 'Market Research', 'Pricing'], permissions: ['read', 'analyze'], sandboxed: true },
+  { id: 'quality-ang', name: 'Quality_Ang', role: 'Quality Assurance', status: 'standby', model: 'claude-opus-4.6', tasks: ['ORACLE Verification', 'Testing', 'Code Review'], permissions: ['read', 'test'], sandboxed: true },
 ];
 
 // ─────────────────────────────────────────────────────────────

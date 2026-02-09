@@ -6,81 +6,99 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import clsx from "clsx";
 
-const navItems = [
+// ── User-facing navigation ──────────────────────────────────
+const userNavItems = [
   { href: "/dashboard/your-space", label: "Your Space" },
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/acheevy", label: "ACHEEVY", highlight: true },
   { href: "/dashboard/chat", label: "Chat w/ACHEEVY" },
   { href: "/dashboard/plan", label: "Plan" },
   { href: "/dashboard/plugs", label: "aiPlugs" },
-  { href: "/dashboard/boomerangs", label: "Boomer_Angs" },
+  { href: "/dashboard/build", label: "Build" },
   { href: "/dashboard/house-of-ang", label: "House of Ang" },
   { href: "/dashboard/project-management", label: "PMO Offices" },
-  { href: "/dashboard/lab", label: "Lab" },
-  { href: "/dashboard/luc", label: "LUC Usage" },
-  { href: "/dashboard/circuit-box", label: "Circuit Box" },
-  { href: "/dashboard/build", label: "Build" },
   { href: "/dashboard/workstreams", label: "Workstreams" },
+  { href: "/dashboard/lab", label: "Workbench" },
+  { href: "/dashboard/luc", label: "LUC" },
   { href: "/dashboard/make-it-mine", label: "Make It Mine" },
+  { href: "/dashboard/model-garden", label: "Model Garden" },
+  { href: "/dashboard/settings", label: "Settings" },
+];
+
+// ── Admin-only (Circuit Box) navigation ─────────────────────
+const adminNavItems = [
+  { href: "/dashboard/circuit-box", label: "Circuit Box" },
+  { href: "/dashboard/boomerangs", label: "Boomer_Angs" },
+  { href: "/dashboard/operations", label: "Operations" },
   { href: "/dashboard/gates", label: "Gates & Evidence" },
   { href: "/dashboard/environments", label: "Environments" },
   { href: "/dashboard/security", label: "Security Center" },
-  { href: "/dashboard/operations", label: "Operations" },
-  { href: "/dashboard/model-garden", label: "Model Garden" },
   { href: "/dashboard/sports-tracker", label: "Sports Tracker" },
-  { href: "/dashboard/settings", label: "Settings" },
 ];
+
+function NavLink({ item, pathname }: { item: { href: string; label: string; highlight?: boolean }; pathname: string | null }) {
+  const active =
+    pathname === item.href ||
+    (item.href !== "/dashboard" && pathname?.startsWith(item.href));
+  const isHighlight = item.highlight;
+
+  return (
+    <Link
+      href={item.href}
+      className={clsx(
+        "mx-1 flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors border",
+        active
+          ? "border-gold/40 bg-gold/5 text-gold"
+          : isHighlight
+          ? "border-gold/20 bg-gold/5 text-gold/80 hover:bg-gold/10"
+          : "border-transparent text-white/60 hover:bg-white/5 hover:border-white/10 hover:text-white/80"
+      )}
+    >
+      <span className={clsx(
+        "h-1.5 w-1.5 rounded-full flex-shrink-0",
+        active
+          ? "bg-gold"
+          : isHighlight
+          ? "bg-gold/60 animate-pulse"
+          : "bg-white/20"
+      )} />
+      <span className="truncate">{item.label}</span>
+      {isHighlight && (
+        <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded border border-gold/20 bg-gold/10 text-gold/80 font-mono uppercase">
+          New
+        </span>
+      )}
+    </Link>
+  );
+}
 
 export function DashboardNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const role = (session?.user as Record<string, unknown> | undefined)?.role;
+  const isAdmin = role === "OWNER";
 
   return (
     <nav className="flex flex-col gap-0.5 text-sm">
       <p className="px-3 pb-2 pt-1 text-[0.6rem] uppercase tracking-[0.2em] text-white/30 font-mono">
         Workspace
       </p>
-      {navItems.map((item) => {
-        const active =
-          pathname === item.href ||
-          (item.href !== "/dashboard" && pathname?.startsWith(item.href));
-        const isHighlight = 'highlight' in item && item.highlight;
 
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={clsx(
-              "mx-1 flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors border",
-              active
-                ? "border-gold/40 bg-gold/5 text-gold"
-                : isHighlight
-                ? "border-gold/20 bg-gold/5 text-gold/80 hover:bg-gold/10"
-                : "border-transparent text-white/60 hover:bg-white/5 hover:border-white/10 hover:text-white/80"
-            )}
-          >
-            <span className={clsx(
-              "h-1.5 w-1.5 rounded-full flex-shrink-0",
-              active
-                ? "bg-gold"
-                : isHighlight
-                ? "bg-gold/60 animate-pulse"
-                : "bg-white/20"
-            )} />
-            <span className="truncate">{item.label}</span>
-            {isHighlight && (
-              <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded border border-gold/20 bg-gold/10 text-gold/80 font-mono uppercase">
-                New
-              </span>
-            )}
-          </Link>
-        );
-      })}
+      {userNavItems.map((item) => (
+        <NavLink key={item.href} item={item} pathname={pathname} />
+      ))}
 
-      {/* Owner-only admin link */}
-      {role === "OWNER" && (
+      {/* Admin / Circuit Box section — only for OWNER */}
+      {isAdmin && (
         <>
+          <div className="mx-3 my-2 border-t border-gold/10" />
+          <p className="px-3 pb-1 pt-1 text-[0.55rem] uppercase tracking-[0.2em] text-gold/30 font-mono">
+            Circuit Box
+          </p>
+          {adminNavItems.map((item) => (
+            <NavLink key={item.href} item={item} pathname={pathname} />
+          ))}
+
           <div className="mx-3 my-2 border-t border-red-500/20" />
           <Link
             href="/dashboard/admin"

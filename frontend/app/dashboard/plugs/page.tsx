@@ -76,7 +76,7 @@ export default function PlugsPage() {
           </p>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl md:text-3xl font-display uppercase tracking-wider text-white">
-              A.I.M.S. More Plugs
+              Deploy Like a Champion Today
             </h1>
             <span className="flex h-5 min-w-5 items-center justify-center rounded border border-gold/20 bg-gold/5 px-1.5 text-[0.6rem] font-mono text-gold">
               {plugs.length}

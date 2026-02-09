@@ -12,7 +12,7 @@
  * - Import/Export data
  * - View usage history
  *
- * LUC = Live Usage Calculator
+ * LUC = Locale Universal Calculator
  * A.I.M.S. core execution service for quota gating and cost tracking.
  */
 
@@ -871,7 +871,7 @@ export default function LUCWorkspacePage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold" style={{ color: AIMS_CIRCUIT_COLORS.secondary }}>
-                  LUC - Usage Calculator
+                  LUC — Locale Universal Calculator
                 </h1>
                 <p className="text-gray-400">
                   Track quotas, estimate costs, and manage your resource usage

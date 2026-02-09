@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { heroStagger, heroItem } from "@/lib/motion";
 
@@ -32,33 +33,51 @@ export function HeroAcheevy() {
           variants={heroItem}
           className="max-w-xl text-sm leading-relaxed text-muted"
         >
-          Orchestrate Boomer_Ang agents, aiPlugs, and A.I.M.S. workflows from a
-          single executive console, while you stay in the loop as final approver.
+          Deploy Boomer_Angs, build aiPlugs, and manage your entire digital
+          operation from one executive console — while you stay in the loop
+          as the final approver.
         </motion.p>
+
+        {/* Activity Breeds Activity — prominent */}
+        <motion.p
+          variants={heroItem}
+          className="font-display text-2xl md:text-3xl uppercase tracking-[0.15em] text-gold text-shadow-gold pt-2"
+        >
+          Activity Breeds Activity
+        </motion.p>
+
         <motion.div
           variants={heroItem}
           className="flex flex-wrap gap-3 pt-4"
         >
-          <motion.button
+          <motion.div
             whileHover={{
               scale: 1.05,
               boxShadow: "0 0 30px rgba(212,168,67,0.25)",
             }}
             whileTap={{ scale: 0.95 }}
-            className="rounded-full bg-gold px-8 py-3 text-sm font-semibold text-black shadow-neon-gold transition-colors hover:bg-gold-light"
           >
-            Start my project
-          </motion.button>
-          <motion.button
+            <Link
+              href="/dashboard/build"
+              className="inline-flex rounded-full bg-gold px-8 py-3 text-sm font-semibold text-black shadow-neon-gold transition-colors hover:bg-gold-light"
+            >
+              Start My Project
+            </Link>
+          </motion.div>
+          <motion.div
             whileHover={{
               scale: 1.05,
               borderColor: "rgba(212,168,67,0.3)",
             }}
             whileTap={{ scale: 0.95 }}
-            className="rounded-full border border-wireframe-stroke bg-white/5 px-6 py-3 text-sm text-white backdrop-blur-sm hover:bg-white/10 transition-all"
           >
-            Watch ACHEEVY in action
-          </motion.button>
+            <Link
+              href="/chat"
+              className="inline-flex rounded-full border border-wireframe-stroke bg-white/5 px-6 py-3 text-sm text-white backdrop-blur-sm hover:bg-white/10 transition-all"
+            >
+              Chat w/ACHEEVY
+            </Link>
+          </motion.div>
         </motion.div>
       </motion.div>
 

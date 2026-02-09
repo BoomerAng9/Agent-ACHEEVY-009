@@ -27,7 +27,7 @@ export default function LabPage() {
       const data = await res.json();
       setResult(data);
     } catch {
-      setResult({ status: "ERROR", message: "UEF Gateway unreachable. Ensure Docker is running." });
+      setResult({ status: "ERROR", message: "Service temporarily unavailable. Please try again." });
     } finally {
       setLoading(false);
     }
@@ -37,10 +37,10 @@ export default function LabPage() {
     <div className="space-y-6 animate-in fade-in duration-700">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight text-amber-50 font-display">
-          LAB
+          WORKBENCH
         </h1>
         <p className="text-sm text-amber-100/70">
-          Experimental workspace. Test ACP requests, inspect UEF responses, and prototype agent workflows.
+          Your sandbox and playground. Test your ideas, preview Plugs, and see real results before you deploy.
         </p>
       </header>
 
@@ -49,13 +49,13 @@ export default function LabPage() {
         <div className="flex items-center gap-2 mb-4">
           <FlaskConical size={16} className="text-amber-300" />
           <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
-            ACP Request Builder
+            Describe What You Want to Build
           </h2>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-xs text-amber-100/60 uppercase tracking-wider">Natural Language Query</label>
+            <label className="text-xs text-amber-100/60 uppercase tracking-wider">Tell us your idea</label>
             <textarea
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -71,7 +71,7 @@ export default function LabPage() {
               className="flex items-center gap-2 rounded-full bg-amber-300 px-6 py-2.5 text-xs font-bold text-black transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               <Play size={14} />
-              {loading ? "Running..." : "Run Experiment"}
+              {loading ? "Testing..." : "Test My Idea"}
             </button>
             <button
               onClick={() => { setQuery(""); setResult(null); }}
@@ -94,12 +94,12 @@ export default function LabPage() {
               <AlertTriangle size={16} className="text-red-400" />
             )}
             <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display">
-              UEF Response
+              Results
             </h2>
             <span className={`ml-auto text-[10px] uppercase font-bold tracking-wider ${
               result.status === "SUCCESS" ? "text-emerald-400" : "text-red-400"
             }`}>
-              {result.status}
+              {result.status === "SUCCESS" ? "Ready" : "Error"}
             </span>
           </div>
 
@@ -132,7 +132,7 @@ export default function LabPage() {
       {/* Quick Templates */}
       <section className="rounded-3xl border border-white/10 bg-black/60 p-6 backdrop-blur-2xl">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-amber-200/90 font-display mb-4">
-          Quick Templates
+          Try One of These
         </h2>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {[

@@ -10,7 +10,7 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { heroStagger, heroItem, cardLift, staggerContainer, staggerItem } from '@/lib/motion/variants';
+import { heroStagger, heroItem, staggerContainer, staggerItem } from '@/lib/motion/variants';
 
 // Lazy-load Remotion Player — no SSR
 const RemotionPlayer = dynamic(
@@ -59,8 +59,8 @@ export function Hero() {
               variants={heroItem}
               className="text-lg md:text-xl text-white/50 max-w-lg leading-relaxed"
             >
-              AI-orchestrated automation that builds, deploys, and manages
-              your entire digital operation.
+              Your AI-powered executive team that manages projects, deploys
+              Boomer_Angs, and scales your business — while you stay in the loop.
             </motion.p>
 
             {/* CTAs */}
@@ -124,25 +124,16 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
+      {/* Activity Breeds Activity motto */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center"
       >
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-[0.6rem] text-white/20 uppercase tracking-[0.3em] font-mono">
-            Scroll to explore
-          </span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="w-5 h-8 rounded-full border border-white/10 flex items-start justify-center p-1.5"
-          >
-            <div className="w-1 h-1 rounded-full bg-gold" />
-          </motion.div>
-        </div>
+        <p className="font-display text-xl md:text-2xl uppercase tracking-[0.3em] text-gold text-shadow-gold">
+          Activity Breeds Activity
+        </p>
       </motion.div>
     </section>
   );
@@ -155,34 +146,40 @@ export function Hero() {
 export function FeatureSection() {
   const features = [
     {
-      title: 'ACHEEVY Assistant',
-      description: 'Your AI executive assistant that orchestrates complex tasks across departments.',
+      title: 'ACHEEVY',
+      description: 'Your AI executive assistant. Think it, prompt it, let ACHEEVY build it.',
       icon: '🎯',
+      href: '/dashboard/acheevy',
     },
     {
-      title: 'Boomer_Ang Agents',
-      description: 'Specialized AI workers that handle everything from research to code generation.',
-      icon: '🤖',
+      title: 'Boomer_Angs',
+      description: 'Your team of specialized AI workers deployed to handle tasks across departments.',
+      icon: '🪃',
+      href: '/dashboard/house-of-ang',
     },
     {
       title: 'Model Garden',
-      description: '200+ AI models at your fingertips — Claude, GPT, Gemini, and more.',
+      description: '200+ AI models at your fingertips — Claude, Gemini, DeepSeek, and more.',
       icon: '🌱',
+      href: '/dashboard/model-garden',
     },
     {
-      title: 'Circuit Box',
-      description: 'Clean system management dashboard for wiring all your integrations.',
-      icon: '⚡',
+      title: 'aiPlugs',
+      description: 'Production-ready apps and tools built by ACHEEVY, deployed to your business.',
+      icon: '🔌',
+      href: '/dashboard/plugs',
     },
     {
-      title: 'LUC Calculator',
-      description: 'Real-time usage tracking and quota management with smart gating.',
-      icon: '📊',
+      title: 'Locale Universal Calculator',
+      description: 'Track your usage, estimate costs, and manage your pay-per-use billing.',
+      icon: '🧮',
+      href: '/dashboard/luc',
     },
     {
       title: 'House of Ang',
-      description: 'Browse, hire, and manage your team of specialized AI agents.',
+      description: 'The factory floor — deploy, manage, and monitor your Boomer_Ang workforce.',
       icon: '🏠',
+      href: '/dashboard/house-of-ang',
     },
   ];
 
@@ -218,11 +215,12 @@ export function FeatureSection() {
               variants={staggerItem}
               whileHover={{ y: -6, boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(212,168,67,0.08)", borderColor: "rgba(212,168,67,0.3)" }}
               whileTap={{ y: 0 }}
-              className="wireframe-card p-6 cursor-default"
             >
-              <div className="text-3xl mb-4">{feature.icon}</div>
-              <h3 className="text-lg font-medium text-white mb-2">{feature.title}</h3>
-              <p className="text-sm text-white/40 leading-relaxed">{feature.description}</p>
+              <Link href={feature.href} className="wireframe-card p-6 block h-full hover:border-gold/20 transition-colors">
+                <div className="text-3xl mb-4">{feature.icon}</div>
+                <h3 className="text-lg font-medium text-white mb-2">{feature.title}</h3>
+                <p className="text-sm text-white/40 leading-relaxed">{feature.description}</p>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
