@@ -68,18 +68,22 @@ export function Hero() {
               variants={heroItem}
               className="flex flex-col sm:flex-row gap-3 pt-2"
             >
-              <Link
-                href="/chat"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-3.5 text-sm font-medium text-black transition-colors hover:bg-gold-light"
-              >
-                Chat w/ACHEEVY
-              </Link>
-              <Link
-                href="/dashboard/build"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-wireframe-stroke px-6 py-3.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/5 hover:border-white/20 hover:text-white"
-              >
-                Build + Deploy
-              </Link>
+              <motion.div whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(212,168,67,0.25)" }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  href="/chat"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-3.5 text-sm font-medium text-black transition-colors hover:bg-gold-light"
+                >
+                  Chat w/ACHEEVY
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05, borderColor: "rgba(212,168,67,0.3)" }} whileTap={{ scale: 0.95 }}>
+                <Link
+                  href="/dashboard/build"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-wireframe-stroke px-6 py-3.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/5 hover:border-white/20 hover:text-white"
+                >
+                  Build + Deploy
+                </Link>
+              </motion.div>
             </motion.div>
 
             {/* Stats */}
@@ -212,7 +216,8 @@ export function FeatureSection() {
             <motion.div
               key={feature.title}
               variants={staggerItem}
-              {...cardLift}
+              whileHover={{ y: -6, boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(212,168,67,0.08)", borderColor: "rgba(212,168,67,0.3)" }}
+              whileTap={{ y: 0 }}
               className="wireframe-card p-6 cursor-default"
             >
               <div className="text-3xl mb-4">{feature.icon}</div>

@@ -3,8 +3,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { staggerContainer, staggerItem } from "@/lib/motion/variants";
+import { motion, AnimatePresence } from "framer-motion";
+import { staggerContainer, staggerItem } from "@/lib/motion";
 import {
   Activity,
   ArrowRight,
@@ -62,7 +62,12 @@ export default function PlugsPage() {
   const liveCount = plugs.filter((p) => p.status === "live" || p.status === "deployed").length;
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      variants={staggerContainer}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -98,12 +103,12 @@ export default function PlugsPage() {
           { label: "Building", value: plugs.filter((p) => p.status === "building").length, color: "text-blue-400" },
           { label: "Total Requests", value: plugs.reduce((s, p) => s + (p.requests || 0), 0).toLocaleString(), color: "text-gold" },
         ].map((stat) => (
-          <div key={stat.label} className="wireframe-card p-4 text-center">
+          <motion.div key={stat.label} variants={staggerItem} whileHover={{ scale: 1.03, borderColor: "rgba(212,168,67,0.3)" }} className="wireframe-card p-4 text-center">
             <p className="text-[0.55rem] uppercase tracking-widest text-white/30 font-mono">
               {stat.label}
             </p>
             <p className={`text-xl font-display mt-1 ${stat.color}`}>{stat.value}</p>
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -292,6 +297,6 @@ export default function PlugsPage() {
           Open Build Wizard <ArrowRight size={12} />
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 }

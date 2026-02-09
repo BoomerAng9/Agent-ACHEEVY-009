@@ -2,6 +2,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { staggerContainer, staggerItem, fadeUp } from "@/lib/motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -224,7 +226,12 @@ export default function BuildWizardPage() {
   const templateData = TEMPLATES.find((t) => t.id === selectedTemplate);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="space-y-6"
+    >
       {/* Header */}
       <header>
         <p className="text-[0.6rem] uppercase tracking-[0.25em] text-gold/50 mb-1 font-mono">
@@ -278,9 +285,10 @@ export default function BuildWizardPage() {
 
       {/* Step Content */}
       <div className="min-h-[400px]">
+        <AnimatePresence mode="wait">
         {/* Step 1: Choose Template */}
         {step === 1 && (
-          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+          <motion.div key="step-1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-4">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-white/80">
               Choose a Template
             </h2>
@@ -347,12 +355,12 @@ export default function BuildWizardPage() {
                 Start from scratch with full control over every aspect.
               </p>
             </button>
-          </div>
+          </motion.div>
         )}
 
         {/* Step 2: Define Features */}
         {step === 2 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+          <motion.div key="step-2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-white/80">
               Define Features
             </h2>
@@ -441,12 +449,12 @@ export default function BuildWizardPage() {
                 />
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Step 3: Branding */}
         {step === 3 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+          <motion.div key="step-3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-white/80">
               Branding
             </h2>
@@ -585,12 +593,12 @@ export default function BuildWizardPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Step 4: Review & Launch */}
         {step === 4 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+          <motion.div key="step-4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-white/80">
               Review &amp; Launch
             </h2>
@@ -792,8 +800,9 @@ export default function BuildWizardPage() {
                 </p>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
       {/* Navigation */}
@@ -818,6 +827,6 @@ export default function BuildWizardPage() {
           <div />
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

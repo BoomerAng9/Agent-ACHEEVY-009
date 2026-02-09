@@ -2,6 +2,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { staggerContainer, staggerItem } from "@/lib/motion";
 import {
   Activity,
   Bell,
@@ -255,9 +257,14 @@ export default function OperationsPage() {
   const [activeTab, setActiveTab] = useState<"alerts" | "incidents" | "traces">("alerts");
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700">
+    <motion.div
+      variants={staggerContainer}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
       {/* ---- Header ---- */}
-      <section className="rounded-3xl border border-amber-300/20 bg-gradient-to-r from-amber-400/5 via-black/80 to-black/60 p-6 shadow-[0_0_40px_rgba(251,191,36,0.08)]">
+      <motion.section variants={staggerItem} className="rounded-3xl border border-amber-300/20 bg-gradient-to-r from-amber-400/5 via-black/80 to-black/60 p-6 shadow-[0_0_40px_rgba(251,191,36,0.08)]">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -281,14 +288,16 @@ export default function OperationsPage() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ---- Top Metrics Row ---- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {TOP_METRICS.map((metric) => (
-          <div
+          <motion.div
             key={metric.label}
-            className={`rounded-2xl border ${metric.border} ${metric.bg} p-5 ${metric.glow} backdrop-blur-2xl transition-all hover:scale-[1.02]`}
+            variants={staggerItem}
+            whileHover={{ scale: 1.03, y: -2 }}
+            className={`rounded-2xl border ${metric.border} ${metric.bg} p-5 ${metric.glow} backdrop-blur-2xl transition-all`}
           >
             <div className="flex items-center justify-between">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-100/50">
@@ -300,7 +309,7 @@ export default function OperationsPage() {
               {metric.value}
             </p>
             <p className="text-[10px] text-amber-100/30 mt-1">{metric.sub}</p>
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -686,6 +695,6 @@ export default function OperationsPage() {
           ))}
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 }
