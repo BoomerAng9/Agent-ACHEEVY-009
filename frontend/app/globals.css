@@ -199,3 +199,125 @@ body {
     left: 0;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Deploy Dock — Lo-fi Retro-Futurism Effects
+   ───────────────────────────────────────────────────────────── */
+
+/* Scanline animation for Transfer View */
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.animate-scan {
+  animation: scan 4s linear infinite;
+}
+
+/* Subtle grain overlay */
+.texture-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Pulse glow for active elements */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 168, 67, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(212, 168, 67, 0.3); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Materialize entrance effect */
+@keyframes materialize {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
+.animate-materialize {
+  animation: materialize 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Swarm convergence for Hatch animation */
+@keyframes swarm-converge {
+  0% {
+    transform: translate(var(--swarm-x, 0), var(--swarm-y, 0)) scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-swarm {
+  animation: swarm-converge 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Protocol line connection animation */
+@keyframes line-connect {
+  0% { transform: scaleX(0); transform-origin: left; }
+  100% { transform: scaleX(1); transform-origin: left; }
+}
+
+.animate-line-connect {
+  animation: line-connect 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Launch pulse animation */
+@keyframes launch-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+
+.animate-launch-pulse {
+  animation: launch-pulse 2s ease-in-out infinite;
+}
+
+/* Glass box timeline marker */
+.timeline-dot {
+  position: relative;
+}
+
+.timeline-dot::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 0;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: var(--background);
+}
+
+/* Scrollbar for ACHEEVY panel */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 168, 67, 0.3);
+}
