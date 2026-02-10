@@ -1,31 +1,25 @@
 // frontend/app/api/auth/demo-session/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/auth/demo-session
  *
  * When DEMO_MODE=true, auto-creates a guest session and redirects to /dashboard.
- * Uses NextAuth credentials provider under the hood.
+ * Uses the request's host header to build absolute URLs (avoids localhost fallback).
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   const isDemo = process.env.DEMO_MODE === "true";
+  const proto = request.headers.get("x-forwarded-proto") || "https";
+  const host = request.headers.get("host") || "demo.plugmein.cloud";
+  const baseUrl = `${proto}://${host}`;
 
   if (!isDemo) {
-    return NextResponse.redirect(new URL("/sign-in", process.env.NEXTAUTH_URL || "http://localhost:3000"));
+    return NextResponse.redirect(new URL("/sign-in", baseUrl));
   }
 
-  // Generate a unique guest ID
-  const guestId = `demo-guest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-
-  // Redirect to the NextAuth sign-in endpoint with demo credentials
-  const signInUrl = new URL("/api/auth/callback/credentials", process.env.NEXTAUTH_URL || "http://localhost:3000");
-  signInUrl.searchParams.set("email", `${guestId}@demo.plugmein.cloud`);
-  signInUrl.searchParams.set("password", "demo-access");
-  signInUrl.searchParams.set("callbackUrl", "/dashboard");
-
-  // In practice, we redirect to the sign-in page with pre-filled demo credentials
-  // The credentials provider in auth.ts handles DEMO_USER role assignment
-  const redirectUrl = new URL("/sign-in", process.env.NEXTAUTH_URL || "http://localhost:3000");
+  // Redirect to sign-in with demo flag — credentials provider in auth.ts
+  // handles DEMO_USER role assignment
+  const redirectUrl = new URL("/sign-in", baseUrl);
   redirectUrl.searchParams.set("demo", "true");
   redirectUrl.searchParams.set("callbackUrl", "/dashboard");
 
