@@ -22,11 +22,28 @@ import { DepartmentBoard } from '@/components/orchestration/DepartmentBoard';
 import { UserInputModal } from '@/components/change-order/UserInputModal';
 import type { ChatMessage } from '@/lib/chat/types';
 import type { ChangeOrder } from '@/lib/change-order/types';
+import type { ChangeOrder } from '@/lib/change-order/types';
 import { formatCurrency } from '@/lib/change-order/types';
+import { PERSONAS } from '@/lib/acheevy/persona';
 
 // ─────────────────────────────────────────────────────────────
 // Icons (inline SVG for simplicity)
 // ─────────────────────────────────────────────────────────────
+
+const GlobeIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
+
+const UserIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
 
 const MicIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
   <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -284,10 +301,16 @@ export function ChatInterface({
   welcomeMessage,
   autoPlayVoice = true,
   showOrchestration = true,
+  showOrchestration = true,
 }: ChatInterfaceProps) {
   const [inputValue, setInputValue] = useState('');
   const [showBoard, setShowBoard] = useState(false);
   const [showInputModal, setShowInputModal] = useState(false);
+  
+  // New State for Persona and Language
+  const [selectedPersona, setSelectedPersona] = useState(PERSONAS[0].id);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -330,7 +353,10 @@ export function ChatInterface({
     regenerate,
     stopGeneration,
   } = useStreamingChat({
+    stopGeneration,
+  } = useStreamingChat({
     sessionId,
+    personaId: selectedPersona, // Pass selected persona
     model,
     onMessageStart: () => {
       // Start orchestration when streaming begins
@@ -389,6 +415,10 @@ export function ChatInterface({
 
   // Voice input
   const voiceInput = useVoiceInput({
+    config: {
+      provider: 'groq',
+      language: selectedLanguage,
+    },
     onTranscript: (result) => {
       setInputValue(result.text);
       // Auto-send after voice input
@@ -498,7 +528,28 @@ export function ChatInterface({
               <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center">
                 <span className="text-2xl font-bold font-display text-gold">A</span>
               </div>
-              <h2 className="text-xl font-medium text-white mb-2">Chat w/ACHEEVY</h2>
+              
+              {/* Persona Selector (Main View) */}
+              <div className="flex justify-center mb-4">
+                <div className="flex items-center gap-2 bg-white/5 rounded-full px-1 py-1 border border-white/10">
+                  {PERSONAS.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => setSelectedPersona(p.id)}
+                      className={`
+                        px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                        ${selectedPersona === p.id 
+                          ? 'bg-gold text-black shadow-lg shadow-gold/20' 
+                          : 'text-white/50 hover:text-white hover:bg-white/5'}
+                      `}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <h2 className="text-xl font-medium text-white mb-2">Chat w/{PERSONAS.find(p => p.id === selectedPersona)?.name || 'ACHEEVY'}</h2>
               <p className="text-white/40 max-w-md mx-auto">{welcomeMessage}</p>
             </motion.div>
           )}
@@ -547,6 +598,25 @@ export function ChatInterface({
           )}
 
           {/* Input Container */}
+          <div className="flex justify-end mb-2 gap-2">
+             {/* Language Selector (Small) */}
+             <div className="flex items-center gap-1 bg-white/5 rounded-lg px-2 py-1 text-xs text-white/50">
+               <GlobeIcon className="w-3 h-3" />
+               <select 
+                 value={selectedLanguage}
+                 onChange={(e) => setSelectedLanguage(e.target.value)}
+                 className="bg-transparent border-none outline-none text-white/70 text-xs cursor-pointer"
+               >
+                 <option value="en" className="bg-[#0A0A0A]">English</option>
+                 <option value="es" className="bg-[#0A0A0A]">Español</option>
+                 <option value="fr" className="bg-[#0A0A0A]">Français</option>
+                 <option value="de" className="bg-[#0A0A0A]">Deutsch</option>
+                 <option value="zh" className="bg-[#0A0A0A]">Chinese</option>
+                 <option value="ja" className="bg-[#0A0A0A]">Japanese</option>
+               </select>
+             </div>
+          </div>
+
           <div className="relative flex items-end gap-3 wireframe-card rounded-2xl p-3 focus-within:border-gold/30 transition-colors">
             {/* Voice Input */}
             <VoiceInputButton

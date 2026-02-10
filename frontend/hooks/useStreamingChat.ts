@@ -11,6 +11,7 @@ import type { ChatMessage } from '@/lib/chat/types';
 interface UseStreamingChatOptions {
   sessionId?: string;
   model?: string;
+  personaId?: string;
   onMessageStart?: () => void;
   onMessageComplete?: (message: ChatMessage) => void;
   onError?: (error: string) => void;
@@ -29,7 +30,7 @@ interface UseStreamingChatReturn {
 }
 
 export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStreamingChatReturn {
-  const { sessionId, model = 'gemini-3-flash', onMessageStart, onMessageComplete, onError } = options;
+  const { sessionId, model = 'gemini-3-flash', personaId, onMessageStart, onMessageComplete, onError } = options;
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -83,6 +84,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
           })),
           model,
           sessionId,
+          personaId,
         }),
         signal: abortControllerRef.current.signal,
       });

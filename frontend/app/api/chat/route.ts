@@ -7,7 +7,7 @@
 
 import { streamText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
-import { ACHEEVY_SYSTEM_PROMPT } from '@/lib/acheevy/persona';
+import { ACHEEVY_SYSTEM_PROMPT, buildSystemPrompt } from '@/lib/acheevy/persona';
 
 export const maxDuration = 60;
 
@@ -24,13 +24,16 @@ const DEFAULT_MODEL = process.env.ACHEEVY_MODEL || 'anthropic/claude-sonnet-4-5'
 
 export async function POST(req: Request) {
   try {
-    const { messages, model } = await req.json();
+    const { messages, model, personaId } = await req.json();
 
     const modelId = model || DEFAULT_MODEL;
 
+    // Use dynamic system prompt based on personaId
+    const systemPrompt = buildSystemPrompt({ personaId, additionalContext: 'User is using the Chat Interface.' });
+
     const result = await streamText({
       model: openrouter(modelId),
-      system: ACHEEVY_SYSTEM_PROMPT,
+      system: systemPrompt,
       messages,
     });
 
