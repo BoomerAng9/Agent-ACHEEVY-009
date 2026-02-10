@@ -3,20 +3,14 @@
 /**
  * A.I.M.S. Landing Page — Hero + Feature Section
  *
- * Hero: "PLUG ME IN." headline with Remotion animation + two CTAs
- * FeatureSection: 6 wireframe-card feature tiles
+ * Hero: Gold ACHIEVEMOR logo wallpaper background, "A.I.M.S. AI MANAGED SYSTEMS"
+ * centered headline, two CTAs, System Online badge.
+ * FeatureSection: 3 core platform feature cards.
  */
 
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { heroStagger, heroItem, staggerContainer, staggerItem } from '@/lib/motion/variants';
-
-// Lazy-load Remotion Player — no SSR
-const RemotionPlayer = dynamic(
-  () => import('@/components/landing/HeroPlayer'),
-  { ssr: false }
-);
+import { staggerContainer, staggerItem } from '@/lib/motion/variants';
 
 // ─────────────────────────────────────────────────────────────
 // Hero Component
@@ -24,209 +18,147 @@ const RemotionPlayer = dynamic(
 
 export function Hero() {
   return (
-    <section className="relative h-screen flex items-center overflow-hidden aims-page-bg">
-      {/* Gold edge rail */}
-      <div className="absolute inset-0 gold-edge-rail pointer-events-none" />
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#0A0A0A]">
+      {/* Gold ACHIEVEMOR logo wallpaper — repeated diagonal pattern */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "url('/images/logos/achievemor-gold.png')",
+          backgroundSize: '120px 120px',
+          backgroundRepeat: 'repeat',
+          opacity: 0.04,
+          transform: 'rotate(-15deg) scale(1.4)',
+          transformOrigin: 'center center',
+        }}
+        aria-hidden="true"
+      />
 
-      {/* Content — two-column layout */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 xl:px-12 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      {/* Subtle radial vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%)',
+        }}
+        aria-hidden="true"
+      />
 
-          {/* Left column — Text */}
-          <motion.div
-            variants={heroStagger}
-            initial="hidden"
-            animate="visible"
-            className="space-y-6"
-          >
-            {/* Badge */}
-            <motion.div variants={heroItem}>
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-gold/20 bg-gold/5 text-[0.65rem] uppercase tracking-[0.2em] text-gold/80 font-mono">
-                AI-Powered Automation Platform
-              </span>
-            </motion.div>
+      {/* Content */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 text-center px-4 max-w-3xl mx-auto"
+      >
+        {/* System Online badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 mb-8"
+        >
+          <div className="w-2 h-2 rounded-full bg-emerald-400">
+            <div className="w-full h-full rounded-full bg-emerald-400 animate-ping opacity-60" />
+          </div>
+          <span className="text-xs text-emerald-400/80 font-mono tracking-wide">System Online</span>
+        </motion.div>
 
-            {/* Headline */}
-            <motion.h1
-              variants={heroItem}
-              className="font-display text-5xl md:text-6xl lg:text-7xl uppercase tracking-wider leading-[1.1]"
+        {/* A.I.M.S. headline */}
+        <h1
+          className="text-5xl md:text-7xl lg:text-8xl mb-3 text-white/90 tracking-[0.15em]"
+          style={{
+            fontFamily: 'var(--font-display, "Doto", monospace)',
+            textShadow: '0 0 30px rgba(212,168,67,0.15)',
+          }}
+        >
+          A.I.M.S.
+        </h1>
+
+        {/* Subtitle */}
+        <h2
+          className="text-lg md:text-2xl lg:text-3xl text-gold/80 tracking-[0.2em] uppercase mb-6"
+          style={{
+            fontFamily: 'var(--font-display, "Doto", monospace)',
+          }}
+        >
+          AI Managed Systems
+        </h2>
+
+        {/* Description */}
+        <p className="text-sm md:text-base text-white/40 max-w-xl mx-auto leading-relaxed mb-10">
+          We take powerful open-source AI tools and ship them as simple,
+          managed solutions for you. No config. Just results.
+        </p>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              href="/dashboard/acheevy"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-black transition-colors hover:bg-gold-light shadow-lg shadow-gold/20"
             >
-              <span className="text-gold text-shadow-gold">PLUG ME IN.</span>
-            </motion.h1>
-
-            {/* Subheading */}
-            <motion.p
-              variants={heroItem}
-              className="text-lg md:text-xl text-white/50 max-w-lg leading-relaxed"
-            >
-              Your AI-powered executive team that manages projects, deploys
-              Boomer_Angs, and scales your business — while you stay in the loop.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              variants={heroItem}
-              className="flex flex-col sm:flex-row gap-3 pt-2"
-            >
-              <motion.div whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(212,168,67,0.25)" }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href="/chat"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-3.5 text-sm font-medium text-black transition-colors hover:bg-gold-light"
-                >
-                  Chat w/ACHEEVY
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05, borderColor: "rgba(212,168,67,0.3)" }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href="/dashboard/build"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-wireframe-stroke px-6 py-3.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/5 hover:border-white/20 hover:text-white"
-                >
-                  Build + Deploy
-                </Link>
-              </motion.div>
-            </motion.div>
-
-            {/* Stats */}
-            <motion.div
-              variants={heroItem}
-              className="grid grid-cols-3 gap-6 pt-6 border-t border-wireframe-stroke mt-6"
-            >
-              {[
-                { value: '200+', label: 'AI Models' },
-                { value: '50+', label: 'Integrations' },
-                { value: '∞', label: 'Possibilities' },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <div className="text-2xl md:text-3xl font-display text-gold">
-                    {stat.value}
-                  </div>
-                  <div className="text-[0.65rem] text-white/30 uppercase tracking-wider mt-1 font-mono">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+              Chat with ACHEEVY
+            </Link>
           </motion.div>
-
-          {/* Right column — Remotion Player */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
-            className="relative aspect-square max-w-[560px] mx-auto lg:mx-0 w-full"
-          >
-            {/* Glow behind player */}
-            <div className="absolute inset-0 rounded-3xl glow-controlled" />
-            <div className="relative rounded-3xl overflow-hidden wireframe-card">
-              <RemotionPlayer />
-            </div>
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-8 py-3.5 text-sm font-medium uppercase tracking-wider text-white/60 transition-colors hover:bg-white/5 hover:text-white hover:border-white/25"
+            >
+              View Dashboard
+            </Link>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Activity Breeds Activity motto */}
+      {/* Bottom feature cards */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 w-full max-w-5xl mx-auto px-4 mt-16 md:mt-24 pb-12"
       >
-        <p className="font-display text-xl md:text-2xl uppercase tracking-[0.3em] text-gold text-shadow-gold">
-          Activity Breeds Activity
-        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            {
+              title: 'Automation & Workflows',
+              description: 'Complete business logic automated behind the scenes. We route your requests to the best agents for the job.',
+              icon: '⚡',
+            },
+            {
+              title: 'Containerized Tools',
+              description: 'We wrap industry-standard open source software in secure, managed Docker containers deployed instantly.',
+              icon: '📦',
+            },
+            {
+              title: 'AI Orchestrator',
+              description: 'ACHEEVY is your single point of contact. Route any task, and the system builds the infrastructure.',
+              icon: '🎯',
+            },
+          ].map((feature) => (
+            <motion.div
+              key={feature.title}
+              variants={staggerItem}
+              className="p-5 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-gold/15 hover:bg-white/[0.04] transition-all"
+            >
+              <div className="text-2xl mb-3">{feature.icon}</div>
+              <h3
+                className="text-sm font-medium text-white/80 mb-2 tracking-wide"
+                style={{ fontFamily: 'var(--font-display, "Doto", monospace)' }}
+              >
+                {feature.title}
+              </h3>
+              <p className="text-xs text-white/35 leading-relaxed">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
       </motion.div>
     </section>
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// Feature Section
-// ─────────────────────────────────────────────────────────────
-
+// FeatureSection kept for backwards compatibility if used elsewhere
 export function FeatureSection() {
-  const features = [
-    {
-      title: 'ACHEEVY',
-      description: 'Your AI executive assistant. Think it, prompt it, let ACHEEVY build it.',
-      icon: '🎯',
-      href: '/dashboard/acheevy',
-    },
-    {
-      title: 'Boomer_Angs',
-      description: 'Your team of specialized AI workers deployed to handle tasks across departments.',
-      icon: '🪃',
-      href: '/dashboard/house-of-ang',
-    },
-    {
-      title: 'Model Garden',
-      description: '200+ AI models at your fingertips — Claude, Gemini, DeepSeek, and more.',
-      icon: '🌱',
-      href: '/dashboard/model-garden',
-    },
-    {
-      title: 'aiPlugs',
-      description: 'Production-ready apps and tools built by ACHEEVY, deployed to your business.',
-      icon: '🔌',
-      href: '/dashboard/plugs',
-    },
-    {
-      title: 'Locale Universal Calculator',
-      description: 'Track your usage, estimate costs, and manage your pay-per-use billing.',
-      icon: '🧮',
-      href: '/dashboard/luc',
-    },
-    {
-      title: 'House of Ang',
-      description: 'The factory floor — deploy, manage, and monitor your Boomer_Ang workforce.',
-      icon: '🏠',
-      href: '/dashboard/house-of-ang',
-    },
-  ];
-
-  return (
-    <section className="py-20 px-4 md:px-6 lg:px-8 xl:px-12 bg-[#0A0A0A]">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="font-display text-3xl md:text-4xl uppercase tracking-wider mb-4">
-            <span className="text-gold">Everything</span>{' '}
-            <span className="text-white">You Need to Build</span>
-          </h2>
-          <p className="text-white/40 max-w-2xl mx-auto">
-            A.I.M.S. provides a complete toolkit for building AI-powered applications
-            and automating your workflows.
-          </p>
-        </motion.div>
-
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-        >
-          {features.map((feature) => (
-            <motion.div
-              key={feature.title}
-              variants={staggerItem}
-              whileHover={{ y: -6, boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(212,168,67,0.08)", borderColor: "rgba(212,168,67,0.3)" }}
-              whileTap={{ y: 0 }}
-            >
-              <Link href={feature.href} className="wireframe-card p-6 block h-full hover:border-gold/20 transition-colors">
-                <div className="text-3xl mb-4">{feature.icon}</div>
-                <h3 className="text-lg font-medium text-white mb-2">{feature.title}</h3>
-                <p className="text-sm text-white/40 leading-relaxed">{feature.description}</p>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
+  return null;
 }
 
 export default Hero;
