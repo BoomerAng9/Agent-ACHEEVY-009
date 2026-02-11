@@ -353,8 +353,6 @@ export function ChatInterface({
     regenerate,
     stopGeneration,
   } = useStreamingChat({
-    stopGeneration,
-  } = useStreamingChat({
     sessionId,
     personaId: selectedPersona, // Pass selected persona
     model,

@@ -80,31 +80,32 @@ export function Hero() {
             fontFamily: 'var(--font-display, "Doto", monospace)',
           }}
         >
-          AI Managed Systems
+          Managed AI Platform
         </h2>
 
         {/* Description */}
         <p className="text-sm md:text-base text-white/40 max-w-xl mx-auto leading-relaxed mb-10">
-          We take powerful open-source AI tools and ship them as simple,
-          managed solutions for you. No config. Just results.
+          The ultimate design editor for AI tools. We ship powerful, simple, managed solutions.
+          <br className="hidden md:block" />
+          Promoting tools, not noise.
         </p>
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Link
-              href="/dashboard/acheevy"
+              href="/dashboard"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-black transition-colors hover:bg-gold-light shadow-lg shadow-gold/20"
             >
-              Chat w/ACHEEVY
+              Launch Platform
             </Link>
           </motion.div>
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Link
-              href="/dashboard"
+              href="/dashboard/chat"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-8 py-3.5 text-sm font-medium uppercase tracking-wider text-white/60 transition-colors hover:bg-white/5 hover:text-white hover:border-white/25"
             >
-              View Dashboard
+              Chat w/ACHEEVY
             </Link>
           </motion.div>
         </div>

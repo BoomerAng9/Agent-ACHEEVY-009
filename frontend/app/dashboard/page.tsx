@@ -16,6 +16,9 @@ import {
   Copy,
   Plug,
   X,
+  BrainCircuit,
+  Bot,
+  Terminal,
 } from "lucide-react";
 
 // ── Health hook ─────────────────────────────────────────────
@@ -68,13 +71,13 @@ function statusDotClass(status: HealthStatus): string {
 function statusText(status: HealthStatus): string {
   switch (status) {
     case "healthy":
-      return "ACHEEVY Online";
+      return "ALL SYSTEMS ONLINE";
     case "degraded":
-      return "ACHEEVY Degraded";
+      return "DEGRADED SERVICE";
     case "unhealthy":
-      return "ACHEEVY Offline";
+      return "OFFLINE";
     default:
-      return "Connecting...";
+      return "CONNECTING...";
   }
 }
 
@@ -99,43 +102,44 @@ const tiles = [
   {
     title: "Chat w/ACHEEVY",
     icon: MessageSquare,
-    desc: "Direct orchestrator interface.",
+    desc: "Executive Orchestrator. Start here.",
     href: "/dashboard/chat",
+    highlight: true,
   },
   {
-    title: "LUC Quotes",
-    icon: CreditCard,
-    desc: "Resource auditing and budgeting.",
-    href: "/dashboard/luc",
-  },
-  {
-    title: "aiPlugs",
-    icon: Layers,
-    desc: "Deploy capability modules.",
-    href: "/dashboard/plugs",
-  },
-  {
-    title: "Build a Plug",
-    icon: Hammer,
-    desc: "Step-by-step plug builder.",
+    title: "OpenClaw (Chicken Hawk)",
+    icon: Terminal,
+    desc: "Build & Execute Code.",
     href: "/dashboard/build",
   },
   {
-    title: "Your Plugs",
-    icon: Plug,
-    desc: "Manage deployed plugs.",
+    title: "AVVA NOON",
+    icon: BrainCircuit,
+    desc: "Strategy & Deep Reasoning.",
+    href: "/dashboard/chat?mode=strategy",
+  },
+  {
+    title: "Boomer_Angs",
+    icon: Bot,
+    desc: "Specialist Agent Team.",
+    href: "/dashboard/chat?mode=specialist",
+  },
+  {
+    title: "Deployed Tools",
+    icon: Layers,
+    desc: "Your active Plugs.",
     href: "/dashboard/plugs",
   },
   {
-    title: "Make It Mine",
-    icon: Copy,
-    desc: "Clone and customize templates.",
-    href: "/dashboard/make-it-mine",
+    title: "LUC",
+    icon: CreditCard,
+    desc: "Usage & Cost.",
+    href: "/dashboard/luc",
   },
   {
     title: "Settings",
     icon: Settings,
-    desc: "Workspace and team config.",
+    desc: "System Config.",
     href: "/dashboard/settings",
   },
 ];
@@ -170,22 +174,22 @@ export default function DashboardPage() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-8"
     >
       {/* Header */}
       <motion.header
         variants={staggerItem}
-        className="flex flex-col md:flex-row md:items-end justify-between gap-4"
+        className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/5 pb-6"
       >
         <div>
           <p className="text-[0.6rem] uppercase tracking-[0.25em] text-gold/50 mb-1 font-mono">
-            Executive Console
+            Platform Overview
           </p>
-          <h1 className="text-2xl md:text-3xl font-display uppercase tracking-wider text-white">
-            Dashboard
+          <h1 className="text-3xl md:text-4xl font-display text-white tracking-tight">
+            Managed AI Systems
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 bg-white/5 py-2 px-4 rounded-full border border-white/5">
           <span
             className={`h-2 w-2 rounded-full ${statusDotClass(healthStatus)}`}
           />
@@ -211,19 +215,18 @@ export default function DashboardPage() {
             <div className="flex flex-col md:flex-row items-center justify-between p-6 gap-4">
               <div className="space-y-1 text-center md:text-left">
                 <h2 className="text-sm font-medium text-white">
-                  Continue Onboarding?
+                  Welcome to A.I.M.S.
                 </h2>
                 <p className="text-xs text-white/40 max-w-sm">
-                  You haven&apos;t finalized The Park model configuration or
-                  initialized ByteRover memory.
+                  Ready to deploy your first tool? Launch the OpenClaw builder.
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <Link
-                  href="/onboarding/estimate"
+                  href="/dashboard/build"
                   className="flex items-center gap-2 rounded-xl bg-gold px-5 py-2.5 text-sm font-medium text-black transition-colors hover:bg-gold-light"
                 >
-                  Run Simulation <ArrowRight size={14} />
+                  Launch Builder <ArrowRight size={14} />
                 </Link>
                 <button
                   type="button"
@@ -244,36 +247,43 @@ export default function DashboardPage() {
         <ArsenalShelf />
       </motion.div>
 
-      {/* Tile grid */}
+      {/* Tool Grid */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
       >
         {tiles.map((tile) => (
           <motion.div key={tile.title} variants={staggerItem}>
             <Link
               href={tile.href}
-              className="group wireframe-card block p-5 hover:border-gold/20 transition-all"
+              className={`
+                group block p-6 h-full rounded-2xl border transition-all relative overflow-hidden
+                ${tile.highlight 
+                  ? 'bg-gold/10 border-gold/30 hover:bg-gold/15' 
+                  : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'}
+              `}
             >
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-wireframe-stroke bg-white/[0.02] text-white/50 group-hover:border-gold/30 group-hover:text-gold transition-colors">
-                <tile.icon size={18} />
+              <div className={`
+                mb-4 flex h-10 w-10 items-center justify-center rounded-xl border transition-colors
+                ${tile.highlight
+                  ? 'bg-gold text-black border-gold'
+                  : 'bg-white/5 border-white/10 text-white/50 group-hover:text-gold group-hover:border-gold/30'}
+              `}>
+                <tile.icon size={20} />
               </div>
-              <h3 className="text-sm font-medium text-white group-hover:text-gold transition-colors">
+              
+              <h3 className={`text-base font-medium mb-1 ${tile.highlight ? 'text-gold' : 'text-white group-hover:text-gold transition-colors'}`}>
                 {tile.title}
               </h3>
-              <p className="mt-1 text-xs text-white/30 leading-relaxed">
+              
+              <p className="text-xs text-white/40 leading-relaxed">
                 {tile.desc}
               </p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-[0.55rem] uppercase font-mono tracking-widest text-gold/50">
-                  Active
-                </span>
-                <ArrowRight
-                  size={12}
-                  className="text-gold/40 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
-                />
+              
+              <div className="absolute top-6 right-6 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                <ArrowRight size={16} className={tile.highlight ? 'text-gold' : 'text-white/30'} />
               </div>
             </Link>
           </motion.div>
