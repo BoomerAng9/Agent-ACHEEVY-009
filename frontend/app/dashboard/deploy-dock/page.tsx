@@ -46,6 +46,7 @@ import {
   Workflow,
   Zap,
 } from "lucide-react";
+import { ParticleLazer } from "@/components/deploy-dock/ParticleLazer";
 
 // ─────────────────────────────────────────────────────────────
 // Types
@@ -555,59 +556,92 @@ function TransferView({ stage }: { stage: "idle" | "hatch" | "assign" | "launch"
 
 export default function DeployDockPage() {
   const [activeTab, setActiveTab] = useState<DeployTab>("hatch");
-  const [deploymentStage, setDeploymentStage] = useState<"idle" | "hatch" | "assign" | "launch">("idle");
-  const [roster, setRoster] = useState<AgentRoster[]>(MOCK_ROSTER);
+  const [deploymentStage, setDeploymentStage] = useState<
+    "plan" | "quote" | "hatch" | "assign" | "launch" | "done"
+  >("plan");
+  const [isHatching, setIsHatching] = useState(false); // Controls particle effect
+
+  const [roster, setRoster] = useState<AgentRoster[]>([]);
   const [events, setEvents] = useState<DeploymentEvent[]>(MOCK_EVENTS);
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+
   const [jobPackets, setJobPackets] = useState<JobPacket[]>([]);
 
+  // Trigger particle effect for 3s
+  const triggerParticles = () => {
+    setIsHatching(true);
+    setTimeout(() => setIsHatching(false), 3000);
+  };
+
   const handleHatchAgent = (agentId: string) => {
+    triggerParticles();
     setRoster((prev) =>
       prev.map((a) =>
         a.id === agentId ? { ...a, status: "active" } : a
       )
     );
-    setDeploymentStage("hatch");
-
-    // Add event
-    setEvents((prev) => [
-      ...prev,
-      {
-        id: `e-${Date.now()}`,
-        timestamp: new Date(),
-        stage: "hatch",
-        title: "Agent Hatched",
-        description: `${roster.find((a) => a.id === agentId)?.name} has been activated`,
-        agent: "ACHEEVY",
-      },
-    ]);
+    addEvent({
+      stage: "hatch",
+      title: "Agent Hatched",
+      description: `${roster.find((a) => a.id === agentId)?.name} has been activated`,
+      agent: "ACHEEVY",
+    });
   };
+
+  const hatchAgents = async () => {
+    triggerParticles();
+    setDeploymentStage("hatch");
+    // Simulate API call
+    setTimeout(() => {
+      setRoster(MOCK_ROSTER);
+      addEvent({
+        stage: "hatch",
+        title: "Agents Hatched",
+        description: "5 agents instantiated from templates",
+        agent: "ACHEEVY",
+      });
+      setDeploymentStage("assign");
+    }, 2500);
+  };
+
+  const launchDeployment = async () => {
+    triggerParticles();
+    setDeploymentStage("launch");
+    addEvent({
+      stage: "launch",
+      title: "Launch Sequence Initiated",
+      description: "Deployment pipeline started",
+      agent: "Chicken_Hawk",
+    });
+    // Simulate completion
+    setTimeout(() => setDeploymentStage("done"), 5000);
+  };
+
+  const addEvent = (partial: Partial<DeploymentEvent>) => {
+    const newEvent: DeploymentEvent = {
+      id: Math.random().toString(36).substr(2, 9),
+      timestamp: new Date(),
+      stage: "plan",
+      title: "New Event",
+      description: "...",
+      agent: "ACHEEVY",
+      ...partial,
+    };
+    setEvents((prev) => [newEvent, ...prev]);
+  };
+  // The original handleHatchAgent is replaced by hatchAgents and addEvent
+  // The original handleHatchAgent function is removed as per the instruction's implied change.
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen pb-20 text-white/80 font-sans selection:bg-gold/30"
     >
-      {/* Header */}
-      <header>
-        <div className="flex items-center gap-2 mb-1">
-          <Ship size={18} className="text-gold" />
-          <p className="text-[0.6rem] uppercase tracking-[0.25em] text-gold/50 font-mono">
-            Deployment Center
-          </p>
-        </div>
-        <h1 className="text-2xl md:text-3xl font-display uppercase tracking-wider text-white">
-          Deploy Dock
-        </h1>
-        <p className="mt-1 text-xs text-white/40">
-          Build → Assign → Launch. ACHEEVY orchestrates your deployment pipeline.
-        </p>
-      </header>
-
-      {/* Main Layout: Two columns on large screens */}
-      <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-        {/* Left Column: Main Workspace */}
+      <ParticleLazer isActive={isHatching} />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 max-w-7xl mx-auto">
+        {/* Left Column: Main Interface */}
         <div className="space-y-6">
           {/* Transfer View */}
           <TransferView stage={deploymentStage} />
@@ -799,7 +833,7 @@ export default function DeployDockPage() {
                   </div>
 
                   <button
-                    onClick={() => setDeploymentStage("launch")}
+                    onClick={launchDeployment}
                     disabled={deploymentStage !== "assign"}
                     className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-bold uppercase tracking-wider border border-emerald-500/30 hover:bg-emerald-500/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   >

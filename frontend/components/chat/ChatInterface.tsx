@@ -22,7 +22,6 @@ import { DepartmentBoard } from '@/components/orchestration/DepartmentBoard';
 import { UserInputModal } from '@/components/change-order/UserInputModal';
 import type { ChatMessage } from '@/lib/chat/types';
 import type { ChangeOrder } from '@/lib/change-order/types';
-import type { ChangeOrder } from '@/lib/change-order/types';
 import { formatCurrency } from '@/lib/change-order/types';
 import { PERSONAS } from '@/lib/acheevy/persona';
 
@@ -629,12 +628,12 @@ export function ChatInterface({
           {/* Input Container */}
           <div className="flex justify-end mb-2 gap-2">
              {/* Model Selector */}
-             <div className="flex items-center gap-1 bg-white/5 rounded-lg px-2 py-1 text-xs text-white/50">
+             <div className="flex items-center gap-1 bg-white/5 rounded-lg px-2 py-1 text-xs text-white/50 hover:bg-white/10 transition-colors">
                <BrainCircuitIcon className="w-3 h-3" />
                <select 
                  value={selectedModel}
                  onChange={(e) => setSelectedModel(e.target.value)}
-                 className="bg-transparent border-none outline-none text-white/70 text-xs cursor-pointer"
+                 className="bg-transparent border-none outline-none text-white/70 text-xs cursor-pointer appearance-none pr-4"
                  title="Select AI Model"
                >
                  {AI_MODELS.map(m => (
@@ -644,20 +643,38 @@ export function ChatInterface({
                  ))}
                </select>
              </div>
-             {/* Language Selector (Small) */}
-             <div className="flex items-center gap-1 bg-white/5 rounded-lg px-2 py-1 text-xs text-white/50">
+
+             {/* Voice/Persona Selector */}
+             <div className="flex items-center gap-1 bg-white/5 rounded-lg px-2 py-1 text-xs text-white/50 hover:bg-white/10 transition-colors">
+               <SpeakerIcon className="w-3 h-3" />
+               <select
+                 value={selectedPersona}
+                 onChange={(e) => setSelectedPersona(e.target.value)}
+                 className="bg-transparent border-none outline-none text-white/70 text-xs cursor-pointer appearance-none pr-4"
+                 title="Select Voice Persona"
+               >
+                 {PERSONAS.map(p => (
+                   <option key={p.id} value={p.id} className="bg-[#0A0A0A]">
+                     {p.name}
+                   </option>
+                 ))}
+               </select>
+             </div>
+
+             {/* Language Selector */}
+             <div className="flex items-center gap-1 bg-white/5 rounded-lg px-2 py-1 text-xs text-white/50 hover:bg-white/10 transition-colors">
                <GlobeIcon className="w-3 h-3" />
                <select 
                  value={selectedLanguage}
                  onChange={(e) => setSelectedLanguage(e.target.value)}
-                 className="bg-transparent border-none outline-none text-white/70 text-xs cursor-pointer"
+                 className="bg-transparent border-none outline-none text-white/70 text-xs cursor-pointer appearance-none"
                >
-                 <option value="en" className="bg-[#0A0A0A]">English</option>
-                 <option value="es" className="bg-[#0A0A0A]">Español</option>
-                 <option value="fr" className="bg-[#0A0A0A]">Français</option>
-                 <option value="de" className="bg-[#0A0A0A]">Deutsch</option>
-                 <option value="zh" className="bg-[#0A0A0A]">Chinese</option>
-                 <option value="ja" className="bg-[#0A0A0A]">Japanese</option>
+                 <option value="en" className="bg-[#0A0A0A]">EN</option>
+                 <option value="es" className="bg-[#0A0A0A]">ES</option>
+                 <option value="fr" className="bg-[#0A0A0A]">FR</option>
+                 <option value="de" className="bg-[#0A0A0A]">DE</option>
+                 <option value="zh" className="bg-[#0A0A0A]">ZH</option>
+                 <option value="ja" className="bg-[#0A0A0A]">JA</option>
                </select>
              </div>
           </div>

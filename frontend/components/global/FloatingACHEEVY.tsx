@@ -239,7 +239,7 @@ export function FloatingACHEEVY() {
 
   // Go to full chat
   const goToFullChat = () => {
-    router.push('/dashboard/acheevy');
+    router.push('/dashboard/chat');
   };
 
   return (
@@ -259,7 +259,7 @@ export function FloatingACHEEVY() {
                 <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-gold to-gold flex items-center justify-center">
                   <span className="text-xs font-bold text-black">A</span>
                 </div>
-                <span className="text-sm font-medium text-white">ACHEEVY</span>
+                <span className="text-sm font-medium text-white">Chat w/ACHEEVY</span>
               </div>
               <div className="flex items-center gap-1">
                 <button
@@ -332,7 +332,7 @@ export function FloatingACHEEVY() {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask ACHEEVY..."
+            placeholder="Chat w/ACHEEVY..."
             disabled={isStreaming}
             className="flex-1 bg-transparent text-sm text-white placeholder:text-gray-500 outline-none min-w-0"
           />
