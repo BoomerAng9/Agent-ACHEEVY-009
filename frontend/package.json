@@ -15,6 +15,7 @@
     "@e2b/sdk": "^1.0.6",
     "@elevenlabs/client": "^0.14.0",
     "@elevenlabs/react": "^0.14.0",
+    "@google-cloud/storage": "^7.19.0",
     "@google/generative-ai": "^0.21.0",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-dialog": "^1.0.5",
