@@ -304,7 +304,7 @@ services:
           memory: 256M
 
   # OpenClaw — AI Multi-Channel Agent (SANDBOXED)
-  # Version: 2026.2.3 — Runs in isolated sandbox-network with NO internet.
+  # Version: latest — Runs in isolated sandbox-network with NO internet.
   # Security: read_only FS, no-new-privileges, all caps dropped, non-root, resource-limited
   openclaw:
     image: ghcr.io/openclaw/openclaw:latest
@@ -323,7 +323,7 @@ services:
       - MODEL_PROVIDER=openrouter
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - DEFAULT_MODEL=moonshot/kimi-k2.5
-      - FALLBACK_MODEL=anthropic/claude-sonnet-4.6
+      - FALLBACK_MODEL=anthropic/claude-opus-4.6
       - CLOUDFLARE_AI_GATEWAY_ENABLED=${CLOUDFLARE_AI_GATEWAY_ENABLED:-false}
       - AGENTS_DASHBOARD_ENABLED=true
       - AGENTS_DASHBOARD_PORT=8002

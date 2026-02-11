@@ -1,15 +1,18 @@
 /**
  * Chat API Route — Vercel AI SDK + OpenRouter
  *
- * Streams AI responses via OpenRouter (supports Claude, GPT-4, Gemini, etc.)
+ * Streams AI responses via OpenRouter.
+ * Feature LLM: Claude Opus 4.6
+ * Priority Models: Qwen, Minimax, GLM, Kimi, WAN, Nano Banana Pro
+ *
  * Uses the Vercel AI SDK streamText for proper useChat() compatibility.
  */
 
 import { streamText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
-import { ACHEEVY_SYSTEM_PROMPT, buildSystemPrompt } from '@/lib/acheevy/persona';
+import { buildSystemPrompt } from '@/lib/acheevy/persona';
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 const openrouter = createOpenAI({
   apiKey: process.env.OPENROUTER_API_KEY || '',
@@ -20,13 +23,37 @@ const openrouter = createOpenAI({
   },
 });
 
-const DEFAULT_MODEL = process.env.ACHEEVY_MODEL || 'anthropic/claude-sonnet-4-5';
+// ── Feature LLM ─────────────────────────────────────────────
+const DEFAULT_MODEL = process.env.ACHEEVY_MODEL || 'anthropic/claude-opus-4.6';
+
+// ── Priority Model Roster (all accessible via OpenRouter) ───
+export const PRIORITY_MODELS: Record<string, { id: string; label: string; provider: string }> = {
+  'claude-opus':    { id: 'anthropic/claude-opus-4.6',        label: 'Claude Opus 4.6',      provider: 'Anthropic' },
+  'claude-sonnet':  { id: 'anthropic/claude-sonnet-4.6',      label: 'Claude Sonnet 4.6',    provider: 'Anthropic' },
+  'qwen':           { id: 'qwen/qwen-2.5-coder-32b',         label: 'Qwen 2.5 Coder 32B',  provider: 'Qwen' },
+  'qwen-max':       { id: 'qwen/qwen-max',                   label: 'Qwen Max',             provider: 'Qwen' },
+  'minimax':        { id: 'minimax/minimax-01',               label: 'MiniMax-01',           provider: 'MiniMax' },
+  'glm':            { id: 'thudm/glm-4-32b',                 label: 'GLM-4 32B',            provider: 'Zhipu' },
+  'kimi':           { id: 'moonshot/kimi-k2.5',               label: 'Kimi K2.5',            provider: 'Moonshot' },
+  'wan':            { id: 'alibaba/wan-2.1-t2v-turbo',        label: 'WAN 2.1',              provider: 'Alibaba' },
+  'nano-banana':    { id: 'google/gemini-2.5-flash',          label: 'Nano Banana Pro',      provider: 'Google' },
+  'gemini-flash':   { id: 'google/gemini-2.5-flash',          label: 'Gemini 2.5 Flash',     provider: 'Google' },
+  'gemini-pro':     { id: 'google/gemini-2.5-pro',            label: 'Gemini 2.5 Pro',       provider: 'Google' },
+};
 
 export async function POST(req: Request) {
   try {
     const { messages, model, personaId } = await req.json();
 
-    const modelId = model || DEFAULT_MODEL;
+    // Resolve model: check roster first, then use raw string, then default
+    let modelId: string;
+    if (model && PRIORITY_MODELS[model]) {
+      modelId = PRIORITY_MODELS[model].id;
+    } else if (model && model.includes('/')) {
+      modelId = model; // Already an OpenRouter model ID
+    } else {
+      modelId = DEFAULT_MODEL;
+    }
 
     // Use dynamic system prompt based on personaId
     const systemPrompt = buildSystemPrompt({ personaId, additionalContext: 'User is using the Chat Interface.' });

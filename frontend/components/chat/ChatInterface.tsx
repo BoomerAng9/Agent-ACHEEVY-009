@@ -27,6 +27,22 @@ import { formatCurrency } from '@/lib/change-order/types';
 import { PERSONAS } from '@/lib/acheevy/persona';
 
 // ─────────────────────────────────────────────────────────────
+// Priority Model Roster (mirrors /api/chat PRIORITY_MODELS)
+// ─────────────────────────────────────────────────────────────
+
+const AI_MODELS = [
+  { key: 'claude-opus',   label: 'Claude Opus 4.6',     tag: 'default' },
+  { key: 'claude-sonnet', label: 'Claude Sonnet 4.6',   tag: '' },
+  { key: 'qwen',          label: 'Qwen 2.5 Coder 32B', tag: 'code' },
+  { key: 'qwen-max',      label: 'Qwen Max',            tag: '' },
+  { key: 'minimax',       label: 'MiniMax-01',          tag: '' },
+  { key: 'glm',           label: 'GLM-4 32B',           tag: '' },
+  { key: 'kimi',          label: 'Kimi K2.5',           tag: 'fast' },
+  { key: 'nano-banana',   label: 'Nano Banana Pro',     tag: 'fast' },
+  { key: 'gemini-pro',    label: 'Gemini 2.5 Pro',      tag: '' },
+];
+
+// ─────────────────────────────────────────────────────────────
 // Icons (inline SVG for simplicity)
 // ─────────────────────────────────────────────────────────────
 
@@ -94,6 +110,16 @@ const BoardIcon = ({ className }: { className?: string }) => (
     <rect x="3" y="3" width="18" height="18" rx="2" />
     <path d="M3 9h18" />
     <path d="M9 21V9" />
+  </svg>
+);
+
+const BrainCircuitIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="4" r="2" />
+    <circle cx="4" cy="12" r="2" />
+    <circle cx="20" cy="12" r="2" />
+    <circle cx="12" cy="20" r="2" />
+    <path d="M12 6v4m0 4v4M6 12h4m4 0h4" />
   </svg>
 );
 
@@ -310,6 +336,7 @@ export function ChatInterface({
   // New State for Persona and Language
   const [selectedPersona, setSelectedPersona] = useState(PERSONAS[0].id);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedModel, setSelectedModel] = useState('claude-opus');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -355,7 +382,7 @@ export function ChatInterface({
   } = useStreamingChat({
     sessionId,
     personaId: selectedPersona, // Pass selected persona
-    model,
+    model: selectedModel,
     onMessageStart: () => {
       // Start orchestration when streaming begins
       if (showOrchestration) {
@@ -601,6 +628,22 @@ export function ChatInterface({
 
           {/* Input Container */}
           <div className="flex justify-end mb-2 gap-2">
+             {/* Model Selector */}
+             <div className="flex items-center gap-1 bg-white/5 rounded-lg px-2 py-1 text-xs text-white/50">
+               <BrainCircuitIcon className="w-3 h-3" />
+               <select 
+                 value={selectedModel}
+                 onChange={(e) => setSelectedModel(e.target.value)}
+                 className="bg-transparent border-none outline-none text-white/70 text-xs cursor-pointer"
+                 title="Select AI Model"
+               >
+                 {AI_MODELS.map(m => (
+                   <option key={m.key} value={m.key} className="bg-[#0A0A0A]">
+                     {m.label}{m.tag ? ` (${m.tag})` : ''}
+                   </option>
+                 ))}
+               </select>
+             </div>
              {/* Language Selector (Small) */}
              <div className="flex items-center gap-1 bg-white/5 rounded-lg px-2 py-1 text-xs text-white/50">
                <GlobeIcon className="w-3 h-3" />
