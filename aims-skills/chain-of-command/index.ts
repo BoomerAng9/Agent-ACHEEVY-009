@@ -1,9 +1,12 @@
 /**
  * @module chain-of-command
- * @version 1.0.0
+ * @version 2.0.0
  * @owner ACHEEVY
  *
  * Barrel exports for the A.I.M.S. Chain of Command + Persona System.
+ *
+ * v2.0.0 — Revised hierarchy: ACHEEVY → Boomer_Ang → Chicken_Hawk → Squad Leader → Lil_Hawk
+ *           Persona ≠ Authority. Boomer_Ang-only tool ownership. Anti-hack behavior contract.
  *
  * Usage:
  *   import { RoleCardRegistry, validateHandle, evaluateRoute } from '../chain-of-command';
@@ -17,6 +20,9 @@ export type {
   BenchLevel,
   CommunicationStyle,
   PersonaIdentity,
+  PersonaCard,
+  VoiceOverlay,
+  SidebarNuggetRules,
   ChainOfCommand,
   RoleCapabilities,
   RoleGates,
@@ -29,6 +35,9 @@ export type {
   HandleRules,
   HandleRule,
   EnforcementPolicy,
+  DelegationChain,
+  PersonaAuthoritySeparation,
+  ToolOwnershipRule,
   OverlaySnippetPolicy,
   DenyRule,
   RouteRequest,
@@ -36,8 +45,13 @@ export type {
   OverlayEvent,
   EventType,
   PipelineStage,
+  WrapperType,
   ValidationResult,
   SquadDefinition,
+  ToolRegistryEntry,
+  ToolRegistryPolicy,
+  CapabilityPack,
+  CapabilityPackRepo,
 } from '../types/chain-of-command';
 
 // ── Engine ─────────────────────────────────────────────────────────

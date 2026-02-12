@@ -1,11 +1,15 @@
 /**
  * @module chain-of-command/engine
- * @version 1.0.0
+ * @version 2.0.0
  * @owner ACHEEVY
  *
  * Runtime enforcement engine for the A.I.M.S. Chain of Command.
  * Validates handles, enforces routing rules, checks gates, and
  * produces overlay-safe events.
+ *
+ * v2.0.0 — Revised hierarchy: ACHEEVY → Boomer_Ang → Chicken_Hawk → Squad Leader → Lil_Hawk
+ *           Added: Chicken_Hawk chain validation, Lil_Hawk → Boomer_Ang deny
+ *           Rule:  Persona ≠ Authority.
  */
 
 import type {
@@ -102,16 +106,60 @@ export function validateRoleCard(card: RoleCard): ValidationResult {
     );
   }
 
-  // 4. Chain-of-command structural checks
-  if (card.role_type === 'ACHEEVY' && card.chain_of_command.reports_to !== null) {
-    errors.push('ACHEEVY must have reports_to: null');
+  // 4. Chain-of-command structural checks (v2 hierarchy)
+  if (card.role_type === 'ACHEEVY') {
+    if (card.chain_of_command.reports_to !== null) {
+      errors.push('ACHEEVY must have reports_to: null');
+    }
+    // ACHEEVY should not directly message Chicken_Hawk or Lil_Hawks
+    if (card.chain_of_command.can_message.some(h =>
+      h === 'Chicken_Hawk' || HANDLE_PATTERNS.Lil_Hawk.test(h)
+    )) {
+      warnings.push('ACHEEVY should speak downward only via Boomer_Angs, not directly to Chicken_Hawk or Lil_Hawks');
+    }
   }
+
+  if (card.role_type === 'Boomer_Ang') {
+    if (card.chain_of_command.reports_to !== 'ACHEEVY') {
+      errors.push(`Boomer_Ang must report to ACHEEVY (got "${card.chain_of_command.reports_to}")`);
+    }
+    // Boomer_Angs must never message USER
+    if (card.chain_of_command.can_message.includes('USER')) {
+      errors.push('Boomer_Ang must never have USER in can_message');
+    }
+  }
+
+  if (card.role_type === 'Chicken_Hawk') {
+    // Chicken_Hawk reports to a Boomer_Ang
+    if (card.chain_of_command.reports_to === null ||
+        !HANDLE_PATTERNS.Boomer_Ang.test(card.chain_of_command.reports_to)) {
+      warnings.push(`Chicken_Hawk should report to a Boomer_Ang (got "${card.chain_of_command.reports_to}")`);
+    }
+    // Chicken_Hawk must never message ACHEEVY or USER
+    if (!card.chain_of_command.cannot_message.includes('ACHEEVY')) {
+      errors.push('Chicken_Hawk must have ACHEEVY in cannot_message');
+    }
+    // Chicken_Hawk must not have MENTOR or CHANGE_SCOPE in allowed_actions
+    if (card.capabilities.allowed_actions.includes('MENTOR')) {
+      errors.push('Chicken_Hawk is not authorized to MENTOR (coordinator, not mentor)');
+    }
+    if (card.capabilities.allowed_actions.includes('CHANGE_SCOPE')) {
+      errors.push('Chicken_Hawk is not authorized to CHANGE_SCOPE');
+    }
+  }
+
   if (card.role_type === 'Lil_Hawk') {
     if (card.chain_of_command.reports_to !== 'Chicken_Hawk') {
       errors.push(`Lil_Hawk must report to Chicken_Hawk (got "${card.chain_of_command.reports_to}")`);
     }
     if (!card.chain_of_command.cannot_message.includes('ACHEEVY')) {
       errors.push('Lil_Hawk must have ACHEEVY in cannot_message');
+    }
+    // v2: Lil_Hawks must not directly message Boomer_Angs
+    for (const handle of card.chain_of_command.can_message) {
+      if (HANDLE_PATTERNS.Boomer_Ang.test(handle)) {
+        errors.push(`Lil_Hawk must not directly message Boomer_Ang "${handle}" — use Squad Leader or Chicken_Hawk`);
+      }
     }
   }
 
@@ -229,6 +277,8 @@ export function authorizeAction(
 
 /**
  * Check whether a role card is authorized to use a given tool.
+ * v2: Tools are Boomer_Ang-owned. Chicken_Hawk and Lil_Hawks only access
+ * tools via delegated workflow packets from their owning Boomer_Ang.
  */
 export function authorizeTool(
   card: RoleCard,
@@ -400,6 +450,16 @@ export function scanForUnsafeContent(
     if (disallowed === 'raw_system_prompts') {
       if (/system\s*prompt|<system>|<<SYS>>/i.test(text)) {
         violations.push('Detected potential raw system prompt in overlay content');
+      }
+    }
+    if (disallowed === 'internal_tool_names' || disallowed === 'raw_endpoints') {
+      if (/https?:\/\/[a-z0-9\-]+:\d{4,5}/i.test(text)) {
+        violations.push('Detected potential internal endpoint in overlay content');
+      }
+    }
+    if (disallowed === 'infrastructure_details') {
+      if (/docker|container|k8s|kubernetes|namespace/i.test(text)) {
+        violations.push('Detected potential infrastructure detail in overlay content');
       }
     }
   }
