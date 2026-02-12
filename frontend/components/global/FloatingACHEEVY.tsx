@@ -81,7 +81,7 @@ export function FloatingACHEEVY() {
   };
 
   return (
-    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+    <div className="fixed left-1/2 -translate-x-1/2 z-50 pointer-events-none" style={{ bottom: 'calc(var(--frame-inset, 12px) + 16px)' }}>
       <motion.div
         layout
         className="pointer-events-auto"

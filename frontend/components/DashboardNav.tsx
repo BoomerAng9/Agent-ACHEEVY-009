@@ -19,14 +19,6 @@ const userNavItems = [
   { href: "/dashboard/circuit-box", label: "Circuit Box", highlight: true },
 ];
 
-// ── Admin-only (Circuit Box) navigation ─────────────────────
-const adminNavItems = [
-  { href: "/dashboard/operations", label: "Operations" },
-  { href: "/dashboard/gates", label: "Gates & Evidence" },
-  { href: "/dashboard/environments", label: "Environments" },
-  { href: "/dashboard/sports-tracker", label: "Sports Tracker" },
-];
-
 function NavLink({ item, pathname }: { item: { href: string; label: string; highlight?: boolean }; pathname: string | null }) {
   const active =
     pathname === item.href ||
@@ -79,17 +71,9 @@ export function DashboardNav() {
         <NavLink key={item.href} item={item} pathname={pathname} />
       ))}
 
-      {/* Admin / Circuit Box section — only for OWNER */}
+      {/* Admin access — consolidated into Circuit Box */}
       {isAdmin && (
         <>
-          <div className="mx-3 my-2 border-t border-gold/10" />
-          <p className="px-3 pb-1 pt-1 text-[0.55rem] uppercase tracking-[0.2em] text-gold/30 font-mono">
-            Circuit Box
-          </p>
-          {adminNavItems.map((item) => (
-            <NavLink key={item.href} item={item} pathname={pathname} />
-          ))}
-
           <div className="mx-3 my-2 border-t border-red-500/20" />
           <Link
             href="/dashboard/admin"
