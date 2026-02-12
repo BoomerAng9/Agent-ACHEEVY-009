@@ -14,7 +14,19 @@
  */
 
 import type { ChainStep } from '../types/skills';
-import type { AgentId } from '../../backend/uef-gateway/src/agents/types';
+
+// Agent ID type — mirrors backend/uef-gateway/src/agents/types.ts
+// Defined locally to avoid cross-boundary imports between aims-skills and backend
+export type AgentId =
+  | 'engineer-ang'
+  | 'marketer-ang'
+  | 'analyst-ang'
+  | 'quality-ang'
+  | 'chicken-hawk'
+  | 'research-ang'
+  | 'router-ang'
+  | 'workflow-smith-squad'
+  | 'vision-scout-squad';
 
 // ---------------------------------------------------------------------------
 // Vertical Phases & Categories

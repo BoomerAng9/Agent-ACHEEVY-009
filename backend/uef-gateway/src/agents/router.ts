@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import logger from '../logger';
 import { registry } from './registry';
 import { AgentTaskInput, AgentTaskOutput, AgentId } from './types';
-import { scoreAndAudit } from '../../../../aims-skills/acheevy-verticals/execution-engine';
+import { scoreAndAudit } from '../acheevy/execution-engine';
 
 export interface RouterResult {
   executed: boolean;

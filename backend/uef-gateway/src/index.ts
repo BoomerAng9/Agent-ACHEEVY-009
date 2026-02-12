@@ -42,6 +42,7 @@ import { incidentManager } from './backup/incident-runbook';
 
 import { a2aRouter } from './a2a';
 import { openclawRouter } from './openclaw/router';
+import { getOrchestrator } from './acheevy/orchestrator';
 import logger from './logger';
 
 const app = express();
@@ -394,6 +395,94 @@ app.get('/llm/usage', (req, res) => {
     res.json(usageTracker.getUserUsage(userId));
   } else {
     res.json(usageTracker.getGlobalStats());
+  }
+});
+
+// --------------------------------------------------------------------------
+// ACHEEVY Orchestrator — Intent classification → agent dispatch
+// This is the PRIMARY execution path for the chat interface.
+// Frontend sends: { userId, message, intent, context }
+// Gateway routes to II-Agent, A2A agents, n8n, OpenClaw, or verticals.
+// --------------------------------------------------------------------------
+app.post('/acheevy/execute', async (req, res) => {
+  try {
+    const { userId, message, intent, conversationId, plugId, skillId, context } = req.body;
+    if (!message || typeof message !== 'string') {
+      res.status(400).json({ error: 'Missing message field' });
+      return;
+    }
+    if (!intent || typeof intent !== 'string') {
+      res.status(400).json({ error: 'Missing intent field' });
+      return;
+    }
+
+    const orchestrator = getOrchestrator();
+    const result = await orchestrator.execute({
+      userId: userId || 'web-user',
+      message,
+      intent,
+      conversationId: conversationId || 'chat-ui',
+      plugId,
+      skillId,
+      context,
+    });
+
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Orchestrator execution failed';
+    logger.error({ err }, '[ACHEEVY] Execute error');
+    res.status(500).json({ error: msg });
+  }
+});
+
+// --------------------------------------------------------------------------
+// ACHEEVY Classify — Quick intent classification for the chat route
+// Frontend can call this to determine if a message needs agent dispatch
+// --------------------------------------------------------------------------
+app.post('/acheevy/classify', (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message || typeof message !== 'string') {
+      res.status(400).json({ error: 'Missing message field' });
+      return;
+    }
+
+    // Intent classification based on keywords
+    const lower = message.toLowerCase();
+
+    // Check for build/engineering intents
+    if (/\b(build|create|scaffold|deploy|generate|implement|code|develop|launch|mvp)\b/.test(lower)) {
+      if (/\b(plug|app|site|website|saas|platform|tool)\b/.test(lower)) {
+        res.json({ intent: 'plug-factory:custom', confidence: 0.9, requiresAgent: true });
+        return;
+      }
+      res.json({ intent: 'skill:build', confidence: 0.75, requiresAgent: true });
+      return;
+    }
+
+    // Check for research intents
+    if (/\b(research|analyze|investigate|study|compare|benchmark|audit)\b/.test(lower)) {
+      res.json({ intent: 'skill:research', confidence: 0.8, requiresAgent: true });
+      return;
+    }
+
+    // Check for vertical/business intents
+    if (/\b(business|startup|entrepreneur|side hustle|monetize|revenue|scale)\b/.test(lower)) {
+      res.json({ intent: 'vertical:idea-generator', confidence: 0.85, requiresAgent: true });
+      return;
+    }
+
+    // Check for PMO/workflow intents
+    if (/\b(workflow|pipeline|automate|chain|team|assign|delegate)\b/.test(lower)) {
+      res.json({ intent: 'pmo-route', confidence: 0.7, requiresAgent: true });
+      return;
+    }
+
+    // Default: conversational (no agent needed, use LLM stream)
+    res.json({ intent: 'conversational', confidence: 0.5, requiresAgent: false });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Classification failed';
+    res.status(500).json({ error: msg });
   }
 });
 

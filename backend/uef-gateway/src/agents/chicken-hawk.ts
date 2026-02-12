@@ -18,7 +18,7 @@
 import logger from '../logger';
 import { Agent, AgentId, AgentTaskInput, AgentTaskOutput, failOutput } from './types';
 import { registry } from './registry';
-import { scoreAndAudit } from '../../../../aims-skills/acheevy-verticals/execution-engine';
+import { scoreAndAudit } from '../acheevy/execution-engine';
 
 const profile = {
   id: 'chicken-hawk' as const,

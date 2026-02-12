@@ -1,8 +1,16 @@
 /**
- * Chat API Route — Unified LLM Gateway + Vercel AI SDK fallback
+ * Chat API Route — Unified LLM Gateway + Agent Orchestrator
  *
- * Primary path: UEF Gateway /llm/stream (Vertex AI + OpenRouter, metered)
- * Fallback path: Direct OpenRouter via Vercel AI SDK (local dev)
+ * THREE execution paths:
+ *   1. Agent dispatch: message classified as actionable → /acheevy/execute → orchestrator
+ *      → II-Agent / A2A agents / n8n / OpenClaw → structured response
+ *   2. LLM stream:    conversational message → /llm/stream → Vertex AI / OpenRouter
+ *      → SSE text stream (metered through LUC)
+ *   3. Direct fallback: gateway unreachable → Vercel AI SDK → OpenRouter
+ *
+ * The classify step calls /acheevy/classify to determine intent.
+ * If requiresAgent=true, we dispatch to the orchestrator.
+ * If requiresAgent=false, we stream via the LLM gateway.
  *
  * Feature LLM: Claude Opus 4.6
  * Priority Models: Qwen, Minimax, GLM, Kimi, WAN, Nano Banana Pro
@@ -52,10 +60,109 @@ function resolveModelId(model?: string): string {
   return DEFAULT_MODEL;
 }
 
-/**
- * Try the UEF Gateway SSE stream first (metered, Vertex AI + OpenRouter).
- * Returns null if gateway is unreachable or not configured.
- */
+// ── Headers helper ──────────────────────────────────────────
+function gatewayHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (INTERNAL_API_KEY) headers['X-API-Key'] = INTERNAL_API_KEY;
+  return headers;
+}
+
+// ---------------------------------------------------------------------------
+// Step 1: Classify intent — determines if we need agent dispatch or LLM chat
+// ---------------------------------------------------------------------------
+
+interface ClassifyResult {
+  intent: string;
+  confidence: number;
+  requiresAgent: boolean;
+}
+
+async function classifyIntent(lastMessage: string): Promise<ClassifyResult | null> {
+  if (!UEF_GATEWAY_URL) return null;
+
+  try {
+    const res = await fetch(`${UEF_GATEWAY_URL}/acheevy/classify`, {
+      method: 'POST',
+      headers: gatewayHeaders(),
+      body: JSON.stringify({ message: lastMessage }),
+    });
+
+    if (!res.ok) return null;
+    return await res.json() as ClassifyResult;
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Path A: Agent dispatch — for actionable intents (build, research, verticals)
+// ---------------------------------------------------------------------------
+
+async function tryAgentDispatch(
+  lastMessage: string,
+  classification: ClassifyResult,
+  conversationHistory: Array<{ role: string; content: string }>,
+): Promise<Response | null> {
+  if (!UEF_GATEWAY_URL) return null;
+
+  try {
+    const res = await fetch(`${UEF_GATEWAY_URL}/acheevy/execute`, {
+      method: 'POST',
+      headers: gatewayHeaders(),
+      body: JSON.stringify({
+        userId: 'web-user',
+        message: lastMessage,
+        intent: classification.intent,
+        conversationId: 'chat-ui',
+        context: {
+          history: conversationHistory.slice(-6), // last 6 messages for context
+          classification,
+        },
+      }),
+    });
+
+    if (!res.ok) return null;
+
+    const result = await res.json();
+
+    // Format orchestrator response as Vercel AI SDK text stream
+    const reply = result.reply || 'Task received. Processing...';
+    const meta = [];
+    if (result.taskId) meta.push(`Task ID: ${result.taskId}`);
+    if (result.status) meta.push(`Status: ${result.status}`);
+    if (result.data?.pipelineSteps) meta.push(`Pipeline: ${result.data.pipelineSteps.length} steps`);
+    if (result.lucUsage) meta.push(`LUC: ${result.lucUsage.amount} ${result.lucUsage.service}`);
+
+    const fullReply = meta.length > 0
+      ? `${reply}\n\n---\n*${meta.join(' | ')}*`
+      : reply;
+
+    // Emit as Vercel AI SDK text stream format (single-shot)
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(`0:${JSON.stringify(fullReply)}\n`));
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'X-ACHEEVY-Intent': classification.intent,
+        'X-ACHEEVY-Agent': 'true',
+      },
+    });
+  } catch (err) {
+    console.warn('[ACHEEVY Chat] Agent dispatch failed:', err instanceof Error ? err.message : err);
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Path B: LLM stream — for conversational messages
+// ---------------------------------------------------------------------------
+
 async function tryGatewayStream(
   modelId: string,
   messages: Array<{ role: string; content: string }>,
@@ -71,10 +178,7 @@ async function tryGatewayStream(
 
     const res = await fetch(`${UEF_GATEWAY_URL}/llm/stream`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(INTERNAL_API_KEY ? { 'X-API-Key': INTERNAL_API_KEY } : {}),
-      },
+      headers: gatewayHeaders(),
       body: JSON.stringify({
         model: modelId,
         messages: gatewayMessages,
@@ -128,17 +232,37 @@ async function tryGatewayStream(
   }
 }
 
+// ---------------------------------------------------------------------------
+// POST handler — the unified entry point
+// ---------------------------------------------------------------------------
+
 export async function POST(req: Request) {
   try {
     const { messages, model, personaId } = await req.json();
     const modelId = resolveModelId(model);
     const systemPrompt = buildSystemPrompt({ personaId, additionalContext: 'User is using the Chat Interface.' });
 
-    // Primary: UEF Gateway (metered, Vertex AI + OpenRouter)
+    // Get the last user message for classification
+    const lastUserMessage = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
+    const lastMessage = lastUserMessage?.content || '';
+
+    // Step 1: Classify intent via gateway
+    const classification = await classifyIntent(lastMessage);
+
+    // Step 2: If agent dispatch is needed, route to orchestrator
+    if (classification?.requiresAgent && classification.confidence > 0.6) {
+      console.log(`[ACHEEVY Chat] Agent dispatch: intent=${classification.intent} confidence=${classification.confidence}`);
+      const agentResponse = await tryAgentDispatch(lastMessage, classification, messages);
+      if (agentResponse) return agentResponse;
+      // If agent dispatch fails, fall through to LLM stream
+      console.warn('[ACHEEVY Chat] Agent dispatch failed, falling through to LLM stream');
+    }
+
+    // Step 3: LLM stream via UEF Gateway (metered, Vertex AI + OpenRouter)
     const gatewayResponse = await tryGatewayStream(modelId, messages, systemPrompt);
     if (gatewayResponse) return gatewayResponse;
 
-    // Fallback: Direct OpenRouter via Vercel AI SDK
+    // Step 4: Direct OpenRouter via Vercel AI SDK (fallback)
     const result = await streamText({
       model: openrouter(modelId),
       system: systemPrompt,

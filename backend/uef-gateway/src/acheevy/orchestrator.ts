@@ -13,7 +13,23 @@ import { LUCEngine } from '../luc';
 import { v4 as uuidv4 } from 'uuid';
 import { triggerN8nPmoWorkflow } from '../n8n';
 import type { N8nPipelineResponse } from '../n8n';
-import { getVertical, executeVertical } from '../../../../aims-skills/acheevy-verticals';
+import { executeVertical } from './execution-engine';
+
+// Vertical definitions: pure data (no gateway imports), loaded at runtime
+// to avoid tsconfig rootDir compilation issues with cross-boundary imports.
+let _verticals: Record<string, any> | null = null;
+function getVertical(id: string): any {
+  if (!_verticals) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const mod = require('../../../../aims-skills/acheevy-verticals/vertical-definitions');
+      _verticals = mod.VERTICALS || {};
+    } catch {
+      _verticals = {};
+    }
+  }
+  return _verticals![id] || null;
+}
 
 // ── Types ────────────────────────────────────────────────────
 
