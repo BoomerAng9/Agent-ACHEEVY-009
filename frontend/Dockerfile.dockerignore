@@ -1,0 +1,20 @@
+# =============================================================================
+# .dockerignore for frontend build (context = repo root)
+# Only include frontend/ and aims-tools/ — ignore everything else
+# =============================================================================
+
+# Ignore everything by default
+*
+
+# Allow frontend source
+!frontend/
+frontend/node_modules
+frontend/.next
+frontend/.env*
+!frontend/.env.example
+frontend/coverage
+frontend/.git
+
+# Allow aims-tools (shared library)
+!aims-tools/
+aims-tools/node_modules

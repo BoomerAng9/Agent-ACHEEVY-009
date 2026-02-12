@@ -2,16 +2,22 @@
 # A.I.M.S. Frontend — Production Dockerfile
 # =============================================================================
 # Multi-stage build for Next.js 14 with standalone output.
+# Build context is the REPO ROOT (..) so we can access aims-tools/.
 # Standalone mode produces a self-contained server (~150MB vs ~500MB).
 
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy package files from frontend/ subdirectory
+COPY frontend/package*.json ./
 RUN npm ci
 
-COPY . .
+# Copy frontend source
+COPY frontend/ ./
+
+# Copy aims-tools to /aims-tools so ../aims-tools resolves from /app
+COPY aims-tools/ /aims-tools/
 
 # Build-time env vars (safe to embed, no secrets)
 ENV NEXT_TELEMETRY_DISABLED=1
