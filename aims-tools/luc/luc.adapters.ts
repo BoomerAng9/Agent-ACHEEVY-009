@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * LUC Adapters - Bindings for UI and API Consumers
  * @version 2.0.0

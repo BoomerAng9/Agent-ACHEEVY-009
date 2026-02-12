@@ -3,11 +3,11 @@
  *
  * Maps ACP intents to the right agent (or agent team) and runs the task.
  *
- * Routing strategy:
- *   CHAT             → Marketer_Ang (conversational) + Quality_Ang (verify)
- *   BUILD_PLUG       → ChickenHawk (pipeline) orchestrating Engineer_Ang
- *   RESEARCH         → Analyst_Ang (primary) + Quality_Ang (verify)
- *   AGENTIC_WORKFLOW → ChickenHawk (full pipeline, multi-agent)
+ * Routing strategy (Boomer_Angs direct, Chicken Hawk + Lil_Hawks execute):
+ *   CHAT             → Marketer_Ang (director) + Quality_Ang (verify)
+ *   BUILD_PLUG       → Engineer_Ang (director) + ChickenHawk (executor running the pipeline) + Quality_Ang (verify)
+ *   RESEARCH         → Analyst_Ang (director) + Quality_Ang (verify)
+ *   AGENTIC_WORKFLOW → ChickenHawk (executor, multi-step pipeline under Boomer_Ang oversight)
  *   ESTIMATE_ONLY    → No agent execution (LUC handles it)
  */
 

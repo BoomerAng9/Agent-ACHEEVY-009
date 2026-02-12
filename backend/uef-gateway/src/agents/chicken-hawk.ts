@@ -1,18 +1,21 @@
 /**
  * Chicken Hawk — Execution & Coding Bot
  *
- * The workhorse. Receives execution plans from the UEF Gateway and runs them
- * step-by-step, coordinating with Boomer_Ang specialists as needed.
+ * The workhorse executor. Receives execution plans from Boomer_Ang directors
+ * (via the UEF Gateway) and runs them step-by-step under their oversight.
+ * Boomer_Angs are the senior specialists who decide WHAT to build —
+ * Chicken Hawk sequences their plan, manages retries, tracks cost accrual,
+ * and produces final artifacts.
  *
- * Unlike Boomer_Angs (which are domain specialists), Chicken Hawk is a
- * general-purpose executor: it sequences steps, manages retries, tracks
- * cost accrual, and produces final artifacts.
+ * Unlike Boomer_Angs (which are domain directors with strategic authority),
+ * Chicken Hawk is a general-purpose executor. They work in unison:
+ * Boomer_Angs plan, Chicken Hawk and Lil_Hawks execute.
  *
  * Behavior:
- *   1. Parse the execution plan into ordered steps
- *   2. For each step, determine which Boomer_Ang (if any) should handle it
+ *   1. Receive execution plan from Boomer_Ang director(s)
+ *   2. For each step, delegate to the appropriate Lil_Hawk squad or handle directly
  *   3. Execute steps sequentially, accumulating artifacts and costs
- *   4. Return consolidated result to UEF Gateway
+ *   4. Return consolidated result to the overseeing Boomer_Ang via UEF Gateway
  */
 
 import logger from '../logger';

@@ -111,14 +111,53 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         const lines = chunk.split('\n');
 
         for (const line of lines) {
+          // Handle Vercel AI SDK format: 0:"text chunk"\n
+          if (/^\d+:/.test(line)) {
+            const colonIdx = line.indexOf(':');
+            const prefix = line.slice(0, colonIdx);
+            const payload = line.slice(colonIdx + 1);
+
+            // 0 = text token, d = done/data, e = error
+            if (prefix === '0') {
+              try {
+                const text = JSON.parse(payload);
+                if (typeof text === 'string') {
+                  currentMessageRef.current += text;
+                  setMessages(prev => {
+                    const updated = [...prev];
+                    const lastMsg = updated[updated.length - 1];
+                    if (lastMsg.role === 'assistant' && lastMsg.isStreaming) {
+                      lastMsg.content = currentMessageRef.current;
+                    }
+                    return [...updated];
+                  });
+                }
+              } catch {
+                // Skip malformed tokens
+              }
+            } else if (prefix === 'e') {
+              // Vercel AI SDK finish signal
+              setIsStreaming(false);
+              setMessages(prev => {
+                const updated = [...prev];
+                const lastMsg = updated[updated.length - 1];
+                if (lastMsg.role === 'assistant') {
+                  lastMsg.isStreaming = false;
+                  onMessageComplete?.(lastMsg);
+                }
+                return updated;
+              });
+              return;
+            }
+            continue;
+          }
+
+          // Handle raw SSE format: data: {content}
           if (line.startsWith('data: ')) {
             const data = line.slice(6);
 
             if (data === '[DONE]') {
-              // Stream complete
               setIsStreaming(false);
-
-              // Finalize the message
               setMessages(prev => {
                 const updated = [...prev];
                 const lastMsg = updated[updated.length - 1];
@@ -133,15 +172,9 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
 
             try {
               const parsed = JSON.parse(data);
-
-              if (parsed.error) {
-                throw new Error(parsed.error);
-              }
-
+              if (parsed.error) throw new Error(parsed.error);
               if (parsed.content) {
                 currentMessageRef.current += parsed.content;
-
-                // Update the streaming message
                 setMessages(prev => {
                   const updated = [...prev];
                   const lastMsg = updated[updated.length - 1];
@@ -151,11 +184,25 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
                   return [...updated];
                 });
               }
-            } catch (e) {
+            } catch {
               // Skip malformed chunks
             }
           }
         }
+      }
+
+      // Stream ended without explicit done signal — finalize
+      if (currentMessageRef.current) {
+        setIsStreaming(false);
+        setMessages(prev => {
+          const updated = [...prev];
+          const lastMsg = updated[updated.length - 1];
+          if (lastMsg.role === 'assistant' && lastMsg.isStreaming) {
+            lastMsg.isStreaming = false;
+            onMessageComplete?.(lastMsg);
+          }
+          return updated;
+        });
       }
     } catch (err: any) {
       if (err.name === 'AbortError') {

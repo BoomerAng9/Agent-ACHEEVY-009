@@ -24,8 +24,8 @@
 export const DELEGATION_CHAIN = [
   { rank: 0, role: 'Lil_Hawk',      label: 'Worker',                speaks_to: 'Squad Leader or Chicken Hawk' },
   { rank: 1, role: 'Squad Leader',   label: 'Coordinator (temp)',    speaks_to: 'Chicken Hawk' },
-  { rank: 2, role: 'Chicken Hawk',   label: 'Coordinator / Enforcer', speaks_to: 'Boomer_Ang' },
-  { rank: 3, role: 'Boomer_Ang',     label: 'Manager / Trainer',     speaks_to: 'ACHEEVY' },
+  { rank: 2, role: 'Chicken Hawk',   label: 'Executor / Enforcer',    speaks_to: 'Boomer_Ang (reports to)' },
+  { rank: 3, role: 'Boomer_Ang',     label: 'Director / Overseer',   speaks_to: 'ACHEEVY' },
   { rank: 4, role: 'ACHEEVY',        label: 'Executive Orchestrator', speaks_to: 'Boomer_Angs only (downward, rare)' },
 ] as const;
 

@@ -46,7 +46,7 @@ import {
   Workflow,
   Zap,
 } from "lucide-react";
-import { ParticleLazer } from "@/components/deploy-dock/ParticleLazer";
+// ParticleLazer removed (component deleted in Phase 6 cleanup)
 
 // ─────────────────────────────────────────────────────────────
 // Types
@@ -439,7 +439,7 @@ function AcheevyPanel() {
 // Transfer View Visualization
 // ─────────────────────────────────────────────────────────────
 
-function TransferView({ stage }: { stage: "idle" | "hatch" | "assign" | "launch" }) {
+function TransferView({ stage }: { stage: string }) {
   const [particles, setParticles] = useState<{ id: number; x: number; y: number; progress: number }[]>([]);
 
   useEffect(() => {
@@ -638,8 +638,13 @@ export default function DeployDockPage() {
       animate={{ opacity: 1 }}
       className="min-h-screen pb-20 text-white/80 font-sans selection:bg-gold/30"
     >
-      <ParticleLazer isActive={isHatching} />
-      
+      {/* Particle effect placeholder — visual flair when hatching */}
+      {isHatching && (
+        <div className="fixed inset-0 pointer-events-none z-50">
+          <div className="absolute inset-0 bg-gold/5 animate-pulse" />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 max-w-7xl mx-auto">
         {/* Left Column: Main Interface */}
         <div className="space-y-6">

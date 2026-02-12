@@ -268,7 +268,7 @@ async function handleCreateDeployment(body: any, userId: string) {
     roster,
     jobPackets: [],
     events,
-    evidenceLocker: { deploymentId, artifacts: [], complete: false },
+    evidenceLocker: { deploymentId, artifacts: [] as any[], complete: false },
     lucBudget,
     lucSpent: 0,
     createdAt: now.toISOString(),
