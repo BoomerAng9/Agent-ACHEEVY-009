@@ -102,10 +102,10 @@ export function Hero() {
           </motion.div>
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Link
-              href="/dashboard/chat"
+              href="/dashboard"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-8 py-3.5 text-sm font-medium uppercase tracking-wider text-white/60 transition-colors hover:bg-white/5 hover:text-white hover:border-white/25"
             >
-              Chat w/ACHEEVY
+              Launch Dashboard
             </Link>
           </motion.div>
         </div>

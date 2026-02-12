@@ -279,7 +279,7 @@ export function DashboardShell({ children }: Props) {
                       </div>
                       <div className="py-1">
                         <button
-                          onClick={() => { setShowAccountMenu(false); router.push('/dashboard/settings'); }}
+                          onClick={() => { setShowAccountMenu(false); router.push('/dashboard/circuit-box?tab=settings'); }}
                           className="w-full text-left px-4 py-2 text-sm text-white/60 hover:bg-white/5 hover:text-white transition-colors"
                         >
                           Settings

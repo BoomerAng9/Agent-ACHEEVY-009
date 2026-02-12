@@ -237,9 +237,9 @@ export function FloatingACHEEVY() {
     }
   };
 
-  // Go to full chat
-  const goToFullChat = () => {
-    router.push('/dashboard/chat');
+  // Toggle maximized state
+  const toggleMaximized = () => {
+    setIsExpanded(true);
   };
 
   return (
@@ -263,11 +263,11 @@ export function FloatingACHEEVY() {
               </div>
               <div className="flex items-center gap-1">
                 <button
-                  onClick={goToFullChat}
+                  onClick={() => setIsExpanded(false)}
                   className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-gold transition-colors"
-                  title="Open full chat"
+                  title="Minimize"
                 >
-                  <ExpandIcon className="w-4 h-4" />
+                  <MinimizeIcon className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setIsExpanded(false)}

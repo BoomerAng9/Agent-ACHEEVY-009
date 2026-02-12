@@ -236,7 +236,7 @@ export function Footer() {
 
           {/* Related Links */}
           <div className="flex items-center gap-4 text-sm">
-            <Link href="/dashboard/acheevy" className="text-gray-400 hover:text-white transition-colors">
+            <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
               ACHEEVY
             </Link>
             <span className="text-gray-600">·</span>

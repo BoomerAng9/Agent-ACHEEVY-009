@@ -864,7 +864,7 @@ export default function ModelGardenPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#0a0f1a' }}>
+    <div className="min-h-screen aims-page-bg">
       <CircuitBoardPattern density="sparse" animated={false} glowIntensity={0.1} />
 
       <div className="relative max-w-7xl mx-auto px-6 py-8">

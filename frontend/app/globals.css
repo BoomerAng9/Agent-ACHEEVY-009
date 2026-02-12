@@ -321,3 +321,18 @@ body {
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(212, 168, 67, 0.3);
 }
+
+/* Circuit Box panel — strip nested page wrappers when embedded */
+.circuit-box-panel > div > .min-h-screen {
+  min-height: auto !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+.circuit-box-panel .aims-page-bg {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+/* Hide nested CircuitBoardPattern when inside Circuit Box */
+.circuit-box-panel canvas {
+  display: none !important;
+}

@@ -232,7 +232,7 @@ function CategoryColumn({ category, index }: { category: TechCategory; index: nu
 
 export default function TechStack() {
   return (
-    <div className="min-h-screen p-8" style={{ backgroundColor: '#0a0f1a' }}>
+    <div className="min-h-screen p-8 aims-page-bg">
       {/* Background */}
       <CircuitBoardPattern density="sparse" animated={false} glowIntensity={0.1} />
 

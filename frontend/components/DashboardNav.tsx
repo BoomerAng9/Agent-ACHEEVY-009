@@ -10,30 +10,19 @@ import clsx from "clsx";
 const userNavItems = [
   { href: "/dashboard/your-space", label: "Your Space" },
   { href: "/dashboard", label: "Overview" },
-  { href: "/dashboard/acheevy", label: "ACHEEVY", highlight: true },
-  { href: "/dashboard/chat", label: "Chat w/ACHEEVY" },
-  { href: "/dashboard/plan", label: "Plan" },
   { href: "/dashboard/deploy-dock", label: "Deploy Dock", highlight: true },
   { href: "/dashboard/plugs", label: "aiPlugs" },
   { href: "/dashboard/house-of-ang", label: "House of Ang" },
   { href: "/dashboard/project-management", label: "PMO Offices" },
-  { href: "/dashboard/workstreams", label: "Workstreams" },
-  { href: "/dashboard/lab", label: "Workbench" },
-  { href: "/dashboard/luc", label: "LUC" },
   { href: "/dashboard/make-it-mine", label: "Make It Mine" },
-  { href: "/dashboard/research", label: "R&D Hub" },
-  { href: "/dashboard/model-garden", label: "Model Garden" },
-  { href: "/dashboard/settings", label: "Settings" },
+  { href: "/dashboard/circuit-box", label: "Circuit Box", highlight: true },
 ];
 
 // ── Admin-only (Circuit Box) navigation ─────────────────────
 const adminNavItems = [
-  { href: "/dashboard/circuit-box", label: "Circuit Box" },
-  { href: "/dashboard/boomerangs", label: "Boomer_Angs" },
   { href: "/dashboard/operations", label: "Operations" },
   { href: "/dashboard/gates", label: "Gates & Evidence" },
   { href: "/dashboard/environments", label: "Environments" },
-  { href: "/dashboard/security", label: "Security Center" },
   { href: "/dashboard/sports-tracker", label: "Sports Tracker" },
 ];
 

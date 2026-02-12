@@ -658,8 +658,7 @@ export default function CircuitBox() {
 
   return (
     <div
-      className="min-h-screen p-6"
-      style={{ backgroundColor: '#0a0f1a' }}
+      className="min-h-screen p-6 aims-page-bg"
     >
       {/* Header */}
       <header className="flex items-center justify-between mb-6">

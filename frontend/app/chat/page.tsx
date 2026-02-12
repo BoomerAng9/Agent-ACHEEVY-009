@@ -614,8 +614,8 @@ export default function ChatPage() {
               )}
 
               <div className="relative">
-                <div className="w-11 h-11 rounded-xl bg-white/5 border border-gold/20 flex items-center justify-center">
-                  <Bot className="text-gold w-6 h-6" />
+                <div className="w-11 h-11 rounded-xl bg-white/5 border border-gold/20 flex items-center justify-center overflow-hidden">
+                  <Image src="/images/acheevy/acheevy-helmet.png" alt="ACHEEVY" width={28} height={28} className="w-7 h-7 object-cover rounded-lg" />
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0A0A0A] animate-pulse" />
               </div>
