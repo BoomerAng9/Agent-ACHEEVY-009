@@ -563,3 +563,54 @@ export function getPersonasForOffice(pmoOffice: string): AngPersona[] {
 export function getAllPersonas(): AngPersona[] {
   return REGISTRY_PERSONAS.map(b => b.persona);
 }
+
+// ---------------------------------------------------------------------------
+// Platform Directive Agent Aliases
+//
+// Maps the directive's [Function]_Ang naming convention to existing
+// codebase agent IDs. Used for user-facing display and routing.
+//
+// Source: PLATFORM_DIRECTIVE.md (February 12, 2026)
+// ---------------------------------------------------------------------------
+
+export interface DirectiveAgentAlias {
+  directiveName: string;      // Name from the Platform Directive
+  codebaseId: string;         // Actual agent ID in registry
+  poweredBy: string;          // Backing technology
+  specialization: string;     // What it does
+  status: 'active' | 'planned';
+}
+
+export const DIRECTIVE_AGENT_ALIASES: DirectiveAgentAlias[] = [
+  { directiveName: 'Code_Ang',    codebaseId: 'engineer-ang',   poweredBy: 'ii-agent',               specialization: 'Full-stack code generation (Express.js, React, Next.js, APIs)', status: 'active' },
+  { directiveName: 'Medical_Ang', codebaseId: 'medical-ang',    poweredBy: 'II-Medical',             specialization: 'NIL contracts, injury prediction, compliance analysis, legal reasoning', status: 'planned' },
+  { directiveName: 'Research_Ang',codebaseId: 'research-ang',   poweredBy: 'ii-researcher',          specialization: 'Web scraping (NCAA stats, NIL databases, recruiting intel)', status: 'active' },
+  { directiveName: 'Test_Ang',    codebaseId: 'quality-ang',    poweredBy: 'ii-agent + custom',      specialization: 'Code quality, security scanning, deployment readiness', status: 'active' },
+  { directiveName: 'Deploy_Ang',  codebaseId: 'automation-ang', poweredBy: 'Custom scripts',         specialization: 'Docker builds, Nginx config, CDN routing, SSL setup', status: 'active' },
+  { directiveName: 'Team_Ang',    codebaseId: 'team-ang',       poweredBy: 'CommonGround',           specialization: 'Multi-agent coordination, workflow orchestration', status: 'planned' },
+  { directiveName: 'Scout_Ang',   codebaseId: 'scout-ang',      poweredBy: 'II-Medical + ii-researcher', specialization: 'Player analysis, performance prediction (Per Form)', status: 'planned' },
+  { directiveName: 'NIL_Ang',     codebaseId: 'nil-ang',        poweredBy: 'II-Medical',             specialization: 'NIL valuation, contract negotiation, market benchmarking', status: 'planned' },
+  { directiveName: 'Comms_Ang',   codebaseId: 'voice-ang',      poweredBy: 'Custom + LLMs',          specialization: 'User notifications, status updates, deployment logs', status: 'active' },
+  { directiveName: 'Safety_Ang',  codebaseId: 'sentinel-ang',   poweredBy: 'II-Medical',             specialization: 'Compliance monitoring (NCAA, FERPA, legal regulations)', status: 'active' },
+  { directiveName: 'PFWA_Ang',    codebaseId: 'pfwa-ang',       poweredBy: 'II-Medical',             specialization: 'Document analysis, action item extraction, report generation', status: 'planned' },
+];
+
+/**
+ * Resolve a directive agent name to its codebase ID.
+ * Supports both directive names (Code_Ang) and codebase IDs (engineer-ang).
+ */
+export function resolveAgentAlias(nameOrId: string): string {
+  const alias = DIRECTIVE_AGENT_ALIASES.find(
+    a => a.directiveName.toLowerCase() === nameOrId.toLowerCase() ||
+         a.codebaseId === nameOrId
+  );
+  return alias?.codebaseId ?? nameOrId;
+}
+
+/**
+ * Get the user-facing directive name for a codebase agent ID.
+ */
+export function getDirectiveName(codebaseId: string): string {
+  const alias = DIRECTIVE_AGENT_ALIASES.find(a => a.codebaseId === codebaseId);
+  return alias?.directiveName ?? codebaseId;
+}

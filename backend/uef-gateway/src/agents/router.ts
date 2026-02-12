@@ -4,11 +4,14 @@
  * Maps ACP intents to the right agent (or agent team) and runs the task.
  *
  * Routing strategy (Boomer_Angs direct, Chicken Hawk + Lil_Hawks execute):
- *   CHAT             → Marketer_Ang (director) + Quality_Ang (verify)
- *   BUILD_PLUG       → Engineer_Ang (director) + ChickenHawk (executor running the pipeline) + Quality_Ang (verify)
- *   RESEARCH         → Analyst_Ang (director) + Quality_Ang (verify)
+ *   CHAT             → Marketer_Ang (director) + Test_Ang/Quality_Ang (verify)
+ *   BUILD_PLUG       → Code_Ang/Engineer_Ang (director) + ChickenHawk (executor) + Test_Ang/Quality_Ang (verify)
+ *   RESEARCH         → Research_Ang/Analyst_Ang (director) + Test_Ang/Quality_Ang (verify)
  *   AGENTIC_WORKFLOW → ChickenHawk (executor, multi-step pipeline under Boomer_Ang oversight)
  *   ESTIMATE_ONLY    → No agent execution (LUC handles it)
+ *
+ * Agent names follow [Function]_Ang convention per Platform Directive.
+ * See pmo/persona-catalog.ts DIRECTIVE_AGENT_ALIASES for name mapping.
  */
 
 import { v4 as uuidv4 } from 'uuid';

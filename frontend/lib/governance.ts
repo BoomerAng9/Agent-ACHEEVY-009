@@ -447,9 +447,11 @@ export const CANON_RULES = [
   },
   {
     id: 'boomer-ang-naming',
-    rule: 'Boomer_Angs — Always with Underscore',
+    rule: 'Boomer_Angs — [Function]_Ang Convention',
     description:
       'The collective noun is Boomer_Angs (with underscore). A single agent is a Boomer_Ang. ' +
+      'User-facing names follow [Function]_Ang format: Code_Ang, Research_Ang, Test_Ang, Deploy_Ang, etc. ' +
+      'Function describes WHAT the agent does, not a generic label. ' +
       'A boomerang (lowercase, no underscore) refers to the Australian tool. ' +
       'Boomer_Angs take the digital form of the boomerang when depicting task completion — ' +
       'they go and come back with the goods.',
