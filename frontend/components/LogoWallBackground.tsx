@@ -23,7 +23,7 @@ export function LogoWallBackground({ mode = "hero", children }: Props) {
   return (
     <div className={clsx(
       "relative text-white",
-      mode === "dashboard" ? "h-screen overflow-hidden bg-[#050505]" : "min-h-screen bg-[#050505]"
+      mode === "dashboard" ? "h-full overflow-hidden bg-[#050505]" : "min-h-full bg-[#050505] gold-edge-rail"
     )}>
       {/* Base: Fine gold grid — Tron aesthetic */}
       <div
@@ -97,7 +97,8 @@ export function LogoWallBackground({ mode = "hero", children }: Props) {
       {/* Content */}
       <main className={clsx(
         "relative z-10 flex flex-col",
-        mode === "dashboard" ? "h-full" : "min-h-screen",
+        mode === "dashboard" ? "h-full" : "min-h-full",
+        mode === "hero" ? "p-4 md:p-6 lg:p-8 xl:p-12" : "p-0"
       )}>
         <div className="flex-1 flex flex-col w-full">
           {children}
