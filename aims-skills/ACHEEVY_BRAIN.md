@@ -141,6 +141,16 @@ Skills inject specialized context, SOPs, and design standards into ACHEEVY's beh
 | **Best Practices** | `skills/best-practices.md` | Code/deploy tasks | Engineering standards and patterns |
 | **Stitch Design** | `skills/stitch-nano-design.skill.md` | UI/design tasks | Nano Banana Pro design system standards |
 | **UI Motion** | `skills/ui-interaction-motion.skill.md` | Animation/interaction tasks | Framer Motion + interaction patterns |
+| **OpenRouter LLM** | `skills/openrouter-llm.skill.md` | "model", "llm", "openrouter" | Model selection rules, cost awareness, fallback chain |
+| **ElevenLabs Voice** | `skills/elevenlabs-voice.skill.md` | "voice", "tts", "speak" | Voice persona rules, ACHEEVY voice identity |
+| **Unified Search** | `skills/unified-search.skill.md` | "search", "find", "lookup" | Provider priority: Brave > Tavily > Serper |
+| **Stripe Billing** | `skills/stripe-billing.skill.md` | "payment", "subscribe", "billing" | 3-6-9 model rules, subscription management |
+| **Firebase Data** | `skills/firebase-data.skill.md` | "store", "firestore", "firebase" | Tenant isolation, collection patterns |
+| **Prisma Database** | `skills/prisma-database.skill.md` | "database", "schema", "query" | Schema conventions, migration workflow |
+| **GCP Services** | `skills/gcp-services.skill.md` | "gcp", "cloud storage", "vision" | GCP service selection, auth patterns |
+| **Auth Flow** | `skills/auth-flow.skill.md` | "login", "auth", "sign in" | Authentication flow rules |
+| **Three.js 3D** | `skills/threejs-3d.skill.md` | "3d", "three", "webgl" | When/how to use 3D, performance constraints |
+| **Analytics Tracking** | `skills/analytics-tracking.skill.md` | "track", "analytics", "event" | Event tracking, privacy rules |
 
 ### Adding a New Skill
 1. Create `skills/<name>.skill.ts` or `skills/<name>.skill.md`
@@ -160,6 +170,16 @@ Tasks are executable units that produce artifacts.
 | **n8n Workflow** | `tasks/n8n-workflow.md` | "automate", "workflow" | n8n workflow JSON |
 | **Remotion Video** | `tasks/remotion.md` | "video", "render" | Remotion video compositions |
 | **UI Motion** | `tasks/ui-interaction-motion.md` | "animate", "interaction" | Motion component code |
+| **Groq Transcription** | `tasks/groq-transcription.md` | "transcribe", "stt" | Text transcription |
+| **E2B Sandbox** | `tasks/e2b-sandbox.md` | "run code", "sandbox", "execute" | Code execution results |
+| **Text-to-Speech** | `tasks/text-to-speech.md` | "speak", "read aloud", "tts" | Audio buffer |
+| **Speech-to-Text** | `tasks/speech-to-text.md` | "listen", "transcribe", "dictate" | Text transcription |
+| **Web Search** | `tasks/web-search.md` | "search web", "find online" | Search results |
+| **Send Email** | `tasks/send-email.md` | "email", "send email", "notify" | Delivery receipt |
+| **Telegram Message** | `tasks/telegram-message.md` | "telegram", "send telegram" | Message receipt |
+| **Discord Message** | `tasks/discord-message.md` | "discord", "send discord" | Message receipt |
+| **Kling Video** | `tasks/kling-video.md` | "generate video", "kling" | Video file |
+| **Web Scrape** | `tasks/web-scrape.md` | "scrape", "crawl", "extract" | Structured data |
 
 ### Adding a New Task
 1. Create `tasks/<name>.md` with YAML frontmatter
@@ -353,11 +373,56 @@ aims-skills/
 │   ├── stitch-nano-design.skill.md
 │   ├── ui-interaction-motion.skill.md
 │   └── scale-with-acheevy/        ← Business builder skills
+├── tools/                            ← Tool reference documentation (32 tools)
+│   ├── index.ts                      ← TOOL_REGISTRY for programmatic discovery
+│   ├── README.md                     ← Directory guide
+│   ├── openrouter.tool.md            ← LLM gateway (200+ models)
+│   ├── anthropic-claude.tool.md      ← Claude AI models
+│   ├── vertex-ai.tool.md             ← GCP Vertex AI (Claude + Gemini)
+│   ├── groq.tool.md                  ← Fast inference + Whisper STT
+│   ├── e2b.tool.md                   ← Code sandbox execution
+│   ├── elevenlabs.tool.md            ← Text-to-speech
+│   ├── deepgram.tool.md              ← Speech-to-text
+│   ├── brave-search.tool.md          ← Web search (primary)
+│   ├── tavily.tool.md                ← Web search (fallback #1)
+│   ├── serper.tool.md                ← Web search (fallback #2)
+│   ├── stripe.tool.md                ← Payments (3-6-9 model)
+│   ├── firebase.tool.md              ← Firestore database
+│   ├── redis.tool.md                 ← Cache + session store
+│   ├── prisma.tool.md                ← ORM
+│   ├── resend.tool.md                ← Email (primary)
+│   ├── sendgrid.tool.md              ← Email (fallback)
+│   ├── telegram.tool.md              ← Telegram Bot API
+│   ├── discord.tool.md               ← Discord bot/webhook
+│   ├── nginx.tool.md                 ← Reverse proxy
+│   ├── certbot.tool.md               ← SSL automation
+│   ├── hostinger-vps.tool.md         ← VPS hosting
+│   ├── gcp-cloud.tool.md             ← GCP Storage + Vision
+│   ├── google-oauth.tool.md          ← OAuth 2.0
+│   ├── kling-ai.tool.md              ← Video generation
+│   ├── agent-zero.tool.md            ← Autonomous agent
+│   ├── composio.tool.md              ← Unified API integration
+│   ├── firecrawl.tool.md             ← Web scraping
+│   ├── apify.tool.md                 ← Scraper library
+│   ├── nextauth.tool.md              ← Authentication framework
+│   ├── threejs.tool.md               ← 3D graphics
+│   ├── posthog.tool.md               ← Product analytics
+│   └── plausible.tool.md             ← Privacy-first analytics
 ├── tasks/
 │   ├── gemini-research.md
 │   ├── n8n-workflow.md
 │   ├── remotion.md
-│   └── ui-interaction-motion.md
+│   ├── ui-interaction-motion.md
+│   ├── groq-transcription.md         ← Audio transcription
+│   ├── e2b-sandbox.md                ← Code execution
+│   ├── text-to-speech.md             ← TTS output
+│   ├── speech-to-text.md             ← STT input
+│   ├── web-search.md                 ← Web search
+│   ├── send-email.md                 ← Email delivery
+│   ├── telegram-message.md           ← Telegram messaging
+│   ├── discord-message.md            ← Discord messaging
+│   ├── kling-video.md                ← Video generation
+│   └── web-scrape.md                 ← Web scraping
 ├── acheevy-verticals/
 │   ├── vertical-definitions.ts    ← 10 revenue verticals
 │   └── types.ts                   ← Vertical type definitions
