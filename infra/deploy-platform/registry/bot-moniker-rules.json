@@ -8,7 +8,7 @@
     "name": "Chicken_Hawk",
     "description": "Deploy execution engine + mascot - small but relentless, powers up when needed",
     "role": "Execution engine that spawns and coordinates Lil_Hawks",
-    "replaces": "OpenClaw (in user-facing + internal artifacts)",
+    "role_note": "Primary execution engine for all user-facing + internal artifacts",
     "evolution": {
       "base": "Small chick - handles atomic tasks",
       "powered": "Wings spread - handles parallel tasks",

@@ -50,7 +50,7 @@ const protocols = [
       "Anthropic's protocol for model-tool interaction. Enables structured tool use, context passing, and capability negotiation between LLMs and external tools.",
     status: "Integrated" as const,
     statusColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-    agents: ["Claude-based agents", "II-Agent", "OpenClaw"],
+    agents: ["Claude-based agents", "II-Agent"],
     features: [
       "Tool schema declaration",
       "Structured input/output binding",

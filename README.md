@@ -134,7 +134,6 @@ infra/
     lore/                    # Workforce & Y-ISO standards
     contracts/               # DSP schemas
     registry/                # Capability registry
-  openclaw-sandbox/          # Chicken_Hawk sandbox config
 ```
 
 ### Local Development

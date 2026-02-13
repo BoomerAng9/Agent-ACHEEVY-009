@@ -8,7 +8,7 @@
     "rule": "Users NEVER interact with raw open-source tools, containers, or internal endpoints.",
     "surface": "Port Authority (Gateway)",
     "functions": [
-      "Routes internally to services (n8n, OpenClaw, executors, RAG, etc.)",
+      "Routes internally to services (n8n, executors, RAG, etc.)",
       "Enforces auth/tenant isolation",
       "Calls LUC before billable actions"
     ]

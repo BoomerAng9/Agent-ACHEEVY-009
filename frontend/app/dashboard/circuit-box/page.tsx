@@ -180,7 +180,6 @@ const SERVICES: ServiceStatus[] = [
   { id: 'uef-gateway', name: 'UEF Gateway', type: 'core', status: 'online', endpoint: 'http://uef-gateway:3001', version: '1.0.0', features: ['ACP', 'UCP', 'Orchestration'] },
   { id: 'acheevy', name: 'ACHEEVY', type: 'core', status: 'online', endpoint: 'http://acheevy:3003', version: '1.0.0', features: ['Intent Analysis', 'Payment Processing', 'Executive Control'] },
   { id: 'house-of-ang', name: 'House of Ang', type: 'core', status: 'online', endpoint: 'http://house-of-ang:3002', version: '1.0.0', features: ['Agent Registry', 'Routing', 'Task Assignment'] },
-  { id: 'openclaw', name: 'OpenClaw', type: 'tool', status: 'sandbox', endpoint: 'http://openclaw:18789', version: '2026.2.3', features: ['Multi-model', 'KIMI K2.5', 'Tool Execution'] },
   { id: 'agent-bridge', name: 'Agent Bridge', type: 'core', status: 'online', endpoint: 'http://agent-bridge:3010', version: '1.0.0', features: ['Security Gateway', 'Rate Limiting', 'Payment Blocking'] },
   { id: 'n8n', name: 'n8n Automation', type: 'tool', status: 'sandbox', endpoint: 'http://n8n:5678', version: 'latest', features: ['Workflows', 'Webhooks', 'Integrations'] },
 ];

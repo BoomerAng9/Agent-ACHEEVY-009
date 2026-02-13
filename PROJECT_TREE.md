@@ -66,8 +66,6 @@
 │   │   │   └── bot-moniker-rules.json       # Naming rules
 │   │   └── stitch/                # UI configurations
 │   │       └── DEPLOY_PLATFORM_YARD_UI_V1.json
-│   ├── openclaw-sandbox/          # Chicken_Hawk sandbox
-│   │   └── openclaw.config.json   # Execution config
 │   ├── boomerangs/                # Boomer_Ang configs
 │   ├── agent-bridge/              # Agent integration
 │   ├── docker-compose.yml         # Dev orchestration
@@ -107,8 +105,6 @@ Configuration and deployment settings.
   - **lore/**: Workforce structure, Y-ISO standards, career tracking
   - **contracts/**: DSP and shift contract schemas
   - **registry/**: Capability registry and naming rules
-- **openclaw-sandbox/**: Chicken_Hawk execution sandbox
-
 ### Documentation (`docs/`)
 Architectural and integration documentation.
 - **AIMS_OVERVIEW.md**: System architecture with mermaid diagrams

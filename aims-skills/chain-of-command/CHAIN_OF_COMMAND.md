@@ -142,7 +142,7 @@ Users should **never** interact with raw open-source tools, containers, or inter
 ### 3.2 Port Authority (Gateway) = The Only Tool Door
 
 Port Authority is the single public API surface that:
-- Routes internally to services (n8n, OpenClaw, executors, RAG, etc.)
+- Routes internally to services (n8n, executors, RAG, etc.)
 - Enforces auth/tenant isolation
 - Calls LUC before billable actions
 
