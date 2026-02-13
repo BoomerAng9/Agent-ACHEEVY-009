@@ -48,7 +48,7 @@ A.I.M.S. is a Next.js 15 + Express microservice platform with 32 API route group
 | `/api/stripe/subscription/route.ts` | Subscription management | Needs RBAC verification |
 | `/api/stripe/webhook/route.ts` | Webhook receiver | Signing secret validation |
 | `/api/admin/api-keys/route.ts` | Admin endpoints exist | RBAC enforcement unverified |
-| `/api/deploy/route.ts` | Deployment trigger | Depends on ChickenHawk (not yet built) |
+| `/api/deploy/route.ts` | Deployment trigger | Depends on Chicken Hawk (not yet built) |
 | `/api/deploy-dock/route.ts` | Deployment dock UI data | Depends on deploy pipeline |
 | `/api/pipelines/route.ts` | Pipeline definitions | Schema present, execution stub |
 | `/api/intake/route.ts` | PMO intake | Gateway proxy |
@@ -100,7 +100,7 @@ A.I.M.S. is a Next.js 15 + Express microservice platform with 32 API route group
 |--------|--------|-------|
 | `agents/` | Boomerang agent dispatch | Framework exists, agents need UEF |
 | `agents/lil-hawks/` | Type definitions only | Routing types, no execution |
-| `deployer/` | Deployment pipeline | Depends on ChickenHawk |
+| `deployer/` | Deployment pipeline | Depends on Chicken Hawk |
 | `scaffolder/` | Project scaffolding | Template-based, partial |
 | `pipeline/` | CI/CD pipeline | Schema defined, execution stub |
 | `pmo/` | Project Management Office | n8n schema pool defined |
@@ -109,7 +109,7 @@ A.I.M.S. is a Next.js 15 + Express microservice platform with 32 API route group
 | `acp/` | Agent Communication Protocol | Types defined, no runtime |
 | `make-it-mine/` | Research pipeline | Proxy to frontend route |
 | `integrations/` | Integration framework | Schema only |
-| `sandbox/` | Sandbox execution | OpenClaw removed, needs ChickenHawk |
+| `sandbox/` | Sandbox execution | OpenClaw removed, needs Chicken Hawk |
 | `ii-agent/` | Intelligent Interface agent | Python service, separate deploy |
 
 ### DEMO / Reference Only
@@ -149,7 +149,7 @@ A.I.M.S. is a Next.js 15 + Express microservice platform with 32 API route group
 | Page | Route | Status |
 |------|-------|--------|
 | Deploy Dock | `/deploy-dock` | UI layout, no deploy pipeline |
-| Circuit Box | `/circuit-box` | Breaker panel UI, no ChickenHawk backend |
+| Circuit Box | `/circuit-box` | Breaker panel UI, no Chicken Hawk backend |
 | Make It Mine | `/make-it-mine` | Pipeline wired to API, search keys needed |
 | Model Garden | `/model-garden` | Model listing, selection stored in state |
 | Integrations | `/integrations` | Catalog display, setup flows partial |
@@ -191,7 +191,7 @@ A.I.M.S. is a Next.js 15 + Express microservice platform with 32 API route group
 | Circuit Metrics | **PARTIAL** | Health aggregator, services list stale |
 | Docker Compose (VPS) | **REAL** | Multi-layer network isolation |
 | Nginx Proxy | **REAL** | TLS termination, reverse proxy |
-| ChickenHawk | **NOT BUILT** | Replacement for OpenClaw execution engine |
+| Chicken Hawk | **NOT BUILT** | Replacement for OpenClaw execution engine |
 
 ---
 
@@ -199,15 +199,15 @@ A.I.M.S. is a Next.js 15 + Express microservice platform with 32 API route group
 
 | # | Gap | Severity | Blocker? |
 |---|-----|----------|----------|
-| 1 | ChickenHawk execution engine not built | **CRITICAL** | Yes — no sandboxed code execution |
+| 1 | Chicken Hawk execution engine not built | **CRITICAL** | Yes — no sandboxed code execution |
 | 2 | Streaming partial transcription during recording | **MEDIUM** | No — full transcript works after stop |
 | 3 | Brave/Tavily/Serper API keys not configured | **HIGH** | Yes — Make It Mine pipeline needs search |
 | 4 | Stripe payment isolation audit incomplete | **HIGH** | Yes — agent payment blocking needs verification |
 | 5 | Evidence Locker has no local fallback | **MEDIUM** | No — works when UEF Gateway is available |
 | 6 | Social feed pages return mock data | **LOW** | No — non-essential feature |
-| 7 | Circuit Box UI has no ChickenHawk backend | **HIGH** | Yes — control plane needs execution engine |
+| 7 | Circuit Box UI has no Chicken Hawk backend | **HIGH** | Yes — control plane needs execution engine |
 | 8 | Boomerang agent dispatch reliability | **MEDIUM** | No — fallback to local exists |
-| 9 | Deploy pipeline has no execution backend | **CRITICAL** | Yes — depends on ChickenHawk |
+| 9 | Deploy pipeline has no execution backend | **CRITICAL** | Yes — depends on Chicken Hawk |
 | 10 | n8n workflow deployment automation untested | **MEDIUM** | No — manual deployment works |
 
 ---

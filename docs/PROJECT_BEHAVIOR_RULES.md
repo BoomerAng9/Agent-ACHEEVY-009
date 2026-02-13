@@ -3,7 +3,7 @@
 **Date:** 2026-02-13
 **Policy Version:** 2.0.0
 **Effective:** Immediately
-**Scope:** All AI agents, Boomer_Angs, ChickenHawk, Lil_Hawks, and ACHEEVY
+**Scope:** All AI agents, Boomer_Angs, Chicken Hawk, Lil_Hawks, and ACHEEVY
 
 ---
 

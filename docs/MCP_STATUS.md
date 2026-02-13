@@ -81,7 +81,7 @@ MCP infrastructure is **fully implemented** in the II-Agent subsystem (Python ba
 **Execution Backends:**
 | Backend | Status | Notes |
 |---------|--------|-------|
-| ChickenHawk | NOT BUILT | Primary execution engine (replaces OpenClaw) |
+| Chicken Hawk | NOT BUILT | Primary execution engine (replaces OpenClaw) |
 | AgentZero | Reference | Sandbox agent framework |
 | n8n | REAL | Workflow automation |
 
@@ -192,9 +192,9 @@ MCP infrastructure is **fully implemented** in the II-Agent subsystem (Python ba
 
 ---
 
-## 6. ChickenHawk Status (NOT YET BUILT)
+## 6. Chicken Hawk Status (NOT YET BUILT)
 
-ChickenHawk is the replacement execution engine for the removed OpenClaw sandbox. Current state:
+Chicken Hawk is the replacement execution engine for the removed OpenClaw sandbox. Current state:
 
 | Component | Status | Notes |
 |-----------|--------|-------|
@@ -224,7 +224,7 @@ ChickenHawk is the replacement execution engine for the removed OpenClaw sandbox
 | n8n Service | COMPLETE | Needs VPS 2 deploy |
 | n8n Bridge | COMPLETE | Needs credentials |
 | Agent Bridge | COMPLETE | Yes |
-| ChickenHawk | NOT STARTED | Blocks deploy pipeline |
+| Chicken Hawk | NOT STARTED | Blocks deploy pipeline |
 
 ---
 

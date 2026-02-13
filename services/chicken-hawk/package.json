@@ -2,7 +2,7 @@
   "name": "@aims/chicken-hawk",
   "version": "0.1.0",
   "private": true,
-  "description": "ChickenHawk service - AIMS Track 1 P0 orchestration layer",
+  "description": "Chicken Hawk service - AIMS Track 1 P0 orchestration layer",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "start": "bun run src/index.ts",

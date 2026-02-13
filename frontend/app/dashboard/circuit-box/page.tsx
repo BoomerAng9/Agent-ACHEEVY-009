@@ -534,12 +534,12 @@ function ControlPlanePanel() {
         </div>
       </div>
 
-      {/* 7. ChickenHawk Status — full width */}
+      {/* 7. Chicken Hawk Status — full width */}
       <div className="p-4 rounded-xl border border-wireframe-stroke bg-black/30">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <RefreshIcon className="w-4 h-4 text-gold" />
-            <h3 className="text-sm font-semibold text-white">ChickenHawk Status</h3>
+            <h3 className="text-sm font-semibold text-white">Chicken Hawk Status</h3>
           </div>
           <div className="flex items-center gap-2">
             <span className="relative flex h-2.5 w-2.5">
@@ -550,7 +550,7 @@ function ControlPlanePanel() {
           </div>
         </div>
         <p className="text-xs text-gray-400 mb-3">
-          Live status from the ChickenHawk execution engine.
+          Live status from the Chicken Hawk execution engine.
         </p>
         <div className="p-3 rounded-lg bg-black/50 border border-wireframe-stroke font-mono text-xs text-gray-300">
           <span className="text-gold">chickenhawk-core</span>: polling...

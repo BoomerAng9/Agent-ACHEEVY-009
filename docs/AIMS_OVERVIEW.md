@@ -14,15 +14,15 @@ graph TD
     end
 
     subgraph "Deploy Platform - Boomer_Angs on the Port"
-        CircuitBox -->|Contract| ChickenHawk[Chicken_Hawk\nExecution Engine]
-        ChickenHawk -->|Spawn| Squad[Squad]
+        CircuitBox -->|Contract| Chicken Hawk[Chicken_Hawk\nExecution Engine]
+        Chicken Hawk -->|Spawn| Squad[Squad]
         Squad -->|Workers| LilHawks[Lil_Hawks\nWorker Bots]
         LilHawks -->|Events| Theater[Live Ops Theater]
     end
 
     subgraph "Persistence Layer"
-        ChickenHawk -->|Logs| KYB[KYB Flight Recorder]
-        ChickenHawk -->|Receipt| Receipt[Signed Receipt]
+        Chicken Hawk -->|Logs| KYB[KYB Flight Recorder]
+        Chicken Hawk -->|Receipt| Receipt[Signed Receipt]
     end
 
     Theater -->|Watch Only| Frontend

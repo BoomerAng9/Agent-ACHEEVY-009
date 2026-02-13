@@ -2,7 +2,7 @@ version: '3.8'
 name: aims-chickenhawk
 
 # ===========================================================================
-# ChickenHawk Service Cluster — Track 1 (P0, heavy)
+# Chicken Hawk Service Cluster — Track 1 (P0, heavy)
 #
 # Usage:
 #   docker compose -f docker-compose.chickenhawk.yml up -d
