@@ -222,7 +222,7 @@ export interface HandleRule {
 export interface HandleRules {
   ACHEEVY: HandleRule;
   Boomer_Ang: HandleRule;
-  Chicken Hawk: HandleRule;
+  'Chicken Hawk': HandleRule;
   Lil_Hawk: HandleRule;
 }
 

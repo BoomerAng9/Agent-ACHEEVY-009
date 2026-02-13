@@ -36,7 +36,7 @@ import type {
 const HANDLE_PATTERNS: Record<RoleType, RegExp> = {
   ACHEEVY: /^ACHEEVY$/,
   Boomer_Ang: /^[A-Za-z0-9\-]+_Ang$/,
-  Chicken Hawk: /^Chicken Hawk$/,
+  'Chicken Hawk': /^Chicken Hawk$/,
   Lil_Hawk: /^Lil_([A-Z][a-z0-9]+)(_[A-Z][a-z0-9]+)*_Hawk$/,
 };
 
@@ -583,7 +583,7 @@ export class RoleCardRegistry {
       total: this.cards.size,
       ACHEEVY: 0,
       Boomer_Ang: 0,
-      Chicken Hawk: 0,
+      'Chicken Hawk': 0,
       Lil_Hawk: 0,
     };
     for (const card of this.cards.values()) {

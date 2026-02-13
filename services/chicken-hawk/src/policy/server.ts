@@ -46,7 +46,7 @@ let circuitBox: CircuitBoxConfig = {
 
 // Load from file if available
 try {
-  const configPath = process.env.CIRCUIT_BOX_CONFIG || "/config/circuit-box.json";
+  const configPath = process.env.CIRCUIT_BOX_CONFIG || "/config/circuit-box/circuit-box-config.json";
   const fs = await import("fs");
   if (fs.existsSync(configPath)) {
     const data = JSON.parse(fs.readFileSync(configPath, "utf-8"));
