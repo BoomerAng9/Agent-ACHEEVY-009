@@ -45,7 +45,7 @@ const staggerItem = {
 
 export function Hero() {
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-full overflow-hidden bg-[#0A0A0A]">
+    <section className="relative flex flex-col items-center justify-center min-h-full overflow-hidden bg-ink">
       {/* Subtle radial vignette */}
       <div
         className="absolute inset-0 pointer-events-none"
