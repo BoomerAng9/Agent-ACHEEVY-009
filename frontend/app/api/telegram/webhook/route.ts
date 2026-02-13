@@ -25,7 +25,7 @@ const openrouter = createOpenAI({
   baseURL: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',
 });
 
-const DEFAULT_MODEL = process.env.ACHEEVY_MODEL || 'anthropic/claude-sonnet-4.6';
+const DEFAULT_MODEL = process.env.ACHEEVY_MODEL || process.env.OPENROUTER_MODEL || 'google/gemini-3.0-flash';
 
 // ── Telegram API Types ──
 
@@ -114,42 +114,87 @@ export async function POST(req: NextRequest) {
     const chatId = chat.id;
     const userName = from.first_name || from.username || 'User';
 
-    // Safety: skip commands that could trigger dangerous actions
-    if (text.startsWith('/') && text !== '/start' && text !== '/help') {
-      await sendTelegramMessage(chatId, 'Commands are not supported yet. Just send me a message and I\'ll help!');
-      return NextResponse.json({ ok: true });
-    }
-
-    // Handle /start
+    // Built-in commands
     if (text === '/start') {
       await sendTelegramMessage(
         chatId,
-        `Welcome to *A.I.M.S.* — AI Managed Solutions.\n\nI'm ACHEEVY, your AI executive orchestrator. Send me any message and I'll help you.\n\n_Activity Breeds Activity_`,
+        `Welcome to *A.I.M.S.* — AI Managed Solutions.\n\nI'm ACHEEVY, your AI executive orchestrator. Send me any message or command and I'll handle it.\n\n*Commands:*\n/start — Welcome\n/help — Help\n/status — System status\n/health — Service health\n\nOr just type naturally.\n\n_Activity Breeds Activity_`,
       );
       return NextResponse.json({ ok: true });
     }
 
-    // Handle /help
     if (text === '/help') {
       await sendTelegramMessage(
         chatId,
-        `*ACHEEVY Commands:*\n\n/start — Welcome message\n/help — This help text\n\nJust type your question or request and I'll handle it.`,
+        `*ACHEEVY Commands:*\n\n/start — Welcome message\n/help — This help text\n/status — System status & active services\n/health — Health check all services\n\n*Or send any message:*\n• Ask questions → AI-powered answers\n• Give instructions → Routes to agents\n• Request tasks → Dispatches to Chicken Hawk\n\nAll messages flow through ACHEEVY orchestration.`,
       );
       return NextResponse.json({ ok: true });
     }
+
+    // /status — Query UEF gateway for system status
+    if (text === '/status') {
+      await sendTypingAction(chatId);
+      try {
+        const uefUrl = process.env.UEF_GATEWAY_URL || process.env.NEXT_PUBLIC_UEF_GATEWAY_URL || 'http://127.0.0.1:3001';
+        const [gatewayRes, coreRes] = await Promise.allSettled([
+          fetch(`${uefUrl}/health`, { signal: AbortSignal.timeout(5000) }),
+          fetch(`${process.env.CHICKENHAWK_CORE_URL || 'http://127.0.0.1:4001'}/status`, { signal: AbortSignal.timeout(5000) }),
+        ]);
+        const gateway = gatewayRes.status === 'fulfilled' ? await gatewayRes.value.json() : null;
+        const core = coreRes.status === 'fulfilled' ? await coreRes.value.json() : null;
+        const lines = [
+          '*A.I.M.S. System Status*\n',
+          `UEF Gateway: ${gateway ? '🟢 Online' : '🔴 Offline'}`,
+          gateway ? `  Uptime: ${Math.round(gateway.uptime)}s` : '',
+          `\nChicken Hawk: ${core ? '🟢 Online' : '🔴 Offline'}`,
+          core ? `  LLM: ${core.engine?.llm_provider || 'unknown'}` : '',
+          core ? `  Adapters: ${core.engine?.registered_adapters?.length || 0}` : '',
+          core ? `  Active manifests: ${Object.keys(core.engine?.active_manifests || {}).length}` : '',
+        ].filter(Boolean);
+        await sendTelegramMessage(chatId, lines.join('\n'));
+      } catch {
+        await sendTelegramMessage(chatId, '⚠️ Could not reach backend services.');
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    // /health — Quick health check of all services
+    if (text === '/health') {
+      await sendTypingAction(chatId);
+      const services = [
+        { name: 'UEF Gateway', url: process.env.UEF_GATEWAY_URL || 'http://127.0.0.1:3001' },
+        { name: 'CH Core', url: process.env.CHICKENHAWK_CORE_URL || 'http://127.0.0.1:4001' },
+        { name: 'CH Policy', url: process.env.CHICKENHAWK_POLICY_URL || 'http://127.0.0.1:4002' },
+        { name: 'CH Audit', url: process.env.CHICKENHAWK_AUDIT_URL || 'http://127.0.0.1:4003' },
+        { name: 'CH Voice', url: process.env.CHICKENHAWK_VOICE_URL || 'http://127.0.0.1:4004' },
+      ];
+      const results = await Promise.allSettled(
+        services.map(s => fetch(`${s.url}/health`, { signal: AbortSignal.timeout(3000) }))
+      );
+      const lines = ['*Service Health*\n'];
+      results.forEach((r, i) => {
+        lines.push(`${r.status === 'fulfilled' && r.value.ok ? '🟢' : '🔴'} ${services[i].name}`);
+      });
+      await sendTelegramMessage(chatId, lines.join('\n'));
+      return NextResponse.json({ ok: true });
+    }
+
+    // All other messages (including slash commands) → route through ACHEEVY LLM
+    // Strip leading slash for natural language processing
+    const userMessage = text.startsWith('/') ? text.slice(1) : text;
 
     // Show typing indicator
     await sendTypingAction(chatId);
 
     // Route through ACHEEVY chat (direct OpenRouter — no gateway needed for Telegram)
     const systemPrompt = buildSystemPrompt({
-      additionalContext: `User "${userName}" is messaging via Telegram. Keep responses concise (under 4000 chars) and use Markdown formatting.`,
+      additionalContext: `User "${userName}" is messaging via Telegram. Keep responses concise (under 4000 chars) and use Markdown formatting. If they ask about system status, services, or health — you can reference the /status and /health commands.`,
     });
 
     const result = await streamText({
       model: openrouter(DEFAULT_MODEL),
       system: systemPrompt,
-      messages: [{ role: 'user', content: text }],
+      messages: [{ role: 'user', content: userMessage }],
     });
 
     // Collect full response
