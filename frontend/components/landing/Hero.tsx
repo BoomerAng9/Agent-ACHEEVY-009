@@ -3,18 +3,25 @@
 /**
  * A.I.M.S. Landing Page — Hero Section
  *
+ * Clean onboarding hero for aimanagedsolutions.cloud.
  * Triangle layout with three active cards:
  *   Top center: Chat w/ACHEEVY (main hero)
  *   Bottom-left: Automate Everything (with Boomer_Angs team image)
  *   Bottom-right: Deploy Your Apps (with Boomer_Ang on Assignment image)
  *
- * All three route to the Chat w/ACHEEVY interface.
+ * All three route to plugmein.cloud where users access AI features and ACHEEVY.
+ * Hero copy (non-negotiable):
+ *   1) "Welcome to AI Managed Solutions."
+ *   2) "I'm ACHEEVY, at your service."
+ *   3) "What will we deploy today?"
  */
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { MessageSquare, Zap, Rocket } from 'lucide-react';
+
+// App domain where users access AI features and ACHEEVY
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'https://plugmein.cloud';
 
 // ── Animation Variants ──
 
@@ -84,7 +91,7 @@ export function Hero() {
             className="text-lg md:text-2xl text-gold/80 tracking-[0.2em] uppercase mb-4"
             style={{ fontFamily: 'var(--font-display, "Doto", monospace)' }}
           >
-            Managed AI Platform
+            Welcome to AI Managed Solutions.
           </h2>
 
           <p className="text-sm text-white/35 max-w-md mx-auto">
@@ -102,7 +109,7 @@ export function Hero() {
         >
           {/* Top — Chat w/ACHEEVY (main hero card) */}
           <motion.div variants={staggerItem} className="w-full max-w-xl">
-            <Link href="/chat" className="group block">
+            <Link href={`${APP_DOMAIN}/chat`} className="group block">
               <div className="wireframe-card p-6 md:p-8 text-center hover:border-gold/30 hover:shadow-[0_0_40px_rgba(212,175,55,0.08)] transition-all duration-500">
                 <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
                   <Image
@@ -136,7 +143,7 @@ export function Hero() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-4xl">
             {/* Bottom-left: Automate Everything */}
             <motion.div variants={staggerItem}>
-              <Link href="/chat" className="group block h-full">
+              <Link href={`${APP_DOMAIN}/chat`} className="group block h-full">
                 <div className="wireframe-card p-5 md:p-6 flex items-center gap-4 hover:border-gold/30 hover:shadow-[0_0_30px_rgba(212,175,55,0.06)] transition-all duration-500 h-full">
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 border border-white/[0.06] group-hover:border-gold/20 transition-colors">
                     <Image
@@ -164,7 +171,7 @@ export function Hero() {
 
             {/* Bottom-right: Deploy Your Apps */}
             <motion.div variants={staggerItem}>
-              <Link href="/chat" className="group block h-full">
+              <Link href={`${APP_DOMAIN}/chat`} className="group block h-full">
                 <div className="wireframe-card p-5 md:p-6 flex items-center gap-4 hover:border-gold/30 hover:shadow-[0_0_30px_rgba(212,175,55,0.06)] transition-all duration-500 h-full">
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 border border-white/[0.06] group-hover:border-gold/20 transition-colors">
                     <Image
