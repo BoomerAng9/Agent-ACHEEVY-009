@@ -97,10 +97,14 @@ export function FloatingACHEEVY() {
           {/* ACHEEVY avatar — click to open chat */}
           <button
             onClick={() => openChat()}
-            className="w-6 h-6 rounded-lg bg-gradient-to-br from-gold to-gold-dark flex items-center justify-center flex-shrink-0 transition-transform hover:scale-110 active:scale-95"
+            className="w-6 h-6 rounded-lg overflow-hidden bg-gold/10 flex-shrink-0 transition-transform hover:scale-110 active:scale-95 border border-gold/20"
             title="Open Chat w/ACHEEVY"
           >
-            <span className="text-[10px] font-bold text-black">A</span>
+            <img
+              src="/images/acheevy/acheevy-helmet.png"
+              alt="ACHEEVY"
+              className="w-full h-full object-cover"
+            />
           </button>
 
           {/* Input */}

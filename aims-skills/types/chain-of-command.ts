@@ -1,10 +1,14 @@
 /**
  * @types/chain-of-command
- * @version 1.0.0
+ * @version 2.0.0
  * @owner ACHEEVY
  *
  * Canonical type definitions for the A.I.M.S. Chain of Command + Persona System.
  * All role cards, enforcement policies, and overlay configs derive from these types.
+ *
+ * v2.0.0 — Revised hierarchy: ACHEEVY → Boomer_Ang → Chicken_Hawk → Squad Leader → Lil_Hawk
+ *           Added: PersonaCard, ToolRegistryEntry, CapabilityPack, BehaviorContract
+ *           Rule:  Persona ≠ Authority. Persona is voice + style overlay, NEVER permissions.
  */
 
 /* ------------------------------------------------------------------ */
@@ -20,7 +24,9 @@ export type CommunicationStyle =
   | 'technical'
   | 'narrative'
   | 'concise'
-  | 'diplomatic';
+  | 'diplomatic'
+  | 'witty'
+  | 'motivational';
 
 export type BudgetExceedAction = 'block' | 'escalate';
 
@@ -45,8 +51,53 @@ export type EventType =
 
 export type PipelineStage = 'INTAKE' | 'SCOPE' | 'BUILD' | 'REVIEW' | 'DEPLOY';
 
+export type WrapperType = 'SERVICE_WRAPPER' | 'JOB_RUNNER_WRAPPER' | 'CLI_WRAPPER' | 'MCP_BRIDGE_WRAPPER';
+
 /* ------------------------------------------------------------------ */
-/*  2. Identity Layer (persona flavor, stable)                        */
+/*  2. Voice Overlay (persona flavor — NOT authority)                  */
+/* ------------------------------------------------------------------ */
+
+export interface VoiceOverlay {
+  origin_story: string;
+  motivation: string;
+  quirk: string;
+  catchphrase: string;
+  tone: CommunicationStyle;
+}
+
+/* ------------------------------------------------------------------ */
+/*  3. Sidebar Nugget Rules                                           */
+/* ------------------------------------------------------------------ */
+
+export interface SidebarNuggetRules {
+  max_length_words: number;
+  max_frequency_per_job: number;
+  user_safe_only: boolean;
+}
+
+/* ------------------------------------------------------------------ */
+/*  4. Persona Card (Section 2.3 — Standard Across All Actors)        */
+/*                                                                    */
+/*  One schema for ACHEEVY, Boomer_Angs, Chicken_Hawk, Lil_Hawks.    */
+/*  Persona ≠ Authority. Voice overlay is flavor, not power.          */
+/* ------------------------------------------------------------------ */
+
+export interface PersonaCard {
+  handle: string;
+  class: RoleType;
+  mission: string;
+  authority_scope: string[];
+  allowed_actions: string[];
+  hard_gates: string[];
+  evidence_required: string[];
+  voice_overlay: VoiceOverlay;
+  sidebar_nugget_rules: SidebarNuggetRules;
+  kpis: string[];
+  promotion_signals: string[];
+}
+
+/* ------------------------------------------------------------------ */
+/*  5. Identity Layer (legacy compat — used in existing role cards)    */
 /* ------------------------------------------------------------------ */
 
 export interface PersonaIdentity {
@@ -59,7 +110,7 @@ export interface PersonaIdentity {
 }
 
 /* ------------------------------------------------------------------ */
-/*  3. Chain of Command Layer                                         */
+/*  6. Chain of Command Layer                                         */
 /* ------------------------------------------------------------------ */
 
 export interface ChainOfCommand {
@@ -72,7 +123,7 @@ export interface ChainOfCommand {
 }
 
 /* ------------------------------------------------------------------ */
-/*  4. Capabilities Layer                                             */
+/*  7. Capabilities Layer                                             */
 /* ------------------------------------------------------------------ */
 
 export interface RoleCapabilities {
@@ -84,7 +135,7 @@ export interface RoleCapabilities {
 }
 
 /* ------------------------------------------------------------------ */
-/*  5. Gates                                                          */
+/*  8. Gates                                                          */
 /* ------------------------------------------------------------------ */
 
 export interface LucBudgetGate {
@@ -118,7 +169,7 @@ export interface RoleGates {
 }
 
 /* ------------------------------------------------------------------ */
-/*  6. Overlay Visibility                                             */
+/*  9. Overlay Visibility                                             */
 /* ------------------------------------------------------------------ */
 
 export interface OverlayVisibility {
@@ -128,7 +179,7 @@ export interface OverlayVisibility {
 }
 
 /* ------------------------------------------------------------------ */
-/*  7. Evaluation                                                     */
+/*  10. Evaluation                                                    */
 /* ------------------------------------------------------------------ */
 
 export interface RoleEvaluation {
@@ -138,7 +189,7 @@ export interface RoleEvaluation {
 }
 
 /* ------------------------------------------------------------------ */
-/*  8. Role Card (Full Schema)                                        */
+/*  11. Role Card (Full Schema)                                       */
 /* ------------------------------------------------------------------ */
 
 export interface RoleCard {
@@ -153,10 +204,14 @@ export interface RoleCard {
   gates: RoleGates;
   overlay_visibility: OverlayVisibility;
   evaluation: RoleEvaluation;
+  /** v2: optional mission statement */
+  mission?: string;
+  /** v2: optional persona card (full Section 2.3 schema) */
+  persona_card?: PersonaCard;
 }
 
 /* ------------------------------------------------------------------ */
-/*  9. Handle Validation Rules                                        */
+/*  12. Handle Validation Rules                                       */
 /* ------------------------------------------------------------------ */
 
 export interface HandleRule {
@@ -172,7 +227,7 @@ export interface HandleRules {
 }
 
 /* ------------------------------------------------------------------ */
-/*  10. Enforcement Policy                                            */
+/*  13. Enforcement Policy (v2 — with delegation chain + persona rule)*/
 /* ------------------------------------------------------------------ */
 
 export interface DenyRule {
@@ -182,10 +237,28 @@ export interface DenyRule {
   result: 'DENY';
 }
 
+export interface DelegationChain {
+  description: string;
+  hierarchy: string[];
+  squad_leader_rule: string;
+}
+
+export interface PersonaAuthoritySeparation {
+  rule: string;
+  enforcement: string;
+}
+
+export interface ToolOwnershipRule {
+  rule: string;
+  registry: string;
+}
+
 export interface ChainBypassPrevention {
   lil_hawk_can_message: string[];
+  squad_leader_can_message?: string[];
   chicken_hawk_can_message: string[];
   boomer_ang_can_message: string[];
+  acheevy_speaks_downward_via?: string;
   deny_rules: DenyRule[];
 }
 
@@ -203,24 +276,32 @@ export interface SafetyAndPrivacy {
   disallow_in_overlay: string[];
   enforce_least_privilege: boolean;
   log_all_access: boolean;
+  never_request_user_api_keys?: boolean;
+  never_claim_unconfirmed_action?: boolean;
 }
 
 export interface ExternalVoiceRule {
   only_user_facing_handle: string;
   block_if_any_other_handle_attempts_user_message: boolean;
+  acheevy_intervenes_via?: string;
 }
 
 export interface EnforcementPolicy {
   policy_id: string;
+  version?: string;
+  effective_date?: string;
   external_voice_rule: ExternalVoiceRule;
+  delegation_chain?: DelegationChain;
   chain_bypass_prevention: ChainBypassPrevention;
+  persona_authority_separation?: PersonaAuthoritySeparation;
+  tool_ownership_rule?: ToolOwnershipRule;
   no_proof_no_done: NoProofNoDone;
   budget_governance: BudgetGovernance;
   safety_and_privacy: SafetyAndPrivacy;
 }
 
 /* ------------------------------------------------------------------ */
-/*  11. Overlay Snippet Policy                                        */
+/*  14. Overlay Snippet Policy                                        */
 /* ------------------------------------------------------------------ */
 
 export interface AutoShowThresholds {
@@ -269,7 +350,7 @@ export interface OverlaySnippetPolicy {
 }
 
 /* ------------------------------------------------------------------ */
-/*  12. Squad Metadata (group labels, not handles)                    */
+/*  15. Squad Metadata                                                */
 /* ------------------------------------------------------------------ */
 
 export interface SquadDefinition {
@@ -277,10 +358,11 @@ export interface SquadDefinition {
   description: string;
   members: string[];   // role card handles
   lead: string;        // Boomer_Ang handle
+  squad_leader?: string; // designated Lil_Hawk handle (temporary coordination assignment)
 }
 
 /* ------------------------------------------------------------------ */
-/*  13. Validation Result                                             */
+/*  16. Validation Result                                             */
 /* ------------------------------------------------------------------ */
 
 export interface ValidationResult {
@@ -290,7 +372,7 @@ export interface ValidationResult {
 }
 
 /* ------------------------------------------------------------------ */
-/*  14. Message Routing (runtime types)                               */
+/*  17. Message Routing (runtime types)                               */
 /* ------------------------------------------------------------------ */
 
 export interface RouteRequest {
@@ -307,7 +389,7 @@ export interface RouteDecision {
 }
 
 /* ------------------------------------------------------------------ */
-/*  15. Overlay Event (runtime type)                                  */
+/*  18. Overlay Event (runtime type)                                  */
 /* ------------------------------------------------------------------ */
 
 export interface OverlayEvent {
@@ -316,4 +398,44 @@ export interface OverlayEvent {
   artifact_ref?: string;
   short_status?: string;
   timestamp: string;
+}
+
+/* ------------------------------------------------------------------ */
+/*  19. Tool Registry Contract (Boomer_Ang-only wrapping)             */
+/* ------------------------------------------------------------------ */
+
+export interface ToolRegistryPolicy {
+  authorized_roles: RoleType[];
+  plan_gate?: string;
+  rate_limit?: number;
+  requires_approval?: boolean;
+}
+
+export interface ToolRegistryEntry {
+  tool_id: string;
+  delegated_boomer_ang_owner: string;
+  endpoint: string;
+  luc_service_key: string;
+  wrapper_type?: WrapperType;
+  policy: ToolRegistryPolicy;
+}
+
+/* ------------------------------------------------------------------ */
+/*  20. Capability Pack (Repo-to-Boomer_Ang mapping)                  */
+/* ------------------------------------------------------------------ */
+
+export interface CapabilityPackRepo {
+  repo: string;
+  delegated_owner: string;
+  role: string;
+  wrapper_type: WrapperType;
+  license_flag?: string;
+  quarantined?: boolean;
+}
+
+export interface CapabilityPack {
+  pack_id: string;
+  name: string;
+  primary: string;
+  repos: CapabilityPackRepo[];
 }

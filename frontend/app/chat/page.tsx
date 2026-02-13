@@ -21,13 +21,14 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
 import {
-  Send, Square, Bot, User, Zap, Copy, Check,
+  Send, Square, User, Copy, Check,
   Trophy, Search, Hammer, Layers, Container, Wand2,
   Building2, DollarSign, Activity, Megaphone, Palette, BookOpen,
   PanelLeftClose, PanelLeftOpen, Plus, MessageSquare, Trash2, Flame,
   Mic, MicOff, Volume2, Loader2,
 } from 'lucide-react';
 import { SiteHeader } from '@/components/SiteHeader';
+import { LogoWallBackground } from '@/components/LogoWallBackground';
 
 // ─────────────────────────────────────────────────────────────
 // Types
@@ -801,7 +802,8 @@ export default function ChatPage() {
   }, [isLoading, messages, speak]);
 
   return (
-    <div className="h-full bg-[#0A0A0A] aims-page-bg flex flex-col overflow-hidden">
+    <LogoWallBackground mode="dashboard">
+    <div className="h-full flex flex-col overflow-hidden">
       <SiteHeader />
 
       <div className="flex-1 flex overflow-hidden">
@@ -833,8 +835,14 @@ export default function ChatPage() {
               )}
 
               <div className="relative">
-                <div className="w-11 h-11 rounded-xl bg-white/5 border border-gold/20 flex items-center justify-center overflow-hidden">
-                  <Image src="/images/acheevy/acheevy-helmet.png" alt="ACHEEVY" width={28} height={28} className="w-7 h-7 object-cover rounded-lg" />
+                <div className="w-11 h-11 rounded-xl bg-white/5 border border-gold/20 overflow-hidden flex items-center justify-center">
+                  <Image
+                    src="/images/acheevy/acheevy-helmet.png"
+                    alt="ACHEEVY"
+                    width={44}
+                    height={44}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0A0A0A] animate-pulse" />
               </div>
@@ -897,13 +905,19 @@ export default function ChatPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="text-center py-16"
                 >
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center">
-                    <span className="text-3xl font-bold font-display text-gold">A</span>
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gold/10 border border-gold/20 overflow-hidden">
+                    <Image
+                      src="/images/acheevy/acheevy-helmet.png"
+                      alt="ACHEEVY"
+                      width={80}
+                      height={80}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">Chat w/ACHEEVY</h2>
-                  <p className="text-white/40 max-w-lg mx-auto mb-10">
-                    Your AI executive orchestrator. I route tasks through the Chain of Command
-                    — Boomer_Ang directors strategize, Chicken_Hawk dispatches, Lil_Hawks execute.
+                  <p className="text-white/50 max-w-lg mx-auto leading-relaxed mb-10">
+                    Welcome to AI Managed Solutions. I&apos;m ACHEEVY, I&apos;m at your service.<br />
+                    What will we deploy today?
                   </p>
 
                   {/* Quick Intents */}
@@ -942,8 +956,14 @@ export default function ChatPage() {
                   animate={{ opacity: 1 }}
                   className="flex gap-3"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-4 h-4 text-gold animate-pulse" />
+                  <div className="w-8 h-8 rounded-full bg-gold/10 border border-gold/20 overflow-hidden flex-shrink-0">
+                    <Image
+                      src="/images/acheevy/acheevy-helmet.png"
+                      alt="ACHEEVY"
+                      width={32}
+                      height={32}
+                      className="w-full h-full object-cover animate-pulse"
+                    />
                   </div>
                   <div className="px-4 py-3 wireframe-card rounded-2xl rounded-tl-sm flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -1080,5 +1100,6 @@ export default function ChatPage() {
         </main>
       </div>
     </div>
+    </LogoWallBackground>
   );
 }

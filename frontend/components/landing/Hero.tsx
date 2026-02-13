@@ -14,11 +14,27 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { staggerContainer, staggerItem } from '@/lib/motion/variants';
+import { MessageSquare, Zap, Rocket } from 'lucide-react';
 
-// ─────────────────────────────────────────────────────────────
-// Hero Component
-// ─────────────────────────────────────────────────────────────
+// ── Animation Variants ──
+
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+// ── Hero Component ──
 
 export function Hero() {
   return (
@@ -179,7 +195,6 @@ export function Hero() {
   );
 }
 
-// Kept for backwards compatibility
 export function FeatureSection() {
   return null;
 }
