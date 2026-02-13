@@ -14,6 +14,7 @@ import { ToolAdapterRegistry } from "../adapters/registry";
 import { PolicyClient } from "../policy/client";
 import { AuditClient } from "../audit/client";
 import { getBuiltInAdapters } from "../adapters/built-in";
+import { llm } from "../lib/llm";
 
 export class ChickenHawkEngine {
   private squadManager: SquadManager;
@@ -28,6 +29,7 @@ export class ChickenHawkEngine {
     this.adapterRegistry = new ToolAdapterRegistry();
     this.policyClient = new PolicyClient();
     this.auditClient = new AuditClient();
+    console.log(`[engine] LLM provider: ${llm.getProvider()}`);
     this.waveExecutor = new WaveExecutor(
       this.squadManager,
       this.adapterRegistry,
@@ -253,6 +255,8 @@ export class ChickenHawkEngine {
       })),
       registered_adapters: this.adapterRegistry.list(),
       buffered_audit_events: this.auditClient.getBuffer().length,
+      llm_provider: llm.getProvider(),
+      llm_configured: llm.isConfigured(),
     };
   }
 
