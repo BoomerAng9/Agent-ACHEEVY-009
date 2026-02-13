@@ -112,12 +112,14 @@ function saveThreads(threads: Thread[]) {
 function useVoiceRecorder() {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState('');
   const [audioLevels, setAudioLevels] = useState<number[]>(new Array(20).fill(0));
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animFrameRef = useRef<number>(0);
   const chunksRef = useRef<Blob[]>([]);
+  const speechRecRef = useRef<any>(null);
 
   const startRecording = useCallback(async () => {
     try {
@@ -143,6 +145,26 @@ function useVoiceRecorder() {
       };
       updateLevels();
 
+      // Start browser SpeechRecognition for live interim transcription
+      setInterimTranscript('');
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        recognition.onresult = (event: any) => {
+          let interim = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            interim += event.results[i][0].transcript;
+          }
+          setInterimTranscript(interim);
+        };
+        recognition.onerror = () => { /* ignore — Groq Whisper is the final source */ };
+        recognition.start();
+        speechRecRef.current = recognition;
+      }
+
       // Start recording
       const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
       chunksRef.current = [];
@@ -158,6 +180,12 @@ function useVoiceRecorder() {
   }, []);
 
   const stopRecording = useCallback(async (): Promise<string> => {
+    // Stop browser speech recognition
+    if (speechRecRef.current) {
+      try { speechRecRef.current.stop(); } catch {}
+      speechRecRef.current = null;
+    }
+
     return new Promise((resolve) => {
       if (!mediaRecorderRef.current || mediaRecorderRef.current.state === 'inactive') {
         resolve('');
@@ -175,7 +203,7 @@ function useVoiceRecorder() {
         // Stop all tracks
         mediaRecorderRef.current?.stream.getTracks().forEach(t => t.stop());
 
-        // Transcribe
+        // Transcribe via Groq Whisper for final quality result
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         const formData = new FormData();
         formData.append('audio', blob, 'recording.webm');
@@ -185,13 +213,16 @@ function useVoiceRecorder() {
           if (res.ok) {
             const data = await res.json();
             setIsTranscribing(false);
+            setInterimTranscript('');
             resolve(data.text || '');
           } else {
             setIsTranscribing(false);
+            setInterimTranscript('');
             resolve('');
           }
         } catch {
           setIsTranscribing(false);
+          setInterimTranscript('');
           resolve('');
         }
       };
@@ -200,7 +231,7 @@ function useVoiceRecorder() {
     });
   }, []);
 
-  return { isRecording, isTranscribing, audioLevels, startRecording, stopRecording };
+  return { isRecording, isTranscribing, interimTranscript, audioLevels, startRecording, stopRecording };
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -625,7 +656,7 @@ export default function ChatPage() {
   const prefillHandled = useRef(false);
 
   // Voice I/O
-  const { isRecording, isTranscribing, audioLevels, startRecording, stopRecording } = useVoiceRecorder();
+  const { isRecording, isTranscribing, interimTranscript, audioLevels, startRecording, stopRecording } = useVoiceRecorder();
   const { isSpeaking, ttsEnabled, setTtsEnabled, speak, stopSpeaking } = useTtsPlayback();
   const lastAssistantRef = useRef<string>('');
 
@@ -992,25 +1023,32 @@ export default function ChatPage() {
                     exit={{ opacity: 0, height: 0 }}
                     className="mb-3"
                   >
-                    <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-gold/20 bg-gold/5">
+                    <div className="flex flex-col gap-2 px-4 py-2.5 rounded-xl border border-gold/20 bg-gold/5">
                       {isRecording && (
                         <>
-                          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                          <span className="text-xs text-white/60 font-mono">Recording...</span>
-                          <AudioWaveform levels={audioLevels} isActive={isRecording} />
-                          <button
-                            onClick={handleVoiceToggle}
-                            className="ml-auto px-3 py-1 rounded-lg bg-gold/20 text-gold text-xs hover:bg-gold/30 transition-colors"
-                          >
-                            Stop & Transcribe
-                          </button>
+                          <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            <span className="text-xs text-white/60 font-mono">Recording...</span>
+                            <AudioWaveform levels={audioLevels} isActive={isRecording} />
+                            <button
+                              onClick={handleVoiceToggle}
+                              className="ml-auto px-3 py-1 rounded-lg bg-gold/20 text-gold text-xs hover:bg-gold/30 transition-colors"
+                            >
+                              Stop & Transcribe
+                            </button>
+                          </div>
+                          {interimTranscript && (
+                            <p className="text-xs text-white/40 italic pl-5 truncate">
+                              {interimTranscript}
+                            </p>
+                          )}
                         </>
                       )}
                       {isTranscribing && (
-                        <>
+                        <div className="flex items-center gap-3">
                           <Loader2 className="w-4 h-4 text-gold animate-spin" />
                           <span className="text-xs text-white/60 font-mono">Transcribing audio...</span>
-                        </>
+                        </div>
                       )}
                     </div>
                   </motion.div>
