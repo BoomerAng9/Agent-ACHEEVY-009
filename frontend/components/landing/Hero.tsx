@@ -76,22 +76,25 @@ export function Hero() {
             <span className="text-xs text-emerald-400/80 font-mono tracking-wide">System Online</span>
           </motion.div>
 
-          {/* A.I.M.S. headline */}
+          {/* A.I.M.S. — Permanent Marker font (embossed wordmark) */}
           <h1
-            className="text-5xl md:text-7xl lg:text-8xl mb-2 text-white/90 tracking-[0.15em]"
+            className="text-5xl md:text-7xl lg:text-8xl mb-3 text-white/90 tracking-[0.08em]"
             style={{
-              fontFamily: 'var(--font-display, "Doto", monospace)',
-              textShadow: '0 0 30px rgba(212,168,67,0.15)',
+              fontFamily: 'var(--font-marker), "Permanent Marker", cursive',
+              textShadow: '0 2px 40px rgba(212,168,67,0.2), 0 0 60px rgba(212,168,67,0.08)',
             }}
           >
             A.I.M.S.
           </h1>
 
+          {/* AI Managed Solutions — Doto Black font */}
           <h2
-            className="text-lg md:text-2xl text-gold/80 tracking-[0.2em] uppercase mb-4"
-            style={{ fontFamily: 'var(--font-display, "Doto", monospace)' }}
+            className="text-lg md:text-2xl text-gold/80 tracking-[0.2em] uppercase mb-4 font-black"
+            style={{
+              fontFamily: 'var(--font-doto), "Doto", monospace',
+            }}
           >
-            Welcome to AI Managed Solutions.
+            AI Managed Solutions
           </h2>
 
           <p className="text-sm text-white/35 max-w-md mx-auto">

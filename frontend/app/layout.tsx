@@ -67,7 +67,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${doto.variable} ${permanentMarker.variable} ${caveat.variable} ${patrickHand.variable} ${nabla.variable} antialiased bg-[#050505] text-white font-sans overflow-hidden selection:bg-gold/30 selection:text-white`}>
+      <body className={`${doto.variable} ${permanentMarker.variable} ${caveat.variable} ${patrickHand.variable} ${nabla.variable} antialiased bg-[#050505] text-white font-sans overflow-x-hidden selection:bg-gold/30 selection:text-white`}>
         <Providers>
           <div className="aims-frame">
             {/* Texture layers — inside frame */}

@@ -13,18 +13,20 @@ type Props = {
 /**
  * LogoWallBackground — Premium branded environment
  *
- * Clean, high-end spatial design inspired by a branded office/lobby.
- * No grid, no matrix, no tiled logos — just a premium dark environment
- * with subtle gold accent lighting and the ACHIEVEMOR logo as a
- * tasteful centered watermark.
+ * Gold ACHIEVEMOR logo embossed across all pages at ultra-low opacity,
+ * like a luxury brand's monogram wallpaper — think Louis Vuitton or
+ * Gucci's repeating logo pattern pressed into leather.
+ *
+ * The emboss effect: subtle repeating logo + inner shadow illusion
+ * on ink-dark background with ambient gold accent lighting.
  */
 export function LogoWallBackground({ mode = "hero", children }: Props) {
   return (
     <div className={clsx(
       "relative text-white",
-      mode === "dashboard" ? "h-full overflow-hidden bg-ink" : "min-h-full bg-ink"
+      mode === "dashboard" ? "h-full bg-ink" : "min-h-full bg-ink"
     )}>
-      {/* Base gradient — premium dark with warm undertone */}
+      {/* Base gradient — warm ink with gold bias */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
@@ -37,7 +39,35 @@ export function LogoWallBackground({ mode = "hero", children }: Props) {
         aria-hidden="true"
       />
 
-      {/* Ambient gold glow — top-left corner accent (like lobby lighting) */}
+      {/* EMBOSSED ACHIEVEMOR LOGO — repeating monogram wallpaper */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url('/images/logos/achievemor-gold.png')",
+          backgroundSize: '100px 100px',
+          backgroundRepeat: 'repeat',
+          opacity: 0.025,
+          filter: 'contrast(0.8) brightness(0.9)',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Emboss depth layer — shifted copy for 3D pressed-in effect */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url('/images/logos/achievemor-gold.png')",
+          backgroundSize: '100px 100px',
+          backgroundRepeat: 'repeat',
+          backgroundPosition: '1px 1px',
+          opacity: 0.012,
+          filter: 'brightness(1.5) contrast(0.7)',
+          mixBlendMode: 'overlay',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Ambient gold glow — top-left accent */}
       <div
         className="pointer-events-none absolute top-0 left-0 w-[600px] h-[600px] z-0"
         style={{
@@ -46,7 +76,7 @@ export function LogoWallBackground({ mode = "hero", children }: Props) {
         aria-hidden="true"
       />
 
-      {/* Ambient gold glow — bottom-right corner */}
+      {/* Ambient gold glow — bottom-right */}
       <div
         className="pointer-events-none absolute bottom-0 right-0 w-[400px] h-[400px] z-0"
         style={{
@@ -55,31 +85,11 @@ export function LogoWallBackground({ mode = "hero", children }: Props) {
         aria-hidden="true"
       />
 
-      {/* ACHIEVEMOR logo — single centered watermark, tasteful */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
-        aria-hidden="true"
-      >
-        <div
-          className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] opacity-[0.025] bg-contain bg-no-repeat bg-center"
-          style={{ backgroundImage: "url('/images/logos/achievemor-gold.png')" }}
-        />
-      </div>
-
-      {/* Cinematic vignette — dark edges, premium depth */}
+      {/* Cinematic vignette — dark edges for depth */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Subtle horizontal line — like a floor reflection */}
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 right-0 h-px z-0"
-        style={{
-          background: 'linear-gradient(90deg, transparent 10%, rgba(212,175,55,0.08) 50%, transparent 90%)',
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.45) 100%)',
         }}
         aria-hidden="true"
       />

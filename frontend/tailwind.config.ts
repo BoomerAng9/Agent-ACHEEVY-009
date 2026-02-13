@@ -54,8 +54,9 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Doto', 'monospace'],     // For headers/data
+        doto: ['Doto', 'monospace'],        // Alias for explicit Doto usage
         mono: ['Doto', 'monospace'],        // For code
-        marker: ['Permanent Marker', 'cursive'], // For human notes
+        marker: ['Permanent Marker', 'cursive'], // A.I.M.S. wordmark
         handwriting: ['Caveat', 'cursive'],
       },
       backgroundImage: {
