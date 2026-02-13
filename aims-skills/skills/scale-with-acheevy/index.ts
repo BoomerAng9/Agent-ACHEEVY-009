@@ -6,7 +6,7 @@
  *
  * ACHEEVY orchestrates:
  * - Boomer_Angs: Task execution agents
- * - Chicken Hawk: Rapid deployment bot
+ * - Chicken_Hawk: Rapid deployment bot
  * - Lil_Hawks: Specialized micro-agents
  */
 

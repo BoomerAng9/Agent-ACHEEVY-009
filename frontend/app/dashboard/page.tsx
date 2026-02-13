@@ -107,7 +107,7 @@ const tiles = [
     highlight: true,
   },
   {
-    title: "Chicken Hawk",
+    title: "Chicken_Hawk",
     icon: Terminal,
     desc: "Build & Execute Code.",
     href: "/dashboard/build",

@@ -88,7 +88,7 @@ export function Hero() {
           </h2>
 
           <p className="text-sm text-white/35 max-w-md mx-auto">
-            Think it. Prompt it. Let ACHEEVY build it.
+            I&apos;m A-C-H-E-E-V-Y — Think it. Prompt it. Let ACHEEVY build it.
           </p>
         </div>
 
@@ -109,7 +109,7 @@ export function Hero() {
                     alt="ACHEEVY"
                     width={56}
                     height={56}
-                    className="w-12 h-12 md:w-14 md:h-14 object-cover"
+                    className="w-12 h-12 md:w-14 md:h-14 object-cover animate-head-bob"
                   />
                 </div>
                 <h3

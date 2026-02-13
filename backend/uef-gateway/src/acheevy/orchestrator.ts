@@ -330,7 +330,7 @@ export class AcheevyOrchestrator {
   /**
    * Vertical execution: NLP-triggered business builder verticals with R-R-S downstream execution.
    * Routes collected user data through the full governance stack:
-   *   ORACLE → ByteRover RAG → PREP_SQUAD → LUC → Chicken Hawk → Boomer_Angs → Artifacts
+   *   ORACLE → ByteRover RAG → PREP_SQUAD → LUC → Chicken_Hawk → Boomer_Angs → Artifacts
    */
   private async handleVerticalExecution(
     requestId: string,

@@ -85,6 +85,14 @@ const BOOMER_ANGS = [
   { id: 'hawk', name: 'Chicken_Hawk', office: 'dispatch', color: 'red' },
 ] as const;
 
+// Status chip labels (owner can toggle back to corporate in Circuit Box)
+const STATUS_LABELS: Record<string, string> = {
+  active: "Maintainin'",
+  idle: "Chillin'",
+  building: "Buildin'",
+  error: 'Stay Loose',
+};
+
 const THREADS_STORAGE_KEY = 'aims_chat_threads';
 const SIDEBAR_STORAGE_KEY = 'aims_chat_sidebar';
 const MOTTOBAR_STORAGE_KEY = 'aims_chat_motto';
@@ -947,8 +955,8 @@ export default function ChatPage() {
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">Chat w/ACHEEVY</h2>
                   <p className="text-white/50 max-w-lg mx-auto leading-relaxed mb-10">
-                    Welcome to AI Managed Solutions. I&apos;m ACHEEVY, I&apos;m at your service.<br />
-                    What will we deploy today?
+                    Welcome to AI Managed Solutions. I&apos;m ACHEEVY&mdash;smooth, cool-as-hell, and at your service.<br />
+                    What are we deploying today?
                   </p>
 
                   {/* Quick Intents */}

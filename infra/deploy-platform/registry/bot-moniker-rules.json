@@ -2,7 +2,7 @@
   "$schema": "https://aims.dev/schemas/bot-moniker-rules.json",
   "name": "Deploy Bot Moniker Rules",
   "version": "2.0.0",
-  "description": "Naming conventions for Lil_Hawks - Chicken Hawk spawned workers organized in Squads",
+  "description": "Naming conventions for Lil_Hawks - Chicken_Hawk spawned workers organized in Squads",
 
   "mascot": {
     "name": "Chicken_Hawk",
@@ -105,7 +105,7 @@
       "allowed_values": ["CraneOps", "YardOps", "SafetyOps", "LoadOps", "DispatchOps"],
       "mapping": {
         "CraneOps": {
-          "description": "Chicken Hawk primary workers - lift/move/place",
+          "description": "Chicken_Hawk primary workers - lift/move/place",
           "functions": ["Deploy", "Scale", "Update", "Swap", "Canary", "Rollback", "Terminate", "Health"]
         },
         "YardOps": {
@@ -171,7 +171,7 @@
 
   "skill_spec": {
     "name": "synthetic_user_naming",
-    "description": "Every Chicken Hawk–spawned bot is issued a governed identity at birth",
+    "description": "Every Chicken_Hawk–spawned bot is issued a governed identity at birth",
     "applies_to": [
       "chickenhawk.bot_spawn_requested",
       "chickenhawk.squad_scale_up",
@@ -228,7 +228,7 @@
   },
 
   "hierarchy": {
-    "description": "Boomer_Ang supervisors command Lil_Hawks via Chicken Hawk",
+    "description": "Boomer_Ang supervisors command Lil_Hawks via Chicken_Hawk",
     "supervisors": {
       "type": "Boomer_Ang",
       "pattern": "<Role>_Ang",
