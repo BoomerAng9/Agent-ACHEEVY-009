@@ -13,7 +13,7 @@ type Props = {
 /**
  * LogoWallBackground — Premium branded environment
  *
- * Gold ACHIEVEMOR logo embossed across all pages at ultra-low opacity,
+ * Gold A.I.M.S. logo embossed across all pages at ultra-low opacity,
  * like a luxury brand's monogram wallpaper — think Louis Vuitton or
  * Gucci's repeating logo pattern pressed into leather.
  *
@@ -39,7 +39,7 @@ export function LogoWallBackground({ mode = "hero", children }: Props) {
         aria-hidden="true"
       />
 
-      {/* EMBOSSED ACHIEVEMOR LOGO — repeating monogram wallpaper */}
+      {/* EMBOSSED A.I.M.S. LOGO — repeating monogram wallpaper */}
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={{

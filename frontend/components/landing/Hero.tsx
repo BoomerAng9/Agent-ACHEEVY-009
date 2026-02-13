@@ -3,13 +3,15 @@
 /**
  * A.I.M.S. Landing Page — Hero Section
  *
- * Clean onboarding hero for aimanagedsolutions.cloud.
- * Triangle layout with three active cards:
- *   Top center: Chat w/ACHEEVY (main hero)
- *   Bottom-left: Automate Everything (with Boomer_Angs team image)
- *   Bottom-right: Deploy Your Apps (with Boomer_Ang on Assignment image)
+ * Dual-purpose hero that serves both domains:
  *
- * All three route to plugmein.cloud where users access AI features and ACHEEVY.
+ * plugmein.cloud (LEARN):
+ *   DO cards → link to aimanagedsolutions.cloud (Chat, Build, Deploy)
+ *   EXPLORE cards → local lore pages (Book of V.I.B.E., Gallery, About)
+ *
+ * aimanagedsolutions.cloud (DO):
+ *   Direct action cards → local routes (Chat, Dashboard, Circuit Box)
+ *
  * Hero copy (non-negotiable):
  *   1) "Welcome to AI Managed Solutions."
  *   2) "I'm ACHEEVY, at your service."
@@ -20,8 +22,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-// App domain where users access AI features and ACHEEVY
-const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'https://plugmein.cloud';
+// Cross-domain URLs
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'https://aimanagedsolutions.cloud';
 
 // ── Animation Variants ──
 
@@ -103,16 +105,28 @@ export function Hero() {
           </p>
         </div>
 
-        {/* ── Triangle Card Layout ── */}
+        {/* ── DO Section — Actions that go to aimanagedsolutions.cloud ── */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
           className="flex flex-col items-center gap-5 mt-8"
         >
+          {/* Section Label: DO */}
+          <motion.div variants={staggerItem} className="flex items-center gap-3 w-full max-w-xl">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+            <span
+              className="text-xs tracking-[0.3em] uppercase text-gold/50"
+              style={{ fontFamily: 'var(--font-doto), "Doto", monospace' }}
+            >
+              Do
+            </span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+          </motion.div>
+
           {/* Top — Chat w/ACHEEVY (main hero card) */}
           <motion.div variants={staggerItem} className="w-full max-w-xl">
-            <Link href={`${APP_DOMAIN}/chat`} className="group block">
+            <a href={`${APP_DOMAIN}/chat`} className="group block">
               <div className="wireframe-card p-6 md:p-8 text-center hover:border-gold/30 hover:shadow-[0_0_40px_rgba(212,175,55,0.08)] transition-all duration-500">
                 <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
                   <Image
@@ -130,7 +144,7 @@ export function Hero() {
                   Chat w/ACHEEVY
                 </h3>
                 <p className="text-sm text-white/40 mb-3">
-                  Your AI executive orchestrator. Route tasks through the Chain of Command.
+                  Your AI executive orchestrator. Tell ACHEEVY what you need — the team handles the rest.
                 </p>
                 <span
                   className="text-gold/60 text-sm uppercase tracking-[0.15em] group-hover:text-gold transition-colors"
@@ -139,14 +153,14 @@ export function Hero() {
                   Activity Breeds Activity
                 </span>
               </div>
-            </Link>
+            </a>
           </motion.div>
 
-          {/* Bottom row — two cards forming triangle base */}
+          {/* Bottom row — two DO cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-4xl">
-            {/* Bottom-left: Automate Everything */}
+            {/* Automate Everything */}
             <motion.div variants={staggerItem}>
-              <Link href={`${APP_DOMAIN}/chat`} className="group block h-full">
+              <a href={`${APP_DOMAIN}/dashboard`} className="group block h-full">
                 <div className="wireframe-card p-5 md:p-6 flex items-center gap-4 hover:border-gold/30 hover:shadow-[0_0_30px_rgba(212,175,55,0.06)] transition-all duration-500 h-full">
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 border border-white/[0.06] group-hover:border-gold/20 transition-colors">
                     <Image
@@ -169,12 +183,12 @@ export function Hero() {
                     </p>
                   </div>
                 </div>
-              </Link>
+              </a>
             </motion.div>
 
-            {/* Bottom-right: Deploy Your Apps */}
+            {/* Deploy Your Apps — Managed Vibe Coding */}
             <motion.div variants={staggerItem}>
-              <Link href={`${APP_DOMAIN}/chat`} className="group block h-full">
+              <a href={`${APP_DOMAIN}/chat`} className="group block h-full">
                 <div className="wireframe-card p-5 md:p-6 flex items-center gap-4 hover:border-gold/30 hover:shadow-[0_0_30px_rgba(212,175,55,0.06)] transition-all duration-500 h-full">
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 border border-white/[0.06] group-hover:border-gold/20 transition-colors">
                     <Image
@@ -193,9 +207,77 @@ export function Hero() {
                       Deploy Your Apps
                     </h3>
                     <p className="text-xs md:text-sm text-white/35 leading-relaxed">
-                      Containerized. Managed. Deployed to production instantly.
+                      Managed Vibe Coding. Conversate your way to a working aiPLUG.
                     </p>
                   </div>
+                </div>
+              </a>
+            </motion.div>
+          </div>
+
+          {/* ── EXPLORE Section — Lore pages on plugmein.cloud ── */}
+          <motion.div variants={staggerItem} className="flex items-center gap-3 w-full max-w-4xl mt-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <span
+              className="text-xs tracking-[0.3em] uppercase text-white/30"
+              style={{ fontFamily: 'var(--font-doto), "Doto", monospace' }}
+            >
+              Explore
+            </span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
+            {/* Book of V.I.B.E. */}
+            <motion.div variants={staggerItem}>
+              <Link href="/the-book-of-vibe" className="group block h-full">
+                <div className="wireframe-card p-5 text-center hover:border-purple-500/30 hover:shadow-[0_0_30px_rgba(147,51,234,0.06)] transition-all duration-500 h-full">
+                  <div className="text-3xl mb-3">📖</div>
+                  <h3
+                    className="text-sm font-bold text-white mb-1 group-hover:text-purple-400 transition-colors"
+                    style={{ fontFamily: 'var(--font-display, "Doto", monospace)' }}
+                  >
+                    The Book of V.I.B.E.
+                  </h3>
+                  <p className="text-xs text-white/30">
+                    The origin story of ACHEEVY and the V.I.B.E. Energy that powers everything.
+                  </p>
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Character Gallery */}
+            <motion.div variants={staggerItem}>
+              <Link href="/gallery" className="group block h-full">
+                <div className="wireframe-card p-5 text-center hover:border-cyan-500/30 hover:shadow-[0_0_30px_rgba(6,182,212,0.06)] transition-all duration-500 h-full">
+                  <div className="text-3xl mb-3">🖼</div>
+                  <h3
+                    className="text-sm font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors"
+                    style={{ fontFamily: 'var(--font-display, "Doto", monospace)' }}
+                  >
+                    Character Gallery
+                  </h3>
+                  <p className="text-xs text-white/30">
+                    Meet ACHEEVY, the Boomer_Angs, Chicken Hawk, and the Lil_Hawks.
+                  </p>
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Merch */}
+            <motion.div variants={staggerItem}>
+              <Link href="/merch" className="group block h-full">
+                <div className="wireframe-card p-5 text-center hover:border-gold/30 hover:shadow-[0_0_30px_rgba(212,175,55,0.06)] transition-all duration-500 h-full">
+                  <div className="text-3xl mb-3">🛍</div>
+                  <h3
+                    className="text-sm font-bold text-white mb-1 group-hover:text-gold transition-colors"
+                    style={{ fontFamily: 'var(--font-display, "Doto", monospace)' }}
+                  >
+                    Merch Store
+                  </h3>
+                  <p className="text-xs text-white/30">
+                    Rep the V.I.B.E. — apparel, gear, and collectibles.
+                  </p>
                 </div>
               </Link>
             </motion.div>

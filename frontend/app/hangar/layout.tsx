@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'A.I.M.S. Hangar — ACHIEVEMOR',
-  description: 'Real-time 3D orchestration view of the ACHIEVEMOR build pipeline.',
+  title: 'A.I.M.S. Hangar — AI Managed Solutions',
+  description: 'Real-time 3D orchestration view of the A.I.M.S. build pipeline.',
 };
 
 /**

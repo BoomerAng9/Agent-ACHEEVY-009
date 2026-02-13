@@ -959,7 +959,7 @@ function CircuitBoxContent() {
 
       {/* Ambient logo watermark */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-0" aria-hidden="true">
-        <div className="w-[400px] h-[400px] opacity-[0.02] bg-contain bg-no-repeat bg-center" style={{ backgroundImage: "url('/images/logos/achievemor-gold.png')" }} />
+        <div className="w-[400px] h-[400px] opacity-[0.02] bg-contain bg-no-repeat bg-center" style={{ backgroundImage: "url('/images/acheevy/acheevy-helmet.png')" }} />
       </div>
 
       <div className="relative z-10">

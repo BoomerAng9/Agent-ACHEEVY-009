@@ -16,6 +16,27 @@ import { NextRequest, NextResponse } from 'next/server';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const IS_DEMO = process.env.DEMO_MODE === 'true';
 
+// ─────────────────────────────────────────────────────────────
+// Domain Routing Configuration
+// ─────────────────────────────────────────────────────────────
+// plugmein.cloud = LEARN (lore, Book of V.I.B.E., galleries, merch, about)
+// aimanagedsolutions.cloud = DO (chat, dashboard, build aiPLUGs, deploy)
+
+const LANDING_HOST = 'plugmein.cloud';          // Lore & learn domain
+const APP_HOST = 'aimanagedsolutions.cloud';     // Functional app domain
+
+// Routes that belong ONLY on the app domain (aimanagedsolutions.cloud)
+const APP_ONLY_ROUTES = [
+  '/dashboard', '/chat', '/api', '/sign-in', '/sign-up',
+  '/forgot-password', '/onboarding', '/workspace',
+];
+
+// Routes that belong ONLY on the landing domain (plugmein.cloud)
+const LANDING_ONLY_ROUTES = [
+  '/the-book-of-vibe', '/gallery', '/merch', '/about',
+  '/mission', '/team', '/careers', '/blog', '/lore',
+];
+
 const ALLOWED_ORIGINS = IS_PRODUCTION
   ? [
       'https://plugmein.cloud',
@@ -25,6 +46,8 @@ const ALLOWED_ORIGINS = IS_PRODUCTION
       'https://www.aims.plugmein.cloud',
       'https://api.aims.plugmein.cloud',
       'https://luc.plugmein.cloud',
+      'https://aimanagedsolutions.cloud',
+      'https://www.aimanagedsolutions.cloud',
     ]
   : [
       'http://localhost:3000',
@@ -247,38 +270,59 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // 1. Honeypot check (block bots probing for vulnerabilities)
+  // 1. Domain routing — redirect wrong-domain requests to the right place
+  if (IS_PRODUCTION) {
+    const host = request.headers.get('host')?.replace(/^www\./, '') || '';
+
+    // On plugmein.cloud: redirect app routes → aimanagedsolutions.cloud
+    if (host === LANDING_HOST || host === `www.${LANDING_HOST}`) {
+      const isAppRoute = APP_ONLY_ROUTES.some(r => pathname.startsWith(r));
+      if (isAppRoute) {
+        return NextResponse.redirect(`https://${APP_HOST}${pathname}${request.nextUrl.search}`);
+      }
+    }
+
+    // On aimanagedsolutions.cloud: redirect lore routes → plugmein.cloud
+    if (host === APP_HOST || host === `www.${APP_HOST}`) {
+      const isLandingRoute = LANDING_ONLY_ROUTES.some(r => pathname.startsWith(r));
+      if (isLandingRoute) {
+        return NextResponse.redirect(`https://${LANDING_HOST}${pathname}${request.nextUrl.search}`);
+      }
+    }
+  }
+
+  // 2. Honeypot check (block bots probing for vulnerabilities)
   if (isHoneypot(pathname)) {
     console.warn(`[SECURITY] Honeypot triggered: ${ip} -> ${pathname}`);
     return createErrorResponse('Not Found', 404);
   }
 
-  // 2. Bot detection (only in production)
+  // 3. Bot detection (only in production)
   if (IS_PRODUCTION && isBlockedBot(userAgent)) {
     console.warn(`[SECURITY] Blocked bot: ${ip} - ${userAgent.slice(0, 100)}`);
     return createErrorResponse('Access denied', 403);
   }
 
-  // 3. Empty user agent check (only in production - dev tools may have short/empty agents)
+  // 4. Empty user agent check (only in production - dev tools may have short/empty agents)
   if (IS_PRODUCTION && (!userAgent || userAgent.length < 10)) {
     console.warn(`[SECURITY] Empty user agent: ${ip}`);
     return createErrorResponse('Access denied', 403);
   }
 
-  // 4. Suspicious patterns check
+  // 5. Suspicious patterns check
   const suspiciousReason = hasSuspiciousPatterns(request);
   if (suspiciousReason) {
     console.warn(`[SECURITY] ${suspiciousReason}: ${ip} -> ${pathname}`);
     return createErrorResponse('Bad request', 400);
   }
 
-  // 5. Request size check for API routes
+  // 6. Request size check for API routes
   if (pathname.startsWith('/api') && isOversizedRequest(request)) {
     console.warn(`[SECURITY] Oversized request: ${ip} -> ${pathname}`);
     return createErrorResponse('Request too large', 413);
   }
 
-  // 6. Rate limiting for API routes (tiered by endpoint sensitivity)
+  // 7. Rate limiting for API routes (tiered by endpoint sensitivity)
   // In development, use much higher limits to allow rapid testing
   if (pathname.startsWith('/api')) {
     const demoFactor = IS_DEMO ? 0.5 : 1; // 50% rate limits in demo mode
@@ -298,7 +342,7 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // 7. CORS check for API routes in production
+  // 8. CORS check for API routes in production
   if (IS_PRODUCTION && pathname.startsWith('/api')) {
     const origin = request.headers.get('origin');
     if (origin && !ALLOWED_ORIGINS.includes(origin)) {

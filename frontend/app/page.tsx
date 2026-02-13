@@ -1,8 +1,8 @@
 /**
  * A.I.M.S. Landing Page
  *
- * Clean, centered landing: Gold ACHIEVEMOR logo wallpaper,
- * "A.I.M.S. AI MANAGED SYSTEMS" headline, two CTAs, three feature cards.
+ * Clean, centered landing: Gold A.I.M.S. logo wallpaper,
+ * "A.I.M.S. AI MANAGED SOLUTIONS" headline, two CTAs, three feature cards.
  */
 
 import { Hero } from '@/components/landing/Hero';
