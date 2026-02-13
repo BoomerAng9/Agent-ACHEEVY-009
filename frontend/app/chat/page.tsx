@@ -955,8 +955,8 @@ export default function ChatPage() {
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">Chat w/ACHEEVY</h2>
                   <p className="text-white/50 max-w-lg mx-auto leading-relaxed mb-10">
-                    Welcome to AI Managed Solutions. I&apos;m ACHEEVY&mdash;smooth, cool-as-hell, and at your service.<br />
-                    What are we deploying today?
+                    I&apos;m ACHEEVY, at your service.<br />
+                    What will we deploy today?
                   </p>
 
                   {/* Quick Intents */}

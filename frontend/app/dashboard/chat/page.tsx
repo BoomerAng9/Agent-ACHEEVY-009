@@ -14,7 +14,7 @@ export default function ChatPage() {
       <ChatInterface
         model="gemini-3-flash"
         autoPlayVoice={true}
-        welcomeMessage="Welcome to AI Managed Solutions. I'm ACHEEVY, I'm at your service. What will we deploy today?"
+        welcomeMessage="I'm ACHEEVY, at your service. What will we deploy today?"
         placeholder="Message ACHEEVY... (or click the mic to speak)"
       />
     </motion.div>

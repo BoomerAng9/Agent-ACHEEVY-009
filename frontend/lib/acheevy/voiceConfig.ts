@@ -44,7 +44,7 @@ export const VOICE_PRESETS: Record<PersonaMode, {
     elevenlabs: ELEVENLABS_ACHEEVY_PRESET,
     deepgram: DEEPGRAM_ACHEEVY_PRESET,
     greeting:
-      "Welcome to AI Managed Solutions. I'm ACHEEVY\u2014smooth, cool-as-hell, and at your service. What are we deploying today?",
+      "I'm ACHEEVY, at your service. What will we deploy today?",
     microCopy: {
       acknowledge: "Got it, let's move.",
       sending: 'All good\u2014sending the container now.',
@@ -56,7 +56,7 @@ export const VOICE_PRESETS: Record<PersonaMode, {
     elevenlabs: { ...ELEVENLABS_ACHEEVY_PRESET, stability: 0.6, style: 0.3 },
     deepgram: { ...DEEPGRAM_ACHEEVY_PRESET, speed: 1.0 },
     greeting:
-      "Welcome to AI Managed Solutions. I'm ACHEEVY, at your service. What will we deploy today?",
+      "I'm ACHEEVY, at your service. What will we deploy today?",
     microCopy: {
       acknowledge: 'Acknowledged. Processing.',
       sending: 'Deploying container now.',

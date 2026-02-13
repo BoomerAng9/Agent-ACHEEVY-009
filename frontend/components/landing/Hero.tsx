@@ -88,7 +88,8 @@ export function Hero() {
           </h2>
 
           <p className="text-sm text-white/35 max-w-md mx-auto">
-            I&apos;m A-C-H-E-E-V-Y — Think it. Prompt it. Let ACHEEVY build it.
+            I&apos;m ACHEEVY, at your service.<br />
+            What will we deploy today?
           </p>
         </div>
 
