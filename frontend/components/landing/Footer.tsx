@@ -48,27 +48,27 @@ const InstagramIcon = ({ className }: { className?: string }) => (
 // Footer Navigation
 // ─────────────────────────────────────────────────────────────
 
-const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'https://plugmein.cloud';
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'https://aimanagedsolutions.cloud';
 
 const FOOTER_NAV = {
-  company: {
-    title: 'Company Navigation',
+  lore: {
+    title: 'The A.I.M.S. Universe',
     links: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Mission & Values', href: '/mission' },
-      { label: 'Team', href: '/team' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Blog', href: '/blog' },
+      { label: 'The Book of V.I.B.E.', href: '/the-book-of-vibe' },
+      { label: 'Character Gallery', href: '/gallery' },
+      { label: 'Merch Store', href: '/merch' },
+      { label: 'About A.I.M.S.', href: '/about' },
+      { label: 'Pricing', href: '/pricing' },
     ],
   },
   platform: {
-    title: 'Platform Sections',
+    title: 'Platform',
     links: [
-      { label: 'ACHEEVY (AI Assistant)', href: `${APP_DOMAIN}/dashboard` },
-      { label: 'House of Ang (Agents)', href: `${APP_DOMAIN}/dashboard/house-of-ang` },
-      { label: 'Model Garden (Tools)', href: `${APP_DOMAIN}/dashboard/model-garden` },
+      { label: 'Chat w/ACHEEVY', href: `${APP_DOMAIN}/chat` },
+      { label: 'Dashboard', href: `${APP_DOMAIN}/dashboard` },
+      { label: 'Model Garden', href: `${APP_DOMAIN}/dashboard/model-garden` },
       { label: 'Circuit Box', href: `${APP_DOMAIN}/dashboard/circuit-box` },
-      { label: 'Pricing', href: '/pricing' },
+      { label: 'House of Ang', href: `${APP_DOMAIN}/dashboard/house-of-ang` },
     ],
   },
   community: {

@@ -6,17 +6,43 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
-const NAV_LINKS = [
+// Domain constants
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL || 'https://aimanagedsolutions.cloud';
+const LANDING_DOMAIN = process.env.NEXT_PUBLIC_LANDING_URL || 'https://plugmein.cloud';
+
+// Navigation for the LANDING domain (plugmein.cloud — lore, learn, explore)
+const LANDING_NAV = [
   { href: "/", label: "Home" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/chat", label: "Chat" },
-  { href: "/plugs", label: "Plugs" },
-  { href: "/integrations", label: "Integrations" },
+  { href: "/the-book-of-vibe", label: "Book of V.I.B.E." },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/about", label: "About" },
 ];
+
+// Navigation for the APP domain (aimanagedsolutions.cloud — do, build, deploy)
+const APP_NAV = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/chat", label: "Chat w/ACHEEVY" },
+  { href: "/dashboard/circuit-box", label: "Circuit Box" },
+  { href: "/dashboard/model-garden", label: "Model Garden" },
+];
+
+function useIsLandingDomain(): boolean {
+  if (typeof window === 'undefined') return true; // SSR default
+  const host = window.location.hostname.replace(/^www\./, '');
+  // In dev, localhost serves both — show landing nav on root
+  return host === 'plugmein.cloud' || host === 'localhost' || host === '127.0.0.1';
+}
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const isLanding = useIsLandingDomain();
+
+  const navLinks = isLanding ? LANDING_NAV : APP_NAV;
+  const crossDomainCta = isLanding
+    ? { href: `${APP_DOMAIN}/sign-up`, label: "Get Started" }
+    : { href: `${LANDING_DOMAIN}/the-book-of-vibe`, label: "Explore Lore" };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-wireframe-stroke bg-[#0A0A0A]/90 backdrop-blur-xl">
@@ -35,7 +61,7 @@ export function SiteHeader() {
 
         {/* Desktop Navigation */}
         <nav className="ml-auto hidden md:flex items-center gap-1">
-          {NAV_LINKS.map((link) => {
+          {navLinks.map((link) => {
             const active = pathname === link.href;
             return (
               <Link
@@ -53,23 +79,23 @@ export function SiteHeader() {
             );
           })}
           <div className="ml-2 flex items-center gap-2">
-            <Link
-              href="/sign-up"
+            <a
+              href={crossDomainCta.href}
               className="rounded-lg bg-gold/90 px-3 py-1.5 text-sm font-medium text-black transition-colors hover:bg-gold"
             >
-              Sign Up
-            </Link>
+              {crossDomainCta.label}
+            </a>
           </div>
         </nav>
 
         {/* Mobile hamburger */}
         <div className="ml-auto flex items-center gap-2 md:hidden">
-          <Link
-            href="/sign-up"
+          <a
+            href={crossDomainCta.href}
             className="rounded-lg bg-gold/90 px-2.5 py-1.5 text-xs font-medium text-black"
           >
-            Sign Up
-          </Link>
+            {crossDomainCta.label}
+          </a>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5"
@@ -89,7 +115,7 @@ export function SiteHeader() {
       {/* Mobile dropdown nav */}
       {menuOpen && (
         <div className="md:hidden border-t border-wireframe-stroke bg-[#0A0A0A]/95 backdrop-blur-xl px-4 py-3 space-y-1">
-          {NAV_LINKS.map((link) => {
+          {navLinks.map((link) => {
             const active = pathname === link.href;
             return (
               <Link

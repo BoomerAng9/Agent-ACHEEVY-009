@@ -710,7 +710,7 @@ export default function AcheevyChat() {
         <div className="flex items-center justify-center gap-1.5 mt-2">
           <Image
             src="/images/logos/achievemor-gold.png"
-            alt="Achievemor"
+            alt="A.I.M.S."
             width={12}
             height={12}
             className="opacity-30"
