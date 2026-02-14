@@ -119,6 +119,9 @@ Hooks are guardrails and interceptors. They run before any task executes.
 | **Onboarding Flow** | `hooks/onboarding-flow.hook.ts` | Guides new users through platform onboarding | First interaction / no profile |
 | **Conversation State** | `hooks/conversation-state.hook.ts` | Tracks conversation context, session state, vertical progress | Every message |
 | **Claude Loop** | `hooks/claude-loop.hook.ts` | Manages Claude agent loop behavior and context injection | Claude agent sessions |
+| **Design Redesign Trigger** | `hooks/design-redesign-trigger.md` | Detects redesign intent and enforces full teardown + rebuild workflow | "redesign", "overhaul", layout/bg/typography changes |
+| **Brand Strings Enforcer** | `hooks/brand-strings-enforcer.md` | Blocks merges if forbidden brand name variants appear (e.g., `Chicken_Hawk`, `ChickenHawk`) | Every merge/PR |
+| **PR Evidence Checklist** | `hooks/pr-evidence-checklist.md` | Requires evidence artifacts: screenshots, responsive checks, routes list, naming scan | Every PR |
 
 ### Adding a New Hook
 1. Create `hooks/<name>.hook.ts` implementing the hook interface
@@ -152,6 +155,38 @@ Skills inject specialized context, SOPs, and design standards into ACHEEVY's beh
 | **Three.js 3D** | `skills/threejs-3d.skill.md` | "3d", "three", "webgl" | When/how to use 3D, performance constraints |
 | **Analytics Tracking** | `skills/analytics-tracking.skill.md` | "track", "analytics", "event" | Event tracking, privacy rules |
 
+#### Design Skills (`skills/design/`)
+
+| Skill | File | Triggers | Purpose |
+|-------|------|----------|---------|
+| **Design-First Builder** | `skills/design/design-first-builder.md` | "design", "redesign", "UI", "layout", "overhaul" | Full pipeline: feel → anchors → tokens → composition → implement. Teardown-first on redesigns. |
+| **Hangar UI World** | `skills/design/hangar-ui-world.md` | "hangar", "3d", "background", "scene", "lighting" | Separate-world Hangar rules: lighting, motion, scene language, layout boundaries |
+| **Circuit Box Visualization** | `skills/design/circuit-box-visualization.md` | "circuit box", "wiring", "services", "telemetry" | How Circuit Box is drawn; Owner vs User visibility boundary |
+| **Design Tokens Standards** | `skills/design/design-tokens-standards.md` | "tokens", "spacing", "typography", "colors", "radii" | Token naming conventions, spacing/radii/elevation/motion/opacity/color definitions |
+
+#### Integration Skills (`skills/integrations/`)
+
+| Skill | File | Triggers | Purpose |
+|-------|------|----------|---------|
+| **Telegram** | `skills/integrations/telegram.md` | "telegram", "telegram bot" | Telegram Bot API rules, message formatting, user setup |
+| **Discord** | `skills/integrations/discord.md` | "discord", "discord bot", "discord webhook" | Discord bot/webhook rules, embed formatting, user setup |
+| **WhatsApp** | `skills/integrations/whatsapp.md` | "whatsapp", "whatsapp message" | WhatsApp Business API rules, template messages, opt-in flow |
+| **Voice (ElevenLabs + Deepgram)** | `skills/integrations/voice-elevenlabs-deepgram.md` | "voice", "tts", "stt", "waveform" | Voice-first UX: live waveform, editable transcript, TTS playback controls |
+
+#### Security Skills (`skills/security/`)
+
+| Skill | File | Triggers | Purpose |
+|-------|------|----------|---------|
+| **No-Reveal Policy** | `skills/security/no-reveal-policy.md` | "security", "secrets", "reveal" | Never reveal secrets, keys, internal pricing, endpoints, or platform IP |
+| **Actions Redirect Policy** | `skills/security/actions-redirect-policy.md` | "actions", "chatgpt", "redirect" | External endpoints redirect to platform without disclosing IP |
+| **Owner-Only Control Plane** | `skills/security/owner-only-control-plane.md` | "owner", "control plane", "admin" | Circuit Box Owner scope — what only the owner can see and control |
+
+#### Skill Router
+
+| Skill | File | Triggers | Purpose |
+|-------|------|----------|---------|
+| **Skill Router** | `skills/skill-router.md` | "build", "design", "redesign", "integrate", "security" | Routes work type to required skills and hooks |
+
 ### Adding a New Skill
 1. Create `skills/<name>.skill.ts` or `skills/<name>.skill.md`
 2. Add YAML frontmatter with triggers, type, and execution metadata
@@ -180,6 +215,24 @@ Tasks are executable units that produce artifacts.
 | **Discord Message** | `tasks/discord-message.md` | "discord", "send discord" | Message receipt |
 | **Kling Video** | `tasks/kling-video.md` | "generate video", "kling" | Video file |
 | **Web Scrape** | `tasks/web-scrape.md` | "scrape", "crawl", "extract" | Structured data |
+
+#### Task Templates (`tasks/templates/`)
+
+| Template | File | Purpose |
+|----------|------|---------|
+| **Design Packet** | `tasks/templates/design-packet.md` | Required output for any design work: anchors, tokens, motion rules, composition |
+| **Redesign Teardown Log** | `tasks/templates/redesign-teardown-log.md` | What got removed, what got rebuilt, what got verified |
+| **Owners vs Users Surface Map** | `tasks/templates/owners-vs-users-surface-map.md` | Explicit visibility map: Owners vs Users for every surface |
+
+#### Runbooks (`tasks/runbooks/`)
+
+| Runbook | File | Purpose |
+|---------|------|---------|
+| **Circuit Box — Owners** | `tasks/runbooks/circuit-box-owners.md` | Full system map setup, telemetry, policy controls |
+| **Circuit Box — Users** | `tasks/runbooks/circuit-box-users.md` | Plug-and-play view, credential input, usage meters |
+| **Telegram Setup** | `tasks/runbooks/telegram-setup-user.md` | User guide: connect Telegram notifications |
+| **Discord Setup** | `tasks/runbooks/discord-setup-user.md` | User guide: connect Discord notifications |
+| **WhatsApp Setup** | `tasks/runbooks/whatsapp-setup-user.md` | User guide: connect WhatsApp notifications |
 
 ### Adding a New Task
 1. Create `tasks/<name>.md` with YAML frontmatter
@@ -354,17 +407,22 @@ aims-skills/
 ├── README.md                      ← Skills framework overview
 ├── hooks/
 │   ├── index.ts                   ← Hook exports
+│   ├── README.md                  ← Hook types and documentation
 │   ├── chain-of-command.hook.ts   ← Governance enforcement
 │   ├── gateway-enforcement.hook.ts← Port Authority enforcement
 │   ├── identity-guard.hook.ts     ← Leak prevention
 │   ├── onboarding-flow.hook.ts    ← New user onboarding
 │   ├── conversation-state.hook.ts ← Session state tracking
 │   ├── claude-loop.hook.ts        ← Claude agent behavior
+│   ├── design-redesign-trigger.md ← Redesign = teardown + rebuild
+│   ├── brand-strings-enforcer.md  ← Exact brand actor naming
+│   ├── pr-evidence-checklist.md   ← Evidence required for merge
 │   ├── plug-protocol.md           ← Plug protocol definition
 │   ├── github-ops.md              ← GitHub operations hook
 │   └── docker-compose.md          ← Docker operations hook
 ├── skills/
 │   ├── index.ts                   ← Skill exports
+│   ├── skill-router.md            ← Routes work type to required skills/hooks
 │   ├── onboarding-sop.skill.ts
 │   ├── idea-validation.skill.ts
 │   ├── claude-agent-loop.skill.ts
@@ -372,7 +430,21 @@ aims-skills/
 │   ├── best-practices.md
 │   ├── stitch-nano-design.skill.md
 │   ├── ui-interaction-motion.skill.md
-│   └── scale-with-acheevy/        ← Business builder skills
+│   ├── scale-with-acheevy/        ← Business builder skills
+│   ├── design/                    ← Design operating system
+│   │   ├── design-first-builder.md      ← Full design pipeline + teardown rules
+│   │   ├── hangar-ui-world.md           ← Hangar lighting, motion, depth, layout
+│   │   ├── circuit-box-visualization.md ← Owner vs User Circuit Box rendering
+│   │   └── design-tokens-standards.md   ← Token naming, spacing, colors, motion
+│   ├── integrations/              ← Third-party integration rules
+│   │   ├── telegram.md                  ← Telegram Bot API integration
+│   │   ├── discord.md                   ← Discord bot/webhook integration
+│   │   ├── whatsapp.md                  ← WhatsApp Business API integration
+│   │   └── voice-elevenlabs-deepgram.md ← Voice-first UX rules
+│   └── security/                  ← Security posture skills
+│       ├── no-reveal-policy.md          ← Never reveal secrets/pricing/IP
+│       ├── actions-redirect-policy.md   ← External actions redirect to platform
+│       └── owner-only-control-plane.md  ← Owner-only ops scope
 ├── tools/                            ← Tool reference documentation (32 tools)
 │   ├── index.ts                      ← TOOL_REGISTRY for programmatic discovery
 │   ├── README.md                     ← Directory guide
@@ -409,6 +481,7 @@ aims-skills/
 │   ├── posthog.tool.md               ← Product analytics
 │   └── plausible.tool.md             ← Privacy-first analytics
 ├── tasks/
+│   ├── README.md                     ← Task structure documentation
 │   ├── gemini-research.md
 │   ├── n8n-workflow.md
 │   ├── remotion.md
@@ -422,7 +495,17 @@ aims-skills/
 │   ├── telegram-message.md           ← Telegram messaging
 │   ├── discord-message.md            ← Discord messaging
 │   ├── kling-video.md                ← Video generation
-│   └── web-scrape.md                 ← Web scraping
+│   ├── web-scrape.md                 ← Web scraping
+│   ├── templates/                    ← Reusable output templates
+│   │   ├── design-packet.md          ← Required output for design work
+│   │   ├── redesign-teardown-log.md  ← Teardown documentation
+│   │   └── owners-vs-users-surface-map.md ← Visibility map
+│   └── runbooks/                     ← Step-by-step execution playbooks
+│       ├── circuit-box-owners.md     ← Owner ops setup and management
+│       ├── circuit-box-users.md      ← User plug-and-play guide
+│       ├── telegram-setup-user.md    ← User Telegram connection guide
+│       ├── discord-setup-user.md     ← User Discord connection guide
+│       └── whatsapp-setup-user.md    ← User WhatsApp connection guide
 ├── acheevy-verticals/
 │   ├── vertical-definitions.ts    ← 10 revenue verticals
 │   └── types.ts                   ← Vertical type definitions
@@ -517,6 +600,59 @@ aims-skills/tasks/<name>.md
 | **Business Builder** | Vertical Phase A match | Hormozi-style. Push for specifics. Action-first. No fluff. |
 | **Growth Advisor** | Growth-related vertical | Data-first scaling. Systems thinker. Metrics-driven. |
 | **DIY Mode** | Voice + camera input | Hands-on project guidance with Vision + TTS |
+
+---
+
+## 16. Non-Negotiable Design & Build Rules
+
+These rules apply to every build. They are enforced by hooks and skills, not by memory.
+
+### 16.1 Redesign = Full Teardown + Rebuild
+When told to redesign / overhaul / refresh / fix the UI:
+1. **Freeze** — capture current UI + routes + must-not-break flows
+2. **Teardown** — remove or disable old layout/components/styles (no patchwork layering)
+3. **Rebuild** — from scratch using the new design packet and token system
+4. **Audit** — responsive fit, no clipping, no overflow, exact brand naming
+
+See: `hooks/design-redesign-trigger.md`, `skills/design/design-first-builder.md`
+
+### 16.2 Brand Actor Naming Is Exact
+These strings are treated like constants — no variations, no creative spelling:
+- `A.I.M.S.` — with periods
+- `ACHEEVY` — all caps
+- `Chicken Hawk` — two words, space-separated, title case
+- `Boomer_Ang` / `Boomer_Angs` — underscore stays
+- `Lil_*_Hawk` — underscore-delimited (e.g., `Lil_Messenger_Hawk`)
+- `Circuit Box` — two words, title case
+
+See: `hooks/brand-strings-enforcer.md`
+
+### 16.3 Security Posture (No Reveal)
+Never output secrets, keys, private repo internals, IP, hidden endpoints, or pricing internals. If something is missing, request only the minimum safe inputs and keep them out of logs and UI.
+
+See: `skills/security/no-reveal-policy.md`
+
+### 16.4 Fit-to-Screen + Margins Are Non-Negotiable
+- Every page loads centered with consistent padding
+- No primary content renders clipped off-screen on first paint
+- Responsive rules are explicit for desktop / tablet / mobile
+
+See: `skills/design/design-first-builder.md`
+
+---
+
+## 17. Behavioral Directive (Claude Code Integration)
+
+When building or redesigning inside this repo:
+
+1. Run `skill-router` and load the required skills for the job type
+2. If redesign is detected, run teardown first and document it
+3. Enforce brand strings exactly — no exceptions
+4. Generate the Design Packet and implement tokens before component work
+5. Wire Circuit Box with Owners vs Users separation as a first-class boundary
+6. Attach evidence artifacts to every PR so merges are verifiable
+
+See: `skills/skill-router.md`, `hooks/pr-evidence-checklist.md`
 
 ---
 
