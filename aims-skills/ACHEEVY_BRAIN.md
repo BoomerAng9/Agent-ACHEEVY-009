@@ -1,7 +1,7 @@
 # ACHEEVY BRAIN
 ## The Single Source of Truth for ACHEEVY's Behavior, Skills, Hooks & Recurring Tasks
 
-> **Version:** 2.1.0
+> **Version:** 2.2.0
 > **Owner:** ACHEEVY (Digital CEO of A.I.M.S.)
 > **Effective:** 2026-02-14
 > **Doctrine:** "Think it. Prompt it. Let ACHEEVY manage it."
@@ -495,6 +495,46 @@ See: `aims-skills/brains/ACHEEVY_II_EXTENSIONS.md` for ACHEEVY's direct extensio
 | `LAB_ANG_BRAIN.md` | Lab_Ang | ii-thought + ii_verl + CoT-Lab-Demo |
 | `INDEX_ANG_BRAIN.md` | Index_Ang | II-Commons |
 
+### Boomer_Ang Role Card Registry
+Every Boomer_Ang has a JSON role card in `aims-skills/chain-of-command/role-cards/`.
+Role cards define identity (bio, origin, catchphrase), capabilities, chain-of-command,
+gates, overlay visibility, and evaluation KPIs. **No agent exists without a card.**
+
+| Role Card | Handle | PMO Office | Accent Color |
+|-----------|--------|------------|-------------|
+| `acheevy.json` | ACHEEVY | Executive Office | Gold #D4AF37 |
+| `betty-ann-ang.json` | Betty-Ann_Ang | HR PMO | Gold #D4AF37 |
+| `forge-ang.json` | Forge_Ang | Digital Transformation PMO | Gold #D4AF37 |
+| `avva-noon-ang.json` | AVVA-NOON_Ang | Holdings Operational Excellence | Amber #F59E0B |
+| `scout-ang.json` | Scout_Ang | Intelligence & Research PMO | Cyan #22D3EE |
+| `opsconsole-ang.json` | OpsConsole_Ang | Operations & Observability PMO | Green #22C55E |
+| `chronicle-ang.json` | Chronicle_Ang | Intelligence & Research PMO | Champagne #F6C453 |
+| `gatekeeper-ang.json` | Gatekeeper_Ang | Infrastructure & Security PMO | Red #EF4444 |
+| `patchsmith-ang.json` | Patchsmith_Ang | Engineering & Delivery PMO | Amber #F59E0B |
+| `runner-ang.json` | Runner_Ang | Engineering & Delivery PMO | Cyan #22D3EE |
+| `showrunner-ang.json` | Showrunner_Ang | Creative & Presentation PMO | Champagne #F6C453 |
+| `scribe-ang.json` | Scribe_Ang | Creative & Presentation PMO | Frosty White #EDEDED |
+| `lab-ang.json` | Lab_Ang | R&D & Experimental PMO | Green #22C55E |
+| `index-ang.json` | Index_Ang | Intelligence & Research PMO | Gold #D4AF37 |
+
+### Boomer_Ang Visual Identity
+All Boomer_Angs follow the canonical visual spec in `aims-skills/brains/BOOMER_ANG_VISUAL_IDENTITY.md`.
+- Digital Humanoids — NOT humans, NOT robots, NOT mascots
+- Always helmeted (no face), always gloved, no skin visible
+- "ANG" on chest plate or shoulder sleeve in gold
+- AIMS logo on helmet, arm, or belt
+- Sleek, cool, futuristic — not scary, not cuddly
+- Each Ang has a signature accent color from the brand palette
+
+### Deployment Hub
+ACHEEVY's agent factory for spawning, configuring, and deploying agents.
+See: `aims-skills/skills/deployment-hub/spawn-agent.skill.md`
+- Spawns Boomer_Angs (persistent capability owners)
+- Spawns Lil_Hawks (task-scoped workers via Chicken Hawk)
+- Deploys agents to autonomous environments (LiveSim, Per|Form Platform, Dojo)
+- Every spawn generates an audit trail entry
+- Invoked via ACHEEVY's `spawn_shift` tool
+
 ---
 
 ## 12. Security & Anti-Hack Framework
@@ -580,6 +620,8 @@ aims-skills/
 │   │   ├── approve-hitl.skill.md        ← HITL gate approval (SoW/Quote/PO)
 │   │   ├── upload-official-rfp.skill.md ← Attach user documents
 │   │   └── record-usage.skill.md        ← Usage/pricing tracking
+│   ├── deployment-hub/             ← Agent spawn & deployment system
+│   │   └── spawn-agent.skill.md   ← Spawn Boomer_Angs, Lil_Hawks, autonomous sessions
 │   ├── simulation/                ← Autonomous simulation skills
 │   │   └── spawn-simulation-room.skill.md ← Create LiveSim room
 │   ├── chicken-hawk/              ← Chicken Hawk vertical skills
@@ -658,6 +700,7 @@ aims-skills/
 │   ├── vertical-definitions.ts    ← 12 revenue verticals (10 + LiveSim + ChickenHawk)
 │   └── types.ts                   ← Vertical type definitions
 ├── brains/                          ← Boomer_Ang brain files (II repo wrappers)
+│   ├── BOOMER_ANG_VISUAL_IDENTITY.md ← Canonical visual design spec for all Boomer_Angs
 │   ├── ACHEEVY_II_EXTENSIONS.md     ← ACHEEVY's direct wraps (ii-agent, II-Commons, Agent Zero)
 │   ├── SCOUT_ANG_BRAIN.md           ← ii-researcher wrapper
 │   ├── OPSCONSOLE_ANG_BRAIN.md      ← CommonGround wrapper
@@ -671,8 +714,23 @@ aims-skills/
 │   └── INDEX_ANG_BRAIN.md           ← II-Commons data layer wrapper
 ├── chain-of-command/
 │   ├── CHAIN_OF_COMMAND.md        ← Full governance document
-│   └── role-cards/
-│       └── acheevy.json           ← ACHEEVY role card
+│   └── role-cards/                ← JSON identity cards (28 total)
+│       ├── acheevy.json           ← ACHEEVY role card
+│       ├── betty-ann-ang.json     ← HR PMO
+│       ├── forge-ang.json         ← Digital Transformation PMO
+│       ├── avva-noon-ang.json     ← Operational Excellence
+│       ├── scout-ang.json         ← Intelligence & Research
+│       ├── opsconsole-ang.json    ← Operations & Observability
+│       ├── chronicle-ang.json     ← Timeline & Audit
+│       ├── gatekeeper-ang.json    ← LLM Gateway & Security
+│       ├── patchsmith-ang.json    ← Code Surgery
+│       ├── runner-ang.json        ← CLI Execution
+│       ├── showrunner-ang.json    ← Presentations
+│       ├── scribe-ang.json        ← Documentation
+│       ├── lab-ang.json           ← R&D Experimental
+│       ├── index-ang.json         ← Data & Embeddings
+│       ├── chicken-hawk.json      ← Coordinator
+│       └── lil-*-hawk.json        ← 13 Lil_Hawk worker cards
 └── luc/                           ← LUC billing engine
 ```
 
