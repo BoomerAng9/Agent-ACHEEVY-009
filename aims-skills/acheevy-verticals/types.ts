@@ -44,9 +44,11 @@ export type VerticalCategory =
   | 'branding'
   | 'marketing'
   | 'engineering'
-  | 'automation';
+  | 'automation'
+  | 'simulation'
+  | 'devops';
 
-export type AcheevyMode = 'business-builder' | 'growth-mode';
+export type AcheevyMode = 'business-builder' | 'growth-mode' | 'livesim' | 'default';
 
 // ---------------------------------------------------------------------------
 // Vertical Definition — Both conversation chain AND execution blueprint
