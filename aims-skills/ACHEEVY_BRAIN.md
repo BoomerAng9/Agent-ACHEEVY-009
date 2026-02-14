@@ -260,7 +260,7 @@ Skills inject specialized context, SOPs, and design standards into ACHEEVY's beh
 | Skill | File | Triggers | Purpose |
 |-------|------|----------|---------|
 | **CLAW Replacement Status** | `skills/chicken-hawk/claw-replacement-status.skill.md` | "claw status" | Check if CLAW is built, running, and passing smoke tests |
-| **Trigger CLAW Buildout** | `skills/chicken-hawk/trigger-claw-buildout.skill.md` | "claw buildout" | Open/continue a build task for OpenCLAW parity |
+| **Trigger CLAW Buildout** | `skills/chicken-hawk/trigger-claw-buildout.skill.md` | "claw buildout" | Open/continue a build task per `CHICKENHAWK_SPEC.md` |
 
 #### Stitch Design Skills
 

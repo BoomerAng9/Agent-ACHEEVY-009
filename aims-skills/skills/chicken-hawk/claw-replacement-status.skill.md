@@ -4,7 +4,7 @@ name: "CLAW Replacement Status"
 type: "skill"
 status: "active"
 triggers: ["claw status", "claw health", "chicken hawk ready"]
-description: "Checks if the CLAW replacement (OpenCLAW successor) is built, running, and passing smoke tests on Hostinger VPS."
+description: "Checks if the Chicken Hawk execution engine is built, running, and passing smoke tests on Hostinger VPS."
 execution:
   target: "api"
   route: "/api/acheevy/chicken-hawk/claw-status"
@@ -25,7 +25,7 @@ priority: "critical"
    - `POST /deploy` — deploy endpoint responds
    - `POST /run` — execution endpoint responds
    - `GET /logs` — log retrieval endpoint responds
-3. **Feature parity with original OpenCLAW spec**
+3. **Feature completeness per `docs/CHICKENHAWK_SPEC.md`**
    - Code generation pipeline functional
    - Build/test pipeline functional
    - Deploy pipeline functional

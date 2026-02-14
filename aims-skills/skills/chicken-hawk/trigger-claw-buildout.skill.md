@@ -4,7 +4,7 @@ name: "Trigger CLAW Buildout"
 type: "skill"
 status: "active"
 triggers: ["claw buildout", "build claw", "claw agent build"]
-description: "Opens or continues a build task in the CLAW code agent to ensure parity with original OpenCLAW spec."
+description: "Opens or continues a build task in the CLAW code agent per `docs/CHICKENHAWK_SPEC.md`."
 execution:
   target: "api"
   route: "/api/acheevy/chicken-hawk/trigger-buildout"
@@ -27,7 +27,7 @@ priority: "high"
    - Run regression tests defined in A.I.M.S. blueprint
 3. Monitors build progress and reports status back to ACHEEVY
 
-### Build Requirements (OpenCLAW Parity)
+### Build Requirements (per CHICKENHAWK_SPEC.md)
 - [ ] Docker container builds successfully
 - [ ] Container deploys to Hostinger VPS
 - [ ] `POST /deploy` endpoint functional
