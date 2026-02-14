@@ -14,6 +14,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { triggerN8nPmoWorkflow } from '../n8n';
 import type { N8nPipelineResponse } from '../n8n';
 import { executeVertical } from './execution-engine';
+import { spawnAgent, decommissionAgent, getRoster, getAvailableRoster } from '../deployment-hub';
+import type { SpawnRequest, EnvironmentTarget } from '../deployment-hub';
 
 // Vertical definitions: pure data (no gateway imports), loaded at runtime
 // to avoid tsconfig rootDir compilation issues with cross-boundary imports.
@@ -111,6 +113,11 @@ export class AcheevyOrchestrator {
       // User → ACHEEVY → Boomer_Ang → Chicken Hawk → Squad → Lil_Hawks → Receipt → ACHEEVY → User
       if (routedTo === 'pmo-route' || routedTo.startsWith('pmo:')) {
         return await this.handlePmoRouting(requestId, req);
+      }
+
+      // Deployment Hub: spawn/decommission/roster for Boomer_Angs and Lil_Hawks
+      if (routedTo.startsWith('spawn:') || routedTo === 'deployment-hub') {
+        return await this.handleDeploymentHub(requestId, req);
       }
 
       // Default: conversational AI via II-Agent
@@ -393,6 +400,124 @@ export class AcheevyOrchestrator {
         taskId: `queued_vertical_${requestId}`,
       };
     }
+  }
+
+  /**
+   * Deployment Hub: spawn, decommission, and query Boomer_Angs and Lil_Hawks.
+   * Intent patterns:
+   *   "spawn:<handle>"          → spawn a specific agent
+   *   "deployment-hub"          → roster/query operations
+   *   context.action = "decommission" → tear down an agent
+   *   context.action = "roster"       → get active roster
+   *   context.action = "available"    → get available agents from card files
+   */
+  private async handleDeploymentHub(
+    requestId: string,
+    req: AcheevyExecuteRequest
+  ): Promise<AcheevyExecuteResponse> {
+    const action = req.context?.action as string || 'spawn';
+
+    // Roster query
+    if (action === 'roster') {
+      const roster = getRoster();
+      return {
+        requestId,
+        status: 'completed',
+        reply: roster.length > 0
+          ? `Active roster: ${roster.map(r => `${r.handle} (${r.environment})`).join(', ')}`
+          : 'No agents currently active. Use spawn to deploy agents.',
+        data: { roster },
+      };
+    }
+
+    // Available agents query
+    if (action === 'available') {
+      const available = getAvailableRoster();
+      return {
+        requestId,
+        status: 'completed',
+        reply: `${available.length} agents available: ${available.map(a => a.handle).join(', ')}`,
+        data: { available },
+      };
+    }
+
+    // Decommission
+    if (action === 'decommission') {
+      const spawnId = req.context?.spawnId as string;
+      const reason = req.context?.reason as string || 'Requested via orchestrator';
+      if (!spawnId) {
+        return { requestId, status: 'error', reply: 'Missing spawnId for decommission.', error: 'spawnId required' };
+      }
+      const result = await decommissionAgent(spawnId, reason);
+      return {
+        requestId,
+        status: result.success ? 'completed' : 'error',
+        reply: result.success
+          ? `${result.handle} decommissioned. Audit trail sealed.`
+          : `Decommission failed: ${result.error}`,
+        data: { spawnResult: result },
+        error: result.error,
+      };
+    }
+
+    // Spawn
+    const handle = req.intent.startsWith('spawn:')
+      ? req.intent.split(':')[1]
+      : (req.context?.handle as string || '');
+
+    if (!handle) {
+      return { requestId, status: 'error', reply: 'Missing agent handle for spawn.', error: 'handle required' };
+    }
+
+    const spawnRequest: SpawnRequest = {
+      spawnType: (req.context?.spawnType as SpawnRequest['spawnType']) || 'BOOMER_ANG',
+      handle,
+      requestedBy: 'ACHEEVY',
+      taskId: req.context?.taskId as string,
+      environment: (req.context?.environment as EnvironmentTarget) || 'PRODUCTION',
+      budgetCapUsd: req.context?.budgetCapUsd as number,
+      sessionDurationMaxS: req.context?.sessionDurationMaxS as number,
+    };
+
+    const result = await spawnAgent(spawnRequest);
+
+    if (!result.success) {
+      return {
+        requestId,
+        status: 'error',
+        reply: `Spawn failed for ${handle}: ${result.error}`,
+        data: { spawnResult: result },
+        error: result.error,
+      };
+    }
+
+    const identity = result.roleCard?.identity;
+    return {
+      requestId,
+      status: 'completed',
+      reply: [
+        `${handle} is online. ${identity?.catchphrase || ''}`,
+        `PMO: ${result.roleCard?.pmo_office || 'N/A'}`,
+        `Environment: ${spawnRequest.environment}`,
+        `Gates passed: ${result.gatesPassed.join(', ')}`,
+        `Spawn ID: ${result.spawnId}`,
+      ].join('\n'),
+      data: {
+        spawnResult: result,
+        identity: {
+          displayName: identity?.display_name,
+          origin: identity?.origin,
+          motivation: identity?.motivation,
+          catchphrase: identity?.catchphrase,
+          communicationStyle: identity?.communication_style,
+        },
+        visualIdentity: result.visualIdentity,
+      },
+      lucUsage: {
+        service: 'spawn_shift',
+        amount: 1,
+      },
+    };
   }
 
   /**

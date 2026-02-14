@@ -621,7 +621,8 @@ aims-skills/
 │   │   ├── upload-official-rfp.skill.md ← Attach user documents
 │   │   └── record-usage.skill.md        ← Usage/pricing tracking
 │   ├── deployment-hub/             ← Agent spawn & deployment system
-│   │   └── spawn-agent.skill.md   ← Spawn Boomer_Angs, Lil_Hawks, autonomous sessions
+│   │   ├── spawn-agent.skill.md   ← Spawn Boomer_Angs, Lil_Hawks, autonomous sessions
+│   │   └── perform-session.skill.md ← Per|Form Platform agent sessions
 │   ├── simulation/                ← Autonomous simulation skills
 │   │   └── spawn-simulation-room.skill.md ← Create LiveSim room
 │   ├── chicken-hawk/              ← Chicken Hawk vertical skills
@@ -743,9 +744,15 @@ backend/acheevy/src/
 └── diy-handler.ts                 ← Voice + Vision DIY mode
 
 backend/uef-gateway/src/acheevy/
-├── orchestrator.ts                ← Advanced gateway orchestrator
+├── orchestrator.ts                ← Advanced gateway orchestrator (spawn: + deployment-hub intents)
 ├── router.ts                      ← Express router
 └── execution-engine.ts            ← Vertical execution + governance
+
+backend/uef-gateway/src/deployment-hub/
+├── index.ts                       ← Public API (spawn, decommission, roster, cards)
+├── types.ts                       ← SpawnRequest, SpawnRecord, RoleCard, VisualIdentity types
+├── card-loader.ts                 ← Loads role cards from JSON files with cache
+└── spawn-engine.ts                ← 9-step spawn flow + gate checks + audit logging
 
 frontend/lib/acheevy/
 ├── persona.ts                     ← System prompt + persona config
