@@ -1,18 +1,33 @@
 /**
- * Boost|Bridge — Simulation Lab, Trial Orchestrator, P2P Training Dojo
+ * Boost|Bridge — Human Companion Platform
  *
- * "Productively Fun." We use AI to solve problems, not just generate content.
- * We bridge the gap between human creativity and AI execution.
+ * "Productively Fun." High-IQ, High-Fly. "The Lab" meets "The Cypher."
+ * We don't just research. We SIMULATE, TRAIN, CERTIFY, and VERIFY.
  *
- * Three Pillars:
- *   A. Synthetic Persona Engine ("The Crowd") — Market simulation via AI personas
+ * Six Sigma DMAIC Remix:
+ *   Define  → THE VISION     (Consulting Launch Pad — what are we building?)
+ *   Measure → THE CROWD      (Synthetic Personas stress-testing reality)
+ *   Analyze → THE ROAST      (AI Critics tearing it down — find every flaw)
+ *   Improve → THE REMIX      (Iterate based on real feedback)
+ *   Control → THE STANDARD   (P2P Training Dojo — certification/accreditation)
+ *   Verify  → THE GATE       (Identity Verification — OCR, Facial, Credentials, ML)
+ *
+ * Engines:
+ *   A. Synthetic Persona Engine ("The Crowd")       — Market simulation via AI personas
  *   B. Trial Run Orchestrator ("The Proving Ground") — Real user trial management
- *   C. P2P Training Dojo ("The Standard") — Peer training with accreditation
+ *   C. P2P Training Dojo ("The Standard")            — Peer training with accreditation
+ *   D. Identity Verification Engine ("The Gate")     — OCR/DeepSeek, Facial/GCP Vision, Credentials, ML/Vertex AI
  *
- * Architecture: Evolved from Veritas Boss-Grunt into a multi-engine platform.
- *   - Companion: Claude — Strategy, synthesis, evaluation
- *   - Search: Brave — Grounded data (replaced Perplexity)
- *   - Personas: Generated agent swarms for market simulation
+ * Integrations:
+ *   - Companion: Claude via OpenRouter — Strategy, synthesis, evaluation
+ *   - Search: Brave — Grounded data
+ *   - OCR: DeepSeek Vision (primary) + GCP Vision API (fallback)
+ *   - Facial: GCP Cloud Vision face detection
+ *   - ML: Vertex AI custom models + Gemini multimodal
+ *   - Batch: Cloud Run Jobs for batch verification
+ *   - Storage: Firebase Firestore for verification records
+ *   - Multi-Agent: CrewAI bridge for complex verification pipelines
+ *   - Discord: Webhooks for The Crowd, The Dojo, The Gate
  *
  * Port: 7001
  */
@@ -123,6 +138,24 @@ import {
   type LearnerProgress,
 } from './engines/p2p-dojo.js';
 
+import {
+  createVerificationRequest,
+  runVerificationPipeline,
+  type VerificationRequest,
+} from './engines/identity-verify.js';
+
+import {
+  healthCheck as crewaiHealth,
+  runVerificationCrew,
+  runResearchCrew,
+} from './integrations/crewai-bridge.js';
+
+import {
+  geminiAnalyze,
+  launchBatchVerificationJob,
+  storeVerificationResult,
+} from './gcp/vertex-ai.js';
+
 interface SimulationJob {
   id: string;
   productName: string;
@@ -143,6 +176,7 @@ const trialRuns = new Map<string, TrialRun>();
 const curricula = new Map<string, Curriculum>();
 const badges: BoostBadge[] = [];
 const learnerProgress = new Map<string, LearnerProgress>();
+const verificationRequests = new Map<string, VerificationRequest>();
 
 // ─── Simulation Pipeline ──────────────────────────────────────────────────
 
@@ -238,21 +272,30 @@ const server = Bun.serve({
       return new Response(JSON.stringify({
         status: 'ok',
         service: 'boost-bridge',
-        philosophy: 'Productively Fun',
+        philosophy: 'Productively Fun — High-IQ, High-Fly',
+        dmaic: { define: 'Vision', measure: 'Crowd', analyze: 'Roast', improve: 'Remix', control: 'Standard' },
         engines: {
-          crowd: 'Synthetic Persona Engine',
-          provingGround: 'Trial Run Orchestrator',
-          dojo: 'P2P Training Dojo',
+          crowd: 'Synthetic Persona Engine (The Crowd)',
+          provingGround: 'Trial Run Orchestrator (The Proving Ground)',
+          dojo: 'P2P Training Dojo (The Standard)',
+          gate: 'Identity Verification Engine (The Gate)',
+          crewai: 'CrewAI Multi-Agent Orchestration',
+          gemini: 'Vertex AI / Gemini Multimodal',
         },
         stats: {
           simulations: crowdReports.length,
           trials: trialRuns.size,
           curricula: curricula.size,
           badges: badges.length,
+          verifications: verificationRequests.size,
         },
         integrations: {
           openrouter: !!OPENROUTER_API_KEY,
           brave: !!BRAVE_API_KEY,
+          deepseek: !!process.env.DEEPSEEK_API_KEY,
+          gcp_vision: !!process.env.GCP_VISION_API_KEY,
+          vertex_ai: !!process.env.GCP_ACCESS_TOKEN,
+          crewai: !!process.env.CREWAI_BASE_URL,
           discord_synthetic: !!DISCORD_WEBHOOK_SYNTHETIC,
           discord_accreditation: !!DISCORD_WEBHOOK_ACCREDITATION,
         },
@@ -591,15 +634,208 @@ const server = Bun.serve({
       }), { headers });
     }
 
+    // ─── THE GATE: Identity Verification ────────────────────────────
+
+    // Start verification
+    if (url.pathname === '/api/gate/verify' && req.method === 'POST') {
+      const body = await req.json() as {
+        userId: string;
+        userName: string;
+        email: string;
+        documentType: string;
+        documentImageBase64: string;
+        selfieImageBase64?: string;
+        professionalClaims?: Array<{ type: string; title: string; issuer: string; year: number; verificationUrl?: string }>;
+      };
+
+      if (!body.userId || !body.documentImageBase64) {
+        return new Response(JSON.stringify({ error: 'userId and documentImageBase64 are required' }), { status: 400, headers });
+      }
+
+      const request = createVerificationRequest({
+        userId: body.userId,
+        userName: body.userName || 'Unknown',
+        email: body.email || '',
+        documentType: (body.documentType || 'state_id') as any,
+        documentImageBase64: body.documentImageBase64,
+        selfieImageBase64: body.selfieImageBase64,
+        professionalClaims: body.professionalClaims as any,
+      });
+
+      verificationRequests.set(request.id, request);
+
+      // Run pipeline async
+      runVerificationPipeline(request).then(async (completed) => {
+        verificationRequests.set(completed.id, completed);
+        // Store in Firestore
+        try {
+          await storeVerificationResult(completed.id, {
+            userId: completed.userId,
+            status: completed.status,
+            confidenceScore: completed.finalVerdict?.confidenceScore || 0,
+            verdict: completed.finalVerdict?.status || 'pending',
+            completedAt: completed.completedAt || '',
+          });
+        } catch (e) {
+          console.warn('[Gate] Firestore store failed:', e);
+        }
+      });
+
+      return new Response(JSON.stringify({
+        verificationId: request.id,
+        status: 'pending',
+        message: `Identity verification started. Poll /api/gate/status/${request.id} for progress.`,
+      }), { status: 202, headers });
+    }
+
+    // Poll verification status
+    if (url.pathname.startsWith('/api/gate/status/') && req.method === 'GET') {
+      const vId = url.pathname.split('/api/gate/status/')[1];
+      const request = verificationRequests.get(vId);
+      if (!request) return new Response(JSON.stringify({ error: 'Verification not found' }), { status: 404, headers });
+
+      return new Response(JSON.stringify({
+        id: request.id,
+        userId: request.userId,
+        status: request.status,
+        events: request.events.slice(-20),
+        ocrResult: request.ocrResult ? {
+          confidence: request.ocrResult.confidence,
+          documentAuthenticity: request.ocrResult.documentAuthenticity,
+          extractedName: request.ocrResult.extractedFields.fullName,
+          flags: request.ocrResult.flags,
+        } : null,
+        faceMatchResult: request.faceMatchResult ? {
+          matchVerdict: request.faceMatchResult.matchVerdict,
+          matchConfidence: request.faceMatchResult.matchConfidence,
+          livenessScore: request.faceMatchResult.livenessScore,
+        } : null,
+        credentialResult: request.credentialResult ? {
+          overallCredibility: request.credentialResult.overallCredibility,
+          claims: request.credentialResult.claims.map(c => ({
+            title: c.claim.title,
+            status: c.status,
+          })),
+        } : null,
+        mlRiskScore: request.mlRiskScore,
+        finalVerdict: request.finalVerdict,
+        completedAt: request.completedAt,
+      }), { headers });
+    }
+
+    // Batch verification via Cloud Run Jobs
+    if (url.pathname === '/api/gate/batch' && req.method === 'POST') {
+      const body = await req.json() as { verificationIds: string[] };
+      if (!body.verificationIds?.length) {
+        return new Response(JSON.stringify({ error: 'verificationIds array required' }), { status: 400, headers });
+      }
+
+      try {
+        const job = await launchBatchVerificationJob(body.verificationIds);
+        return new Response(JSON.stringify(job), { status: 202, headers });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Batch job failed';
+        return new Response(JSON.stringify({ error: msg }), { status: 500, headers });
+      }
+    }
+
+    // ─── CREWAI: Multi-Agent Orchestration ───────────────────────────
+
+    // CrewAI health
+    if (url.pathname === '/api/crew/health' && req.method === 'GET') {
+      const status = await crewaiHealth();
+      return new Response(JSON.stringify(status), { headers });
+    }
+
+    // Run verification crew
+    if (url.pathname === '/api/crew/verify' && req.method === 'POST') {
+      const body = await req.json() as {
+        documentImageBase64: string;
+        selfieImageBase64?: string;
+        professionalClaims?: Array<{ title: string; issuer: string; year: number }>;
+      };
+
+      try {
+        const execution = await runVerificationCrew(body);
+        return new Response(JSON.stringify(execution), { status: 202, headers });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'CrewAI verification failed';
+        return new Response(JSON.stringify({ error: msg }), { status: 500, headers });
+      }
+    }
+
+    // Run research crew
+    if (url.pathname === '/api/crew/research' && req.method === 'POST') {
+      const body = await req.json() as {
+        industry: string;
+        productDescription: string;
+        competitors?: string[];
+      };
+
+      try {
+        const execution = await runResearchCrew(body);
+        return new Response(JSON.stringify(execution), { status: 202, headers });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'CrewAI research failed';
+        return new Response(JSON.stringify({ error: msg }), { status: 500, headers });
+      }
+    }
+
+    // ─── GEMINI: Multimodal Analysis ─────────────────────────────────
+
+    if (url.pathname === '/api/gemini/analyze' && req.method === 'POST') {
+      const body = await req.json() as { prompt: string; imageBase64?: string; model?: string };
+      if (!body.prompt) {
+        return new Response(JSON.stringify({ error: 'prompt is required' }), { status: 400, headers });
+      }
+
+      try {
+        const result = await geminiAnalyze(body.prompt, body.imageBase64, body.model);
+        return new Response(JSON.stringify(result), { headers });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Gemini analysis failed';
+        return new Response(JSON.stringify({ error: msg }), { status: 500, headers });
+      }
+    }
+
+    // ─── DMAIC FRAMEWORK (Six Sigma Remix) ───────────────────────────
+
+    if (url.pathname === '/api/dmaic' && req.method === 'GET') {
+      return new Response(JSON.stringify({
+        framework: 'Boost|Bridge Six Sigma Remix',
+        phases: {
+          define: { name: 'The Vision', engine: 'Consulting Launch Pad', description: 'What are we building? Scope, stakeholders, success criteria.' },
+          measure: { name: 'The Crowd', engine: 'Synthetic Persona Engine', description: 'Synthetic Personas stress-test the idea. Data, not opinions.' },
+          analyze: { name: 'The Roast', engine: 'Agent Roast / AI Critics', description: 'AI Critics tear it down. Find every flaw before the market does.' },
+          improve: { name: 'The Remix', engine: 'Trial Run Orchestrator', description: 'Iterate based on real feedback. Ship the fix, measure again.' },
+          control: { name: 'The Standard', engine: 'P2P Training Dojo', description: 'Certification and accreditation. Maintain the bar.' },
+        },
+        verification: { name: 'The Gate', engine: 'Identity Verification', description: 'OCR + Facial + Credentials + ML Risk. Trust but verify.' },
+      }), { headers });
+    }
+
     // ─── 404 ────────────────────────────────────────────────────────
 
     return new Response(JSON.stringify({
       error: 'Not found',
       service: 'boost-bridge',
+      philosophy: 'Productively Fun — High-IQ, High-Fly',
+      dmaic: {
+        define: 'The Vision',
+        measure: 'The Crowd',
+        analyze: 'The Roast',
+        improve: 'The Remix',
+        control: 'The Standard',
+        verify: 'The Gate',
+      },
       endpoints: {
         crowd: ['POST /api/crowd/simulate', 'GET /api/crowd/job/:id', 'GET /api/crowd/stream/:id', 'GET /api/crowd/reports', 'GET /api/crowd/report/:id'],
         trial: ['POST /api/trial/create', 'GET /api/trial/:id', 'POST /api/trial/:id/enroll', 'POST /api/trial/:id/feedback', 'POST /api/trial/:id/report'],
         dojo: ['POST /api/dojo/curriculum', 'POST /api/dojo/curriculum/:id/evaluate', 'POST /api/dojo/curriculum/:id/grade', 'GET /api/dojo/badges', 'GET /api/dojo/curricula', 'GET /api/badge/verify/:id'],
+        gate: ['POST /api/gate/verify', 'GET /api/gate/status/:id', 'POST /api/gate/batch'],
+        crew: ['GET /api/crew/health', 'POST /api/crew/verify', 'POST /api/crew/research'],
+        gemini: ['POST /api/gemini/analyze'],
+        dmaic: ['GET /api/dmaic'],
       },
     }), { status: 404, headers });
   },
@@ -607,9 +843,10 @@ const server = Bun.serve({
 
 console.log(`[Boost|Bridge] Platform running on port ${PORT}`);
 console.log(`[Boost|Bridge] Companion Model: ${COMPANION_MODEL}`);
-console.log(`[Boost|Bridge] Philosophy: "Productively Fun"`);
-console.log(`[Boost|Bridge] Engines: The Crowd | The Proving Ground | The Dojo`);
-console.log(`[Boost|Bridge] OpenRouter: ${OPENROUTER_API_KEY ? 'configured' : 'NOT configured'}`);
-console.log(`[Boost|Bridge] Brave Search: ${BRAVE_API_KEY ? 'configured' : 'NOT configured'}`);
-console.log(`[Boost|Bridge] Discord Synthetic: ${DISCORD_WEBHOOK_SYNTHETIC ? 'configured' : 'NOT configured'}`);
-console.log(`[Boost|Bridge] Discord Accreditation: ${DISCORD_WEBHOOK_ACCREDITATION ? 'configured' : 'NOT configured'}`);
+console.log(`[Boost|Bridge] Philosophy: "Productively Fun — High-IQ, High-Fly"`);
+console.log(`[Boost|Bridge] DMAIC Remix: Vision → Crowd → Roast → Remix → Standard`);
+console.log(`[Boost|Bridge] Engines: The Crowd | The Proving Ground | The Dojo | The Gate`);
+console.log(`[Boost|Bridge] Integrations: CrewAI | Vertex AI | Gemini | GCP Vision | DeepSeek`);
+console.log(`[Boost|Bridge] OpenRouter: ${OPENROUTER_API_KEY ? '✓' : '✗'} | Brave: ${BRAVE_API_KEY ? '✓' : '✗'} | DeepSeek: ${process.env.DEEPSEEK_API_KEY ? '✓' : '✗'}`);
+console.log(`[Boost|Bridge] GCP Vision: ${process.env.GCP_VISION_API_KEY ? '✓' : '✗'} | Vertex AI: ${process.env.GCP_ACCESS_TOKEN ? '✓' : '✗'} | CrewAI: ${process.env.CREWAI_BASE_URL ? '✓' : '✗'}`);
+console.log(`[Boost|Bridge] Discord Synthetic: ${DISCORD_WEBHOOK_SYNTHETIC ? '✓' : '✗'} | Accreditation: ${DISCORD_WEBHOOK_ACCREDITATION ? '✓' : '✗'}`);
