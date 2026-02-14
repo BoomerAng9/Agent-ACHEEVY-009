@@ -262,6 +262,14 @@ Skills inject specialized context, SOPs, and design standards into ACHEEVY's beh
 | **CLAW Replacement Status** | `skills/chicken-hawk/claw-replacement-status.skill.md` | "claw status" | Check if CLAW is built, running, and passing smoke tests |
 | **Trigger CLAW Buildout** | `skills/chicken-hawk/trigger-claw-buildout.skill.md` | "claw buildout" | Open/continue a build task per `CHICKENHAWK_SPEC.md` |
 
+#### Gridiron Sandbox Skills (`skills/gridiron/`)
+
+| Skill | File | Triggers | Purpose |
+|-------|------|----------|---------|
+| **Gridiron Scout Run** | `skills/gridiron/scout-run.skill.md` | "scout run", "scan prospects" | Trigger Lil_Hawk adversarial scouting pipeline |
+| **Film Room Analysis** | `skills/gridiron/film-analysis.skill.md` | "analyze film", "tape review" | Send footage to SAM 2 (Vertex AI) for player segmentation |
+| **War Room Status** | `skills/gridiron/war-room-status.skill.md` | "war room status", "gridiron status" | Report Gridiron Sandbox health, rankings, content pipeline |
+
 #### Stitch Design Skills
 
 | Skill | File | Triggers | Purpose |

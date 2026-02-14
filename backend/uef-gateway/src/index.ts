@@ -183,6 +183,58 @@ app.post('/perform/athlete', async (req, res) => {
 });
 
 // --------------------------------------------------------------------------
+// Gridiron Sandbox — Per|Form Sports Analytics Pipeline Proxy
+// Routes /api/gridiron/* to the three sandbox containers
+// --------------------------------------------------------------------------
+const GRIDIRON_SCOUT_HUB = process.env.GRIDIRON_SCOUT_HUB_URL || 'http://scout-hub:5001';
+const GRIDIRON_FILM_ROOM = process.env.GRIDIRON_FILM_ROOM_URL || 'http://film-room:5002';
+const GRIDIRON_WAR_ROOM = process.env.GRIDIRON_WAR_ROOM_URL || 'http://war-room:5003';
+
+async function gridironProxy(serviceUrl: string, path: string, method: string, body?: unknown): Promise<unknown> {
+  const url = `${serviceUrl}${path}`;
+  const opts: RequestInit = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+  };
+  if (body && method !== 'GET') opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  return res.json();
+}
+
+app.all('/api/gridiron/scout-hub/*', async (req, res) => {
+  try {
+    const path = req.path.replace('/api/gridiron/scout-hub', '');
+    const data = await gridironProxy(GRIDIRON_SCOUT_HUB, path || '/health', req.method, req.body);
+    res.json(data);
+  } catch (error: unknown) {
+    logger.error({ err: error }, 'Gridiron Scout Hub proxy error');
+    res.status(502).json({ error: 'Scout Hub unreachable' });
+  }
+});
+
+app.all('/api/gridiron/film-room/*', async (req, res) => {
+  try {
+    const path = req.path.replace('/api/gridiron/film-room', '');
+    const data = await gridironProxy(GRIDIRON_FILM_ROOM, path || '/health', req.method, req.body);
+    res.json(data);
+  } catch (error: unknown) {
+    logger.error({ err: error }, 'Gridiron Film Room proxy error');
+    res.status(502).json({ error: 'Film Room unreachable' });
+  }
+});
+
+app.all('/api/gridiron/war-room/*', async (req, res) => {
+  try {
+    const path = req.path.replace('/api/gridiron/war-room', '');
+    const data = await gridironProxy(GRIDIRON_WAR_ROOM, path || '/health', req.method, req.body);
+    res.json(data);
+  } catch (error: unknown) {
+    logger.error({ err: error }, 'Gridiron War Room proxy error');
+    res.status(502).json({ error: 'War Room unreachable' });
+  }
+});
+
+// --------------------------------------------------------------------------
 // PMO Offices — Project Management Governance
 // --------------------------------------------------------------------------
 app.get('/pmo', (_req, res) => {
