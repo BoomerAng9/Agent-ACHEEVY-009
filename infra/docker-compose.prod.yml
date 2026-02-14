@@ -477,6 +477,128 @@ services:
           cpus: '0.25'
           memory: 128M
 
+  # ---------------------------------------------------------------------------
+  # LAYER 5: GRIDIRON SANDBOX (Per|Form Autonomous Sports Analytics)
+  # Three containers: Scout Hub, Film Room, War Room
+  # Enable with: docker compose --profile gridiron up -d
+  # ---------------------------------------------------------------------------
+
+  # Scout Hub — Lil_Hawk Adversarial Scouting (nightly cron)
+  scout-hub:
+    build:
+      context: ../services/gridiron/scout-hub
+      dockerfile: Dockerfile
+    container_name: gridiron-scout-hub
+    expose:
+      - "5001"
+    environment:
+      - PORT=5001
+      - NODE_ENV=production
+      - BRAVE_API_KEY=${BRAVE_API_KEY}
+      - FIRECRAWL_URL=${FIRECRAWL_URL:-http://firecrawl:3002}
+      - WAR_ROOM_URL=http://war-room:5003
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-aims_redis_secret}@redis:6379
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - SCOUT_CRON=${SCOUT_CRON:-0 2 * * *}
+      - HS_POOL_SIZE=${HS_POOL_SIZE:-300}
+      - COLLEGE_POOL_SIZE=${COLLEGE_POOL_SIZE:-551}
+    volumes:
+      - gridiron-debate-logs:/data/debate-logs
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      war-room:
+        condition: service_healthy
+    networks:
+      - aims-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    profiles:
+      - gridiron
+
+  # Film Room — Vertex AI SAM 2 Bridge
+  film-room:
+    build:
+      context: ../services/gridiron/film-room
+      dockerfile: Dockerfile
+    container_name: gridiron-film-room
+    expose:
+      - "5002"
+    environment:
+      - PORT=5002
+      - NODE_ENV=production
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID:-ai-managed-services}
+      - GCP_REGION=${GCP_REGION:-us-central1}
+      - VERTEX_ENDPOINT_ID=${VERTEX_SAM2_ENDPOINT_ID}
+      - WAR_ROOM_URL=http://war-room:5003
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - aims-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+    profiles:
+      - gridiron
+
+  # War Room — Boomer_Angs + Chicken Hawk Grading & Content
+  war-room:
+    build:
+      context: ../services/gridiron/war-room
+      dockerfile: Dockerfile
+    container_name: gridiron-war-room
+    expose:
+      - "5003"
+    environment:
+      - PORT=5003
+      - NODE_ENV=production
+      - CHICKENHAWK_CORE_URL=${CHICKENHAWK_CORE_URL:-http://chickenhawk-core:4001}
+      - FILM_ROOM_URL=http://film-room:5002
+      - SCOUT_HUB_URL=http://scout-hub:5001
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID:-pNInz6obpgDQGcFmaJgB}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - BRAVE_API_KEY=${BRAVE_API_KEY}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-aims_redis_secret}@redis:6379
+    volumes:
+      - gridiron-debate-logs:/data/debate-logs:ro
+      - gridiron-rankings:/data/rankings
+      - gridiron-content:/data/content
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:5003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - aims-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    profiles:
+      - gridiron
+
 volumes:
   certbot-webroot:
   certbot-certs:
@@ -488,6 +610,9 @@ volumes:
   n8n-data:
   luc-data:
   demo-luc-data:
+  gridiron-debate-logs:
+  gridiron-rankings:
+  gridiron-content:
 
 networks:
   aims-network:

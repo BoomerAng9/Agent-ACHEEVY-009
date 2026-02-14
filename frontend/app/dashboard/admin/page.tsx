@@ -38,6 +38,7 @@ const SQUADS = [
   { squad: "PREP_SQUAD_ALPHA", purpose: "Pre-Execution Intelligence", hawks: ["INTAKE", "DECOMP", "CONTEXT", "POLICY", "COST", "ROUTER"] },
   { squad: "WORKFLOW_SMITH_SQUAD", purpose: "n8n Workflow Integrity", hawks: ["AUTHOR", "VALIDATE", "FAILURE", "GATE"] },
   { squad: "VISION_SCOUT_SQUAD", purpose: "Video/Footage Assessment", hawks: ["VISION", "SIGNAL", "COMPLIANCE"] },
+  { squad: "GRIDIRON_SCOUT_SQUAD", purpose: "Adversarial Prospect Scouting", hawks: ["BULL", "BEAR", "SCRAPER", "VALIDATOR"] },
 ];
 
 const SYSTEM_METRICS = [

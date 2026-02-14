@@ -66,6 +66,7 @@ const OWNER_TABS: NavItem[] = [
   { href: "/dashboard/circuit-box?tab=live-events", label: "Live Events", icon: Zap, ownerOnly: true },
   { href: "/dashboard/circuit-box?tab=security", label: "Security", icon: Shield, ownerOnly: true },
   { href: "/dashboard/circuit-box?tab=research", label: "R&D Hub", icon: FlaskConical, ownerOnly: true },
+  { href: "/dashboard/war-room", label: "War Room", icon: Cpu, ownerOnly: true },
 ];
 
 // ── NavLink Component ──
