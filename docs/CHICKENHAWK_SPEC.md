@@ -3,7 +3,7 @@
 **Date:** 2026-02-13
 **Version:** 3.0.0
 **Status:** SPECIFICATION — Implementation pending
-**Replaces:** OpenClaw sandbox (removed commit `98de4fe`)
+**Succeeds:** OpenClaw sandbox (removed in commit `98de4fe` — fully purged, no remaining references)
 
 ---
 
