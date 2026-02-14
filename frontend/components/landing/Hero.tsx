@@ -47,7 +47,7 @@ const staggerItem = {
 
 export function Hero() {
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-screen bg-ink overflow-visible">
+    <section className="relative flex flex-col items-center bg-ink">
       {/* Subtle radial vignette */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -62,7 +62,7 @@ export function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 w-full max-w-6xl mx-auto px-4 py-12 md:py-20 pb-20"
+        className="relative z-10 w-full max-w-6xl mx-auto px-4 pt-16 md:pt-24 pb-24 md:pb-32"
       >
         {/* System Online badge */}
         <div className="text-center mb-8">
