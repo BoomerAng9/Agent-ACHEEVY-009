@@ -7,11 +7,14 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "discord:register": "ts-node --project tsconfig.json scripts/register-discord-commands.ts"
+    "discord:register": "ts-node --project tsconfig.json scripts/register-discord-commands.ts",
+    "remotion:studio": "remotion studio remotion/Root.tsx --port 3001",
+    "remotion:render": "remotion render remotion/Root.tsx"
   },
   "dependencies": {
     "@ai-sdk/google": "^0.0.52",
     "@ai-sdk/openai": "^0.0.66",
+    "@babel/parser": "^7.29.0",
     "@deepgram/sdk": "^3.9.0",
     "@e2b/sdk": "^1.0.6",
     "@elevenlabs/client": "^0.14.0",
@@ -23,7 +26,10 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@react-three/drei": "^9.114.3",
     "@react-three/fiber": "^8.17.10",
+    "@remotion/google-fonts": "^4.0.0",
     "@remotion/player": "^4.0.419",
+    "@remotion/transitions": "^4.0.0",
+    "@remotion/zod-types": "^4.0.0",
     "@types/three": "^0.169.0",
     "ai": "^3.4.33",
     "bcryptjs": "^3.0.3",

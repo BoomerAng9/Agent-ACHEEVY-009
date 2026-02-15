@@ -281,6 +281,12 @@ Skills inject specialized context, SOPs, and design standards into ACHEEVY's beh
 |-------|------|----------|---------|
 | **Stitch AppFactory Voice UI** | `skills/stitch-app-factory-voice-ui.skill.md` | "stitch", "app factory ui" | Design spec for cross-device ACHEEVY UI (ConversationShell, LiveSimView, ChickenHawkView) |
 
+#### Remotion Video Skills
+
+| Skill | File | Triggers | Purpose |
+|-------|------|----------|---------|
+| **Remotion Video Production** | `skills/remotion-video.skill.md` | "remotion", "video", "render", "composition", "clip" | Production-quality Remotion v4 video: schema-driven compositions, scene architecture, transitions, AIMS theme |
+
 #### Skill Router
 
 | Skill | File | Triggers | Purpose |
