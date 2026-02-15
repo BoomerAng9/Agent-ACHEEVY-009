@@ -97,6 +97,7 @@ const FOOTER_NAV = {
     title: 'Legal & Security',
     links: [
       { label: 'Terms of Service', href: '/terms' },
+      { label: 'Savings Plan Terms', href: '/terms/savings-plan' },
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Security Policy', href: '/security' },
       { label: 'Cookie Policy', href: '/cookies' },
