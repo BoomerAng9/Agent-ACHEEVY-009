@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/db/prisma";
 import {
   ServiceKey,
   SERVICE_COSTS,
@@ -119,11 +120,42 @@ function initializeUserQuotas(userId: string, plan: string = "free"): Record<Ser
   return quotas;
 }
 
-function getUserQuotas(userId: string): Record<ServiceKey, UsageQuota> {
+function getUserQuotas(userId: string, plan: string = "starter"): Record<ServiceKey, UsageQuota> {
   if (!userQuotas.has(userId)) {
-    return initializeUserQuotas(userId, "starter"); // Default to starter for dev
+    return initializeUserQuotas(userId, plan);
   }
   return userQuotas.get(userId)!;
+}
+
+async function getUserPlan(userIdOrEmail: string): Promise<string> {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: userIdOrEmail },
+          { id: userIdOrEmail }
+        ]
+      },
+      include: {
+        workspaces: {
+          take: 1,
+          orderBy: { createdAt: 'asc' },
+          include: {
+            workspace: {
+              include: {
+                lucAccount: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return user?.workspaces[0]?.workspace?.lucAccount?.planId || "free";
+  } catch (error) {
+    console.error("Error fetching user plan:", error);
+    return "free";
+  }
 }
 
 function updateQuotaMetrics(quota: UsageQuota): UsageQuota {
@@ -153,7 +185,8 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId") || session.user.email;
 
-    const quotas = getUserQuotas(userId);
+    const plan = await getUserPlan(userId);
+    const quotas = getUserQuotas(userId, plan);
 
     // Calculate total usage
     let totalUsed = 0;
@@ -169,7 +202,7 @@ export async function GET(req: NextRequest) {
 
     const summary: UsageSummary = {
       userId,
-      plan: "starter", // TODO: Get from user profile
+      plan,
       quotas,
       billingCycleEnd: new Date(
         new Date().getFullYear(),
@@ -201,6 +234,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action, userId = session.user.email, service, amount, metadata, reservationId } = body;
 
+    if (!userQuotas.has(userId)) {
+      const plan = await getUserPlan(userId);
+      initializeUserQuotas(userId, plan);
+    }
     const quotas = getUserQuotas(userId);
 
     switch (action) {
