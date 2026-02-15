@@ -263,8 +263,10 @@ export class ServerStorageAdapter {
   // ─────────────────────────────────────────────────────────
 
   async exportCSV(userId: string): Promise<string> {
-    const account = await this.getAccount(userId);
-    const history = await this.getUsageHistory(userId);
+    const [account, history] = await Promise.all([
+      this.getAccount(userId),
+      this.getUsageHistory(userId),
+    ]);
 
     let csv = '=== LUC ACCOUNT EXPORT ===\n\n';
 
