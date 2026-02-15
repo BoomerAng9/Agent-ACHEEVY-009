@@ -33,7 +33,7 @@ export interface BaseTier {
   tokenMarkup: number;        // markup over API cost (0.25 = 25%)
   discount: string;           // human-readable discount
   models: string[];           // accessible model tiers
-  agents: number;             // active agent/bot limit (0 = unlimited)
+  agents: number;             // active agent/bot limit (0 = pay-per-use, metered)
   concurrent: number;         // max concurrent agent executions
   stripePriceId: string;
 }
@@ -50,7 +50,7 @@ export const BASE_TIERS: BaseTier[] = [
     tokenMarkup: 0.25,
     discount: 'No commitment — 25% token markup',
     models: ['free-models', 'claude-opus-4-6', 'gemini-2.5-pro'],
-    agents: 0, // unlimited — pay per execution
+    agents: 0, // metered — pay per execution, no included allocation
     concurrent: 1,
     stripePriceId: process.env.STRIPE_PRICE_P2P || '',
   },
@@ -339,7 +339,7 @@ export const WHITE_LABEL_PLANS: WhiteLabelPlan[] = [
     id: 'self_managed',
     name: 'Self-Managed',
     tagline: 'Your brand, your control',
-    startingPrice: 'From $499/mo',
+    startingPrice: 'Custom Quote',
     features: [
       'Full A.I.M.S. platform under your brand',
       'Custom domain + branding (logo, colors, copy)',
@@ -354,7 +354,7 @@ export const WHITE_LABEL_PLANS: WhiteLabelPlan[] = [
     id: 'aims_managed',
     name: 'A.I.M.S. Managed',
     tagline: 'Hire us to run it for you',
-    startingPrice: 'From $999/mo',
+    startingPrice: 'Custom Quote',
     features: [
       'Everything in Self-Managed',
       'Dedicated A.I.M.S. operations team',
@@ -370,7 +370,7 @@ export const WHITE_LABEL_PLANS: WhiteLabelPlan[] = [
     id: 'fully_autonomous',
     name: 'Fully Autonomous',
     tagline: 'ACHEEVY + Boomer_Angs run it all',
-    startingPrice: 'From $1,499/mo',
+    startingPrice: 'Custom Quote',
     features: [
       'Everything in A.I.M.S. Managed',
       'ACHEEVY orchestrates all operations',

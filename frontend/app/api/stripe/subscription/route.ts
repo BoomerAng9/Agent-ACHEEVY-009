@@ -1,8 +1,9 @@
 /**
- * Subscription Status API — Returns the user's current 3-6-9 tier
+ * Subscription Status API — Returns the user's current plan tier
  *
+ * 5-tier model: Pay-per-Use | Coffee | Data Entry | Pro | Enterprise
  * Checks Stripe for active subscription, maps to AIMS tier.
- * Falls back to P2P (free) if no subscription found.
+ * Falls back to Pay-per-Use if no subscription found.
  */
 
 import { NextResponse } from 'next/server';
@@ -14,6 +15,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16' as any,
 });
 
+/**
+ * Maps Stripe price IDs to plan tiers.
+ * No tier is "unlimited" — all have explicit caps.
+ */
 const PRICE_TO_TIER: Record<string, {
   tierId: string;
   tierName: string;
@@ -22,35 +27,43 @@ const PRICE_TO_TIER: Record<string, {
   agents: number;
   concurrent: number;
 }> = {
-  [process.env.STRIPE_PRICE_GARAGE || 'price_garage']: {
-    tierId: 'garage',
-    tierName: 'Garage',
-    monthlyPrice: 99,
-    tokensIncluded: 100_000,
-    agents: 3,
+  [process.env.STRIPE_PRICE_COFFEE_MONTHLY || 'price_coffee']: {
+    tierId: 'coffee',
+    tierName: 'Buy Me a Coffee',
+    monthlyPrice: 7.99,
+    tokensIncluded: 10_000,
+    agents: 5,
     concurrent: 1,
   },
-  [process.env.STRIPE_PRICE_COMMUNITY || 'price_community']: {
-    tierId: 'community',
-    tierName: 'Community',
-    monthlyPrice: 89,
-    tokensIncluded: 250_000,
-    agents: 10,
-    concurrent: 5,
+  [process.env.STRIPE_PRICE_DATA_ENTRY_MONTHLY || 'price_data_entry']: {
+    tierId: 'data_entry',
+    tierName: 'Data Entry',
+    monthlyPrice: 29.99,
+    tokensIncluded: 50_000,
+    agents: 15,
+    concurrent: 3,
   },
-  [process.env.STRIPE_PRICE_ENTERPRISE || 'price_enterprise']: {
+  [process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_pro']: {
+    tierId: 'pro',
+    tierName: 'Pro',
+    monthlyPrice: 99.99,
+    tokensIncluded: 200_000,
+    agents: 50,
+    concurrent: 10,
+  },
+  [process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY || 'price_enterprise']: {
     tierId: 'enterprise',
     tierName: 'Enterprise',
-    monthlyPrice: 67,
+    monthlyPrice: 299,
     tokensIncluded: 500_000,
-    agents: 50,
+    agents: 100,
     concurrent: 25,
   },
 };
 
 const P2P_RESPONSE = {
   tierId: 'p2p',
-  tierName: 'P2P (Free)',
+  tierName: 'Pay-per-Use',
   monthlyPrice: 0,
   tokensIncluded: 0,
   tokensUsed: 0,
@@ -72,10 +85,10 @@ export async function GET() {
         tierId: 'enterprise',
         tierName: 'Enterprise (Owner)',
         monthlyPrice: 0,
-        tokensIncluded: 999_999,
+        tokensIncluded: 500_000,
         tokensUsed: 0,
-        agents: 999,
-        concurrent: 999,
+        agents: 100,
+        concurrent: 25,
       });
     }
 

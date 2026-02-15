@@ -46,15 +46,20 @@ export interface TierConfig {
   monthlyPrice: number;
   tokensIncluded: number;
   overdraftBuffer: number;
-  agents: number;       // active agent limit (0 = unlimited for P2P)
+  agents: number;       // active agent limit (0 = metered pay-per-use for P2P)
   concurrent: number;   // max concurrent agent executions
 }
 
+/**
+ * Tier configs aligned to the canonical 3-6-9 model (frontend/lib/stripe.ts).
+ * monthlyPrice is 0 here — actual prices live in Stripe env vars only.
+ * No tier is "unlimited". agents: 0 for P2P means metered, not infinite.
+ */
 export const TIER_CONFIGS: TierConfig[] = [
-  { id: 'garage',     name: 'Garage',     commitmentMonths: 3,  deliveredMonths: 3,  monthlyPrice: 99, tokensIncluded: 100_000, overdraftBuffer: 50_000,  agents: 3,  concurrent: 1 },
-  { id: 'community',  name: 'Community',  commitmentMonths: 6,  deliveredMonths: 6,  monthlyPrice: 89, tokensIncluded: 250_000, overdraftBuffer: 150_000, agents: 10, concurrent: 5 },
-  { id: 'enterprise', name: 'Enterprise', commitmentMonths: 9,  deliveredMonths: 12, monthlyPrice: 67, tokensIncluded: 500_000, overdraftBuffer: 500_000, agents: 50, concurrent: 25 },
-  { id: 'p2p',        name: 'P2P',        commitmentMonths: 0,  deliveredMonths: 0,  monthlyPrice: 0,  tokensIncluded: 0,       overdraftBuffer: 0,       agents: 0,  concurrent: 1 },
+  { id: '3mo',  name: '3 Months',          commitmentMonths: 3,  deliveredMonths: 3,  monthlyPrice: 0, tokensIncluded: 100_000, overdraftBuffer: 50_000,  agents: 5,  concurrent: 2 },
+  { id: '6mo',  name: '6 Months',          commitmentMonths: 6,  deliveredMonths: 6,  monthlyPrice: 0, tokensIncluded: 250_000, overdraftBuffer: 150_000, agents: 15, concurrent: 5 },
+  { id: '9mo',  name: '9 Months V.I.B.E.', commitmentMonths: 9,  deliveredMonths: 12, monthlyPrice: 0, tokensIncluded: 500_000, overdraftBuffer: 500_000, agents: 50, concurrent: 25 },
+  { id: 'p2p',  name: 'Pay-per-Use',       commitmentMonths: 0,  deliveredMonths: 0,  monthlyPrice: 0, tokensIncluded: 0,       overdraftBuffer: 0,       agents: 0,  concurrent: 1 },
 ];
 
 // ---------------------------------------------------------------------------
@@ -193,7 +198,7 @@ export function checkAgentLimit(
 ): { within: boolean; limit: number; active: number } {
   const tier = TIER_CONFIGS.find(t => t.id === tierId);
   if (!tier || tier.agents === 0) {
-    // P2P = unlimited agents (pay per execution)
+    // P2P = metered agents (pay per execution, no included allocation)
     return { within: true, limit: 0, active: activeAgents };
   }
   return { within: activeAgents <= tier.agents, limit: tier.agents, active: activeAgents };

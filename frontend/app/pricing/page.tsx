@@ -273,7 +273,7 @@ export default function PricingPage() {
               <span className="text-white/70">
                 100 tokens / <span className="text-white font-semibold">$1</span>
               </span>
-              <span className="text-emerald-400/70 font-semibold">Unlimited agents &middot; 1 concurrent</span>
+              <span className="text-emerald-400/70 font-semibold">Metered agents &middot; 1 concurrent</span>
               <span className="text-white/70">Pay-as-you-go</span>
             </div>
           </div>

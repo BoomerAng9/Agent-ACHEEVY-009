@@ -57,7 +57,7 @@ export const RequestIdSchema = z.string().uuid().optional();
 
 export const QuotaSchema = z.object({
   serviceKey: ServiceKeySchema,
-  limit: z.number().int(), // -1 = unlimited
+  limit: z.number().int(), // 0 = metered/P2P (no included allocation)
   used: z.number().min(0),
   reserved: z.number().min(0).default(0),
   overage: z.number().min(0).default(0),
@@ -292,7 +292,7 @@ export type PolicyScope = z.infer<typeof PolicyScopeSchema>;
 
 export const QuotaLimitPolicySchema = z.object({
   serviceKey: ServiceKeySchema,
-  limit: z.number().int(), // -1 = unlimited
+  limit: z.number().int(), // 0 = metered/P2P (no included allocation)
   rate: z.number().min(0), // Cost per unit
 });
 

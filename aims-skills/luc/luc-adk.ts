@@ -44,8 +44,8 @@ export class LucAdk {
       throw new Error(`Service ${service} not found in user's quotas`);
     }
 
-    // Check if unlimited (-1)
-    if (quota.limit === -1) {
+    // Check if P2P metered (limit <= 0) — always allow, bill per use
+    if (quota.limit <= 0) {
       return { success: true, can_execute: true };
     }
 
@@ -110,8 +110,8 @@ export class LucAdk {
       return { can_execute: false, reason: 'Service not available in plan' };
     }
 
-    // Unlimited
-    if (quota.limit === -1) {
+    // P2P metered — always allow, bill per use
+    if (quota.limit <= 0) {
       return { can_execute: true };
     }
 
@@ -154,7 +154,7 @@ export class LucAdk {
       quotaSummary[service] = {
         limit: quota.limit,
         used: quota.used,
-        percent: quota.limit === -1 ? 0 : Math.round((quota.used / quota.limit) * 100)
+        percent: quota.limit <= 0 ? 0 : Math.round((quota.used / quota.limit) * 100)
       };
     }
 
@@ -466,7 +466,7 @@ export class LucAdk {
 
       for (const [service, used] of Object.entries(currentUsage)) {
         const limit = plan.quotas[service as keyof typeof plan.quotas] || 0;
-        if (limit !== -1 && used > limit) {
+        if (limit > 0 && used > limit) {
           fitsWithinPlan = false;
           overageCost += (used - limit) * OVERAGE_RATES[service as keyof typeof OVERAGE_RATES];
         }
