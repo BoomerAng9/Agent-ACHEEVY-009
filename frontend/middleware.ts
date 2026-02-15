@@ -118,6 +118,9 @@ const SECURITY_HEADERS = {
 
 // Rate limit store (in-memory, resets on deploy)
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_CLEANUP_INTERVAL_MS = 10000; // 10 seconds
+const RATE_LIMIT_MAP_MAX_SIZE = 10000; // Start cleaning when map grows too large
+let lastCleanup = 0;
 
 // ─────────────────────────────────────────────────────────────
 // Helper Functions
@@ -143,6 +146,20 @@ function isHoneypot(path: string): boolean {
 
 function checkRateLimit(ip: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
+
+  // Periodic cleanup of expired entries to prevent memory leaks
+  if (
+    rateLimitStore.size > RATE_LIMIT_MAP_MAX_SIZE &&
+    now - lastCleanup > RATE_LIMIT_CLEANUP_INTERVAL_MS
+  ) {
+    rateLimitStore.forEach((value, key) => {
+      if (value.resetAt < now) {
+        rateLimitStore.delete(key);
+      }
+    });
+    lastCleanup = now;
+  }
+
   const key = `global:${ip}`;
   const state = rateLimitStore.get(key);
 
