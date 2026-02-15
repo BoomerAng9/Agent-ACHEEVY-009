@@ -519,7 +519,7 @@ export default function PricingPage() {
                   <span className="text-white font-semibold">${USAGE_MODIFIERS.p2pTransactionFee.toFixed(2)}</span> per P2P transaction
                 </p>
                 <p className="text-sm text-emerald-400 font-semibold mt-2">
-                  70% of fees fund your Savings Plan
+                  70% of these fees fund your Savings Plan
                 </p>
               </div>
             </div>

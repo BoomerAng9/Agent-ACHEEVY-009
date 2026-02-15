@@ -234,9 +234,10 @@ export interface FeeBreakdown {
 
 /**
  * Calculate mandatory fees for an invoice or transaction.
- * Maintenance fee applies to every invoice.
- * P2P transaction fee applies to every pay-per-use execution.
- * All fees are split 70/30 into user savings / platform.
+ * Maintenance fee ($5.00) applies to every invoice.
+ * P2P transaction fee ($0.99) applies to every pay-per-use execution.
+ * Only these two fees are split 70/30 into user savings / platform.
+ * Subscription costs, overage charges, and pillar addons are NOT split.
  */
 export function calculateFees(
   isP2pTransaction: boolean,
@@ -354,15 +355,15 @@ export function generateInvoiceLineItems(
     });
   }
 
-  // Savings plan credit (70% of all fees returned to user)
-  const totalFees = items
+  // Savings plan credit — 70% of maintenance + transaction fees only
+  const totalSplitFees = items
     .filter(i => i.category === 'fee')
     .reduce((sum, i) => sum + i.total, 0);
-  const savingsCredit = Math.round(totalFees * SAVINGS_SPLIT_USER * 100) / 100;
+  const savingsCredit = Math.round(totalSplitFees * SAVINGS_SPLIT_USER * 100) / 100;
 
   if (savingsCredit > 0) {
     items.push({
-      description: 'Savings Plan Credit (70% of fees)',
+      description: 'Savings Plan Credit (70% of maintenance + transaction fees)',
       quantity: 1,
       unitPrice: -savingsCredit,
       total: -savingsCredit,

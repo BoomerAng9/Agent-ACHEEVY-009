@@ -111,8 +111,8 @@ export const USAGE_MODIFIERS = {
   lucCalculator: 'included',      // always included — pre-action cost transparency
   maintenanceFee: 5.00,           // $5.00 mandatory platform maintenance fee per invoice
   p2pTransactionFee: 0.99,        // $0.99 fee on every Pay-per-Use transaction
-  savingsSplitUser: 0.70,         // 70% of fees go to user savings plan
-  savingsSplitPlatform: 0.30,     // 30% of fees retained by platform
+  savingsSplitUser: 0.70,         // 70% of these two fees go to user savings plan
+  savingsSplitPlatform: 0.30,     // 30% of these two fees retained by platform
 };
 
 // Internal-only markup rates — NEVER expose to user-facing UI
@@ -494,7 +494,7 @@ export function calculateBill(
 // Dimension 7: Lifetime Deal (LTD) Plans — AppSumo & Marketplace Partners
 // ---------------------------------------------------------------------------
 
-export type LtdTier = 'ltd_byoapi' | 'ltd_platform' | 'ltd_whitelabel';
+export type LtdTier = 'ltd_byok' | 'ltd_platform' | 'ltd_whitelabel';
 
 export interface LtdPlan {
   id: LtdTier;
@@ -504,8 +504,8 @@ export interface LtdPlan {
   onetimePrice: number;
   /** What the user gets forever */
   access: PlatformApp[];
-  /** BYOAPI = user provides their own API keys */
-  byoapi: boolean;
+  /** BYOK = user provides their own API keys (Bring Your Own Key) */
+  byok: boolean;
   /** White label rights */
   whitelabel: boolean;
   features: string[];
@@ -515,23 +515,23 @@ export interface LtdPlan {
 
 export const LTD_PLANS: LtdPlan[] = [
   {
-    id: 'ltd_byoapi',
-    name: 'LTD — Bring Your Own API',
+    id: 'ltd_byok',
+    name: 'LTD — Bring Your Own Key',
     tagline: 'Lifetime access, your API keys',
     onetimePrice: 149,
     access: ['perform', 'luc'],
-    byoapi: true,
+    byok: true,
     whitelabel: false,
     features: [
       'Lifetime access to Per|Form and LUC platforms',
-      'Bring your own API keys (OpenAI, Anthropic, etc.)',
+      'Bring your own key (OpenAI, Anthropic, Google, etc.)',
       'All agent types and workflow templates',
       'Community support',
       'Platform updates included forever',
       'No monthly fees — one-time payment',
     ],
     quotaCap: 'Usage limited by your own API key spend',
-    stripePriceId: process.env.STRIPE_PRICE_LTD_BYOAPI || '',
+    stripePriceId: process.env.STRIPE_PRICE_LTD_BYOK || '',
   },
   {
     id: 'ltd_platform',
@@ -539,11 +539,11 @@ export const LTD_PLANS: LtdPlan[] = [
     tagline: 'Lifetime access, our infrastructure',
     onetimePrice: 399,
     access: ['perform', 'luc', 'marketplace'],
-    byoapi: false,
+    byok: false,
     whitelabel: false,
     features: [
-      'Everything in BYOAPI tier',
-      'Platform-managed API keys (no BYOAPI needed)',
+      'Everything in BYOK tier',
+      'Platform-managed API keys (no BYOK needed)',
       'Pro-level quotas locked in forever',
       'Marketplace access for publishing apps',
       'Priority execution queue',
@@ -559,7 +559,7 @@ export const LTD_PLANS: LtdPlan[] = [
     tagline: 'Your brand, our engine, forever',
     onetimePrice: 997,
     access: ['perform', 'luc', 'marketplace', 'whitelabel'],
-    byoapi: false,
+    byok: false,
     whitelabel: true,
     features: [
       'Everything in Full Platform tier',

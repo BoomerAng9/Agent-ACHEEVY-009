@@ -77,7 +77,9 @@ export default function SavingsPlanTermsPage() {
             3. Savings Split
           </h2>
           <p className="text-sm text-white/70 leading-relaxed mb-4">
-            All fees collected under Section 2 are split as follows:
+            The two fees described in Section 2 — the $5.00 Platform
+            Maintenance Fee and the $0.99 Pay-per-Use Transaction Fee —
+            are split between the user and the platform as follows:
           </p>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-center">
