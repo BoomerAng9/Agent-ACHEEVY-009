@@ -63,6 +63,16 @@ priority: "critical"
 **Required hooks:**
 1. `pr-evidence-checklist` — Evidence artifacts required for merge
 
+### Video / Remotion Work
+**Triggers:** video, render, remotion, composition, animation, clip, footage, motion, promo video, intro video
+
+**Required skills:**
+1. `remotion-video.skill.md` — Full Remotion v4 production pipeline (structure, schemas, scenes, transitions, theme)
+
+**Required hooks:**
+1. `brand-strings-enforcer` — Exact brand actor naming
+2. `pr-evidence-checklist` — Evidence artifacts required for merge
+
 ## Router Execution Order
 
 ```
