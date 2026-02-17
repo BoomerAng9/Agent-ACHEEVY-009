@@ -69,7 +69,7 @@ jobs:
             fi
 
             echo "=== Stopping old containers ==="
-            docker compose -p locale down 2>/dev/null || true
+            docker compose -f infra/docker-compose.prod.yml down --remove-orphans 2>/dev/null || true
 
             echo "=== Running deploy script ==="
             chmod +x deploy.sh

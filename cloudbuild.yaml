@@ -95,7 +95,7 @@ steps:
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/frontend:latest'
       - -f
       - frontend/Dockerfile
-      - frontend
+      - .
     waitFor: ['frontend-build']
 
   # ── Step 4: Push to Artifact Registry ──

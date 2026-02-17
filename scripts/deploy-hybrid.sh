@@ -105,6 +105,10 @@ echo "    VPS Host:     ${VPS_HOST}"
 echo "    Dry Run:      ${DRY_RUN}"
 echo ""
 
+# Initialize Cloud Run URL variables (set within TIER 1 block if deploying)
+FRONTEND_URL=""
+GATEWAY_URL=""
+
 # =============================================================================
 # TIER 1: Cloud Run (Stateless Services)
 # =============================================================================
@@ -139,7 +143,7 @@ if [ "${DEPLOY_CLOUD}" = "true" ]; then
         -t "${REGISTRY}/frontend:${TAG}" \
         -t "${REGISTRY}/frontend:latest" \
         -f "${PROJECT_ROOT}/frontend/Dockerfile" \
-        "${PROJECT_ROOT}/frontend"
+        "${PROJECT_ROOT}"
 
     info "Pushing Frontend image..."
     run docker push "${REGISTRY}/frontend:${TAG}"
@@ -262,8 +266,8 @@ echo "  │  A.I.M.S. Hybrid Deployment Summary              │"
 echo "  ├──────────────────────────────────────────────────┤"
 if [ "${DEPLOY_CLOUD}" = "true" ]; then
 echo "  │  CLOUD RUN (stateless, auto-scaling)             │"
-echo "  │    Frontend:     ${FRONTEND_URL:-N/A}"
-echo "  │    UEF Gateway:  ${GATEWAY_URL:-N/A}"
+echo "  │    Frontend:     ${FRONTEND_URL:-not deployed}"
+echo "  │    UEF Gateway:  ${GATEWAY_URL:-not deployed}"
 fi
 if [ "${DEPLOY_VPS}" = "true" ]; then
 echo "  │  VPS @ ${VPS_HOST} (stateful, persistent)         │"
