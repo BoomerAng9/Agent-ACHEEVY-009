@@ -26,7 +26,7 @@ interface UseVoiceOutputReturn {
   isLoading: boolean;
   currentText: string | null;
   error: string | null;
-  progress: number;
+  onProgress: (callback: (p: number) => void) => () => void;
   speak: (text: string, immediate?: boolean) => Promise<void>;
   pause: () => void;
   resume: () => void;
@@ -44,7 +44,6 @@ export function useVoiceOutput(options: UseVoiceOutputOptions = {}): UseVoiceOut
   const [state, setState] = useState<VoiceOutputState>('idle');
   const [currentText, setCurrentText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState(0);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(config?.autoPlay ?? true);
 
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -55,6 +54,7 @@ export function useVoiceOutput(options: UseVoiceOutputOptions = {}): UseVoiceOut
   const startTimeRef = useRef<number>(0);
   const durationRef = useRef<number>(0);
   const pausedAtRef = useRef<number>(0);
+  const progressListeners = useRef<Set<(p: number) => void>>(new Set());
 
   // ─────────────────────────────────────────────────────────
   // Initialize Audio Context
@@ -138,7 +138,7 @@ export function useVoiceOutput(options: UseVoiceOutputOptions = {}): UseVoiceOut
     source.onended = () => {
       if (isPlayingRef.current) {
         isPlayingRef.current = false;
-        setProgress(1);
+        progressListeners.current.forEach(cb => cb(1));
         setState('idle');
         setCurrentText(null);
         onEnd?.();
@@ -159,7 +159,8 @@ export function useVoiceOutput(options: UseVoiceOutputOptions = {}): UseVoiceOut
     const updateProgress = () => {
       if (isPlayingRef.current && audioContextRef.current) {
         const elapsed = audioContextRef.current.currentTime - startTimeRef.current;
-        setProgress(Math.min(elapsed / durationRef.current, 1));
+        const p = Math.min(elapsed / durationRef.current, 1);
+        progressListeners.current.forEach(cb => cb(p));
         requestAnimationFrame(updateProgress);
       }
     };
@@ -187,7 +188,7 @@ export function useVoiceOutput(options: UseVoiceOutputOptions = {}): UseVoiceOut
     setError(null);
     setCurrentText(text);
     setState('loading');
-    setProgress(0);
+    progressListeners.current.forEach(cb => cb(0));
 
     try {
       const audioData = await fetchAudio(text);
@@ -245,13 +246,20 @@ export function useVoiceOutput(options: UseVoiceOutputOptions = {}): UseVoiceOut
 
     isPlayingRef.current = false;
     queueRef.current = [];
-    setProgress(0);
+    progressListeners.current.forEach(cb => cb(0));
     setCurrentText(null);
     setState('idle');
   }, []);
 
   const setAutoPlay = useCallback((enabled: boolean) => {
     setAutoPlayEnabled(enabled);
+  }, []);
+
+  const onProgress = useCallback((callback: (p: number) => void) => {
+    progressListeners.current.add(callback);
+    return () => {
+      progressListeners.current.delete(callback);
+    };
   }, []);
 
   // ─────────────────────────────────────────────────────────
@@ -274,7 +282,7 @@ export function useVoiceOutput(options: UseVoiceOutputOptions = {}): UseVoiceOut
     isLoading: state === 'loading',
     currentText,
     error,
-    progress,
+    onProgress,
     speak,
     pause,
     resume,
