@@ -25,6 +25,7 @@ import { useVoiceOutput } from '@/hooks/useVoiceOutput';
 import { createReadReceipt, advanceReceipt, classifyIntent } from '@/lib/acheevy/read-receipt';
 import type { ReadReceipt } from '@/lib/acheevy/read-receipt';
 import AcheevyMessage from './AcheevyMessage';
+import { VoicePlaybackBar } from './chat/VoicePlaybackBar';
 
 // ── Types ──
 
@@ -127,20 +128,6 @@ function VoiceWaveform({ audioLevel, state }: { audioLevel: number; state: 'idle
           />
         );
       })}
-    </div>
-  );
-}
-
-// ── Playback Progress Bar ──
-
-function PlaybackBar({ progress, isPlaying }: { progress: number; isPlaying: boolean }) {
-  if (!isPlaying && progress === 0) return null;
-  return (
-    <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden">
-      <div
-        className="h-full bg-gold/60 rounded-full transition-all duration-200"
-        style={{ width: `${progress * 100}%` }}
-      />
     </div>
   );
 }
@@ -477,7 +464,7 @@ export default function AcheevyChat() {
             {voiceOutput.isPlaying ? <Pause size={12} /> : <Play size={12} />}
           </button>
           <div className="flex-1">
-            <PlaybackBar progress={voiceOutput.progress} isPlaying={voiceOutput.isPlaying} />
+            <VoicePlaybackBar voiceOutput={voiceOutput} />
           </div>
           <button
             type="button"
