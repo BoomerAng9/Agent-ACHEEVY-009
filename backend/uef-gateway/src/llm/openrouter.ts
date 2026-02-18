@@ -29,7 +29,7 @@ export interface ChatRequest {
   max_tokens?: number;
   temperature?: number;
   top_p?: number;
-  stream?: false;
+  stream?: boolean;
 }
 
 export interface ChatChoice {
@@ -272,6 +272,90 @@ class OpenRouterClient {
       },
       cost: { usd: totalCost },
     };
+  }
+
+  /**
+   * Streaming chat — sends stream:true to OpenRouter and returns a ReadableStream of text chunks.
+   * Used by the /llm/stream endpoint for real token-by-token streaming.
+   */
+  async streamChat(request: ChatRequest): Promise<ReadableStream<string>> {
+    if (!this.isConfigured()) {
+      return new ReadableStream<string>({
+        start(controller) {
+          controller.enqueue('[LLM Offline] OpenRouter API key not configured.');
+          controller.close();
+        },
+      });
+    }
+
+    const modelSpec = this.resolveModel(request.model);
+
+    const body = {
+      model: modelSpec.id,
+      messages: request.messages,
+      max_tokens: request.max_tokens || 4096,
+      temperature: request.temperature ?? 0.7,
+      top_p: request.top_p,
+      stream: true,
+    };
+
+    logger.info({ model: modelSpec.id }, '[OpenRouter] Streaming request');
+
+    const res = await fetch(OPENROUTER_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': this.siteUrl,
+        'X-Title': this.siteName,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errorBody = await res.text().catch(() => 'Unknown error');
+      logger.error({ status: res.status, body: errorBody }, '[OpenRouter] Stream API error');
+      throw new Error(`OpenRouter stream error ${res.status}: ${errorBody}`);
+    }
+
+    if (!res.body) {
+      throw new Error('OpenRouter returned no body for stream request');
+    }
+
+    // Parse SSE from OpenRouter into a text-only ReadableStream
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+
+    return new ReadableStream<string>({
+      async pull(controller) {
+        const { done, value } = await reader.read();
+        if (done) {
+          controller.close();
+          return;
+        }
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6).trim();
+          if (data === '[DONE]') {
+            controller.close();
+            return;
+          }
+          try {
+            const parsed = JSON.parse(data);
+            const text = parsed.choices?.[0]?.delta?.content;
+            if (text) {
+              controller.enqueue(text);
+            }
+          } catch {
+            // Skip malformed SSE lines
+          }
+        }
+      },
+    });
   }
 
   /**
