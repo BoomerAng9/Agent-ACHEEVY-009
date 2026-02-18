@@ -35,8 +35,11 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Submit to Cloud Build
+        env:
+          SHORT_SHA: ${{ github.sha }}
         run: |
+          SHORT_SHA_SHORT=${SHORT_SHA:0:7}
           gcloud builds submit \
             --config=cloudbuild.yaml \
             --project=${{ env.PROJECT_ID }} \
-            --substitutions=SHORT_SHA=${GITHUB_SHA:0:7}
+            --substitutions=SHORT_SHA=$SHORT_SHA_SHORT
