@@ -1,5 +1,23 @@
 # A.I.M.S. — Claude Code Project Instructions
 
+## Deployment Pipeline Rules (READ FIRST)
+
+These three rules determine WHERE every piece of code deploys. Apply them to every task:
+
+```
+IF core platform service (ACHEEVY API, UEF Gateway, Per|Form, n8n, PersonaPlex, House of Ang, Redis)
+  THEN → Hostinger VPS (76.13.96.107) in Docker
+  Files: infra/docker-compose.prod.yml, deploy.sh
+
+IF long-running/scheduled autonomous job or sandbox (content engine, autonomous builds, daily crons)
+  THEN → GCP Cloud Run (job or service), trigger via cron/events
+  Files: infra/gcp-setup.sh, Cloud Run job configs (TBD)
+
+IF user-facing app/site, dashboard, or static artifact (landing pages, funnels, generated apps)
+  THEN → CDN with: shareable URL, optional custom domain, optional paywall
+  Target: Vercel / custom CDN (TBD)
+```
+
 ## Project Overview
 A.I.M.S. (AI Managed Solutions) is an AI-managed platform orchestrated by ACHEEVY.
 Domain: plugmein.cloud | VPS: 76.13.96.107 | GCP: ai-managed-services
@@ -9,6 +27,9 @@ The single source of truth for ACHEEVY's behavior, skills, hooks, and recurring 
 **`aims-skills/ACHEEVY_BRAIN.md`**
 
 Read that file before making any changes to ACHEEVY's behavior, skills, hooks, verticals, or chain-of-command logic.
+
+## Current Status & Plan
+See **`AIMS_PLAN.md`** for the full SOP, PRD, implementation roadmap, and AIMS_REQUIREMENTS checklist.
 
 ## Architecture
 - **Frontend**: Next.js 15 (App Router) at `frontend/`

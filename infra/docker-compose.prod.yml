@@ -71,10 +71,13 @@ services:
       - NEXTAUTH_URL=${NEXTAUTH_URL}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - UEF_ENDPOINT=http://uef-gateway:3001
+      - UEF_GATEWAY_URL=http://uef-gateway:3001
       - HOUSE_OF_ANG_URL=http://house-of-ang:3002
       - ACHEEVY_URL=http://acheevy:3003
       # SQLite for LUC — persisted to luc-data volume
       - DATABASE_URL=file:/app/.luc-data/luc.db
+      # LLM — OpenRouter for direct fallback
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       # Voice — TTS & STT
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
       - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
@@ -118,10 +121,13 @@ services:
       - NEXTAUTH_URL=https://demo.plugmein.cloud
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - UEF_ENDPOINT=http://uef-gateway:3001
+      - UEF_GATEWAY_URL=http://uef-gateway:3001
       - HOUSE_OF_ANG_URL=http://house-of-ang:3002
       - ACHEEVY_URL=http://acheevy:3003
       # SQLite for LUC — persisted to demo-luc-data volume
       - DATABASE_URL=file:/app/.luc-data/luc.db
+      # LLM — OpenRouter for direct fallback
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       # Voice — TTS & STT
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
       - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
@@ -167,6 +173,8 @@ services:
       - N8N_URL=http://n8n:5678
       - RESEARCH_ANG_URL=http://research-ang:3020
       - ROUTER_ANG_URL=http://router-ang:3021
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
       - DEBUG=false
     volumes:
       - gateway-data:/app/data
