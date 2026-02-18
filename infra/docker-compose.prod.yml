@@ -417,8 +417,10 @@ services:
       - ii-agents
 
   # ---------------------------------------------------------------------------
-  # n8n — Workflow Automation (Boomer_Ang Build Layer)
-  # Factory floor for Chicken Hawk and Lil_Hawk workflow execution
+  # n8n — Core Workflow Automation Engine
+  # Factory floor for Boomer_Ang dispatch, Chicken Hawk builds,
+  # Lil_Hawk workflows, PMO pipeline, and all automation tasks.
+  # This is CORE infrastructure — not optional.
   # ---------------------------------------------------------------------------
   n8n:
     image: n8nio/n8n:latest
@@ -452,8 +454,6 @@ services:
         limits:
           cpus: '1'
           memory: 1G
-    profiles:
-      - n8n
 
   # ---------------------------------------------------------------------------
   # Circuit Metrics — Service Health Dashboard
@@ -488,9 +488,10 @@ services:
           memory: 128M
 
   # ---------------------------------------------------------------------------
-  # LAYER 5: GRIDIRON SANDBOX (Per|Form Autonomous Sports Analytics)
+  # LAYER 5: PER|FORM PLATFORM — Sports Analytics
   # Three containers: Scout Hub, Film Room, War Room
-  # Enable with: docker compose --profile gridiron up -d
+  # Gridiron (football) is one category within Per|Form
+  # Enable with: docker compose --profile perform up -d
   # ---------------------------------------------------------------------------
 
   # Scout Hub — Lil_Hawk Adversarial Scouting (nightly cron)
@@ -513,7 +514,7 @@ services:
       - HS_POOL_SIZE=${HS_POOL_SIZE:-300}
       - COLLEGE_POOL_SIZE=${COLLEGE_POOL_SIZE:-551}
     volumes:
-      - gridiron-debate-logs:/data/debate-logs
+      - perform-debate-logs:/data/debate-logs
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:5001/health"]
       interval: 30s
@@ -532,7 +533,7 @@ services:
           cpus: '0.5'
           memory: 512M
     profiles:
-      - gridiron
+      - perform
 
   # Film Room — Vertex AI SAM 2 Bridge
   film-room:
@@ -564,7 +565,7 @@ services:
           cpus: '0.25'
           memory: 256M
     profiles:
-      - gridiron
+      - perform
 
   # War Room — Boomer_Angs + Chicken Hawk Grading & Content
   war-room:
@@ -586,9 +587,9 @@ services:
       - BRAVE_API_KEY=${BRAVE_API_KEY}
       - REDIS_URL=redis://:${REDIS_PASSWORD:-aims_redis_secret}@redis:6379
     volumes:
-      - gridiron-debate-logs:/data/debate-logs:ro
-      - gridiron-rankings:/data/rankings
-      - gridiron-content:/data/content
+      - perform-debate-logs:/data/debate-logs:ro
+      - perform-rankings:/data/rankings
+      - perform-content:/data/content
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:5003/health"]
       interval: 30s
@@ -607,7 +608,7 @@ services:
           cpus: '1'
           memory: 1G
     profiles:
-      - gridiron
+      - perform
 
 volumes:
   certbot-webroot:
