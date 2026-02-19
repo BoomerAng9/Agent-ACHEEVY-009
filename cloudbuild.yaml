@@ -1,19 +1,19 @@
 # =============================================================================
-# A.I.M.S. — Google Cloud Build Pipeline (Hybrid Deployment)
+# A.I.M.S. — Google Cloud Build Pipeline (CI: Build & Push)
 # =============================================================================
-# Triggers: Push to main branch (configured in GCP Console or via gcloud)
+# Triggers: Push to main branch (via GitHub Actions → gcloud builds submit)
 #
-# Hybrid architecture:
-#   Cloud Run (stateless):  frontend, uef-gateway — auto-scaling, managed
-#   VPS (stateful):         Redis, n8n, Agent Bridge, agents
+# VPS-first architecture:
+#   All services run on VPS (31.97.138.45) via docker-compose.prod.yml
+#   This pipeline only builds images and pushes to Artifact Registry.
+#   VPS pulls latest images via deploy.sh.
 #
 # What it does:
-#   1. Install + lint + test backend
-#   2. Install + lint + build frontend
-#   3. Build Docker images (gateway, frontend, agents)
-#   4. Push to Artifact Registry
-#   5. Deploy stateless services to Cloud Run
-#   6. Optionally trigger VPS deployment via SSH
+#   1. Build Docker images (gateway, frontend, agents)
+#   2. Push to Artifact Registry (us-central1-docker.pkg.dev)
+#   — No Cloud Run deploys. VPS is the deployment target. —
+#
+# GPU inference (PersonaPlex/Nemotron) handled separately via Vertex AI.
 #
 # Setup:
 #   gcloud builds submit --config=cloudbuild.yaml
@@ -106,69 +106,11 @@ steps:
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/router-ang'
     waitFor: ['docker-router-ang']
 
-  # ── Step 4: Deploy to Cloud Run ──
-  # These connect back to VPS stateful services via _VPS_HOST
-  - id: deploy-gateway
-    name: gcr.io/cloud-builders/gcloud
-    args:
-      - run
-      - deploy
-      - aims-gateway
-      - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/uef-gateway:${_SHORT_SHA}
-      - --region=${_REGION}
-      - --platform=managed
-      - --port=3001
-      - --memory=1Gi
-      - --cpu=1
-      - --min-instances=1
-      - --max-instances=3
-      - --allow-unauthenticated
-      - --set-env-vars=NODE_ENV=production,LOG_LEVEL=info,REDIS_URL=redis://${_VPS_HOST}:6379,N8N_URL=http://${_VPS_HOST}:5678,RESEARCH_ANG_URL=http://${_VPS_HOST}:3020,ROUTER_ANG_URL=http://${_VPS_HOST}:3021,CORS_ORIGIN=https://${_VPS_DOMAIN}
-      - --update-secrets=INTERNAL_API_KEY=INTERNAL_API_KEY:latest,OPENROUTER_API_KEY=OPENROUTER_API_KEY:latest,REDIS_PASSWORD=REDIS_PASSWORD:latest
-    waitFor: ['push-gateway']
-
-  # Get the gateway's Cloud Run URL after deploy
-  - id: get-gateway-url
-    name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        gcloud run services describe aims-gateway \
-          --region=${_REGION} \
-          --format='value(status.url)' > /workspace/gateway-url.txt
-        echo "Gateway URL: $(cat /workspace/gateway-url.txt)"
-    waitFor: ['deploy-gateway']
-
-  # Frontend points to gateway's Cloud Run URL
-  - id: deploy-frontend
-    name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        GATEWAY_URL=$(cat /workspace/gateway-url.txt)
-        gcloud run deploy aims-frontend \
-          --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/frontend:${_SHORT_SHA} \
-          --region=${_REGION} \
-          --platform=managed \
-          --port=3000 \
-          --memory=512Mi \
-          --cpu=1 \
-          --min-instances=0 \
-          --max-instances=5 \
-          --allow-unauthenticated \
-          --set-env-vars="NODE_ENV=production,UEF_ENDPOINT=$${GATEWAY_URL},NEXTAUTH_URL=https://${_VPS_DOMAIN}" \
-          --update-secrets=NEXTAUTH_SECRET=NEXTAUTH_SECRET:latest,INTERNAL_API_KEY=INTERNAL_API_KEY:latest
-    waitFor: ['push-frontend', 'get-gateway-url']
-
 # ── Substitution Variables ──
 # Override these in your Cloud Build trigger config or via --substitutions
 substitutions:
   _REGION: us-central1
   _REPO: aims-docker
-  _VPS_HOST: '31.97.138.45'
-  _VPS_DOMAIN: plugmein.cloud
   _SHORT_SHA: local
 
 # ── Images to push (Cloud Build auto-pushes these) ──

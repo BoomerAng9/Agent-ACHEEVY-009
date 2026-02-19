@@ -1,4 +1,4 @@
-name: Build & Deploy to GCP Cloud Run
+name: CI — Build & Push Images
 
 on:
   push:
@@ -16,7 +16,7 @@ env:
 
 jobs:
   deploy:
-    name: Deploy to Cloud Run
+    name: Build & Push to Artifact Registry
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,7 +54,7 @@ jobs:
           gcloud builds submit \
             --config=cloudbuild.yaml \
             --project=${{ env.PROJECT_ID }} \
-            --substitutions=_SHORT_SHA=$SHORT_SHA_SHORT,_REGION=us-central1,_REPO=aims-docker,_VPS_HOST=31.97.138.45,_VPS_DOMAIN=plugmein.cloud \
+            --substitutions=_SHORT_SHA=$SHORT_SHA_SHORT,_REGION=us-central1,_REPO=aims-docker \
             --verbosity=debug 2>&1 || {
               echo "::error::Cloud Build submission failed with exit code $?"
               exit 1

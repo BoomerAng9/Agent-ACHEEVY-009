@@ -12,14 +12,15 @@ IF core platform service (ACHEEVY API, UEF Gateway, Per|Form, House of Ang, Redi
   First-time cert: ./deploy.sh --domain plugmein.cloud --landing-domain aimanagedsolutions.cloud --email admin@aimanagedsolutions.cloud
 
 IF GPU-accelerated AI inference (PersonaPlex / Nemotron model serving)
-  THEN → GCP Cloud Run with GPU (L4 or A100)
+  THEN → GCP Vertex AI Endpoints (GPU: L4 or A100)
   Model: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-Base-BF16 (MoE, 3B active params)
   License: NVIDIA Nemotron Open Model License (commercial OK)
   The UEF Gateway calls this via PERSONAPLEX_ENDPOINT env var.
 
-IF long-running/scheduled autonomous job or sandbox (content engine, autonomous builds, daily crons)
-  THEN → GCP Cloud Run (job or service), trigger via cron/events
-  Files: infra/gcp-setup.sh, Cloud Run job configs (TBD)
+IF CI pipeline (image builds on push to main)
+  THEN → GCP Cloud Build → Artifact Registry (us-central1-docker.pkg.dev)
+  Files: cloudbuild.yaml, .github/workflows/deploy.yml
+  No Cloud Run deploys — VPS pulls images via deploy.sh
 ```
 
 ## Project Overview
@@ -40,7 +41,8 @@ See **`AIMS_PLAN.md`** for the full SOP, PRD, implementation roadmap, and AIMS_R
 - **Backend**: Express gateway at `backend/uef-gateway/`, ACHEEVY service at `backend/acheevy/`
 - **Skills Engine**: `aims-skills/` — hooks, skills, tasks, verticals, chain-of-command
 - **Infra**: Docker Compose at `infra/`, deploy script at root (`deploy.sh`)
-- **PersonaPlex**: NVIDIA Nemotron-3-Nano-30B-A3B on GCP Cloud Run w/ GPU — called via `PERSONAPLEX_ENDPOINT`
+- **PersonaPlex**: NVIDIA Nemotron-3-Nano-30B-A3B on GCP Vertex AI — called via `PERSONAPLEX_ENDPOINT`
+- **CI Pipeline**: GitHub Actions → Cloud Build → Artifact Registry (build+push only, no Cloud Run)
 
 ### VPS Services (default deploy, no profiles)
 nginx, frontend, demo-frontend, uef-gateway, house-of-ang, acheevy, redis, agent-bridge, chickenhawk-core, n8n, circuit-metrics, ii-agent, ii-agent-postgres, ii-agent-tools, ii-agent-sandbox (15 containers)
