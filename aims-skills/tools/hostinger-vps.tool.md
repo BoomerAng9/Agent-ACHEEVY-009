@@ -36,7 +36,7 @@ AIMS uses **two separate Hostinger KVM2 VPS instances** to isolate the core plat
 
 ### AIMS Core (31.97.138.45)
 ```bash
-./deploy.sh --domain plugmein.cloud --email acheevy@aimanagedsolutions.cloud
+./deploy.sh --domain plugmein.cloud --email admin@aimanagedsolutions.cloud
 # SSH: ssh root@31.97.138.45
 ```
 

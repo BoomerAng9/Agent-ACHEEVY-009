@@ -62,7 +62,7 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Examples:"
             echo "  ./deploy.sh --domain plugmein.cloud --landing-domain aimanagedsolutions.cloud"
-            echo "  ./deploy.sh --domain plugmein.cloud --email acheevy@aimanagedsolutions.cloud  # first-time cert"
+            echo "  ./deploy.sh --domain plugmein.cloud --email admin@aimanagedsolutions.cloud  # first-time cert"
             echo "  ./deploy.sh --ssl-renew"
             exit 0 ;;
         *) error "Unknown option: $1"; exit 1 ;;

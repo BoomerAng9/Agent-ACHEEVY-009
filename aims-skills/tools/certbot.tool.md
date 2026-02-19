@@ -41,7 +41,7 @@ certbot certonly --webroot \
   -w /var/www/certbot \
   -d plugmein.cloud \
   -d aimanagedsolutions.cloud \
-  --email acheevy@aimanagedsolutions.cloud \
+  --email admin@aimanagedsolutions.cloud \
   --agree-tos --no-eff-email
 ```
 
