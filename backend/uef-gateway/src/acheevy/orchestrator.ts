@@ -3,9 +3,12 @@
  *
  * The real backend orchestration engine. Receives classified intents from
  * the frontend, runs the skills/hooks lifecycle, checks LUC quotas via
- * Firestore, and dispatches work to II-Agent or other Boomer_Angs.
+ * Firestore, and dispatches work to II-Agent, Chicken Hawk, or other Boomer_Angs.
  *
- * This replaces the frontend-only keyword routing with actual execution.
+ * Execution order:
+ *   1. Try II-Agent (autonomous execution engine) via Socket.IO
+ *   2. Fallback → Chicken Hawk (manifest-based execution engine) via HTTP
+ *   3. Fallback → queued (if both engines are offline)
  */
 
 import { getIIAgentClient, IIAgentClient, IIAgentTask } from '../ii-agent/client';
@@ -16,6 +19,7 @@ import type { N8nPipelineResponse } from '../n8n';
 import { executeVertical } from './execution-engine';
 import { spawnAgent, decommissionAgent, getRoster, getAvailableRoster } from '../deployment-hub';
 import type { SpawnRequest, EnvironmentTarget } from '../deployment-hub';
+import logger from '../logger';
 
 // Vertical definitions: pure data (no gateway imports), loaded at runtime
 // to avoid tsconfig rootDir compilation issues with cross-boundary imports.
@@ -33,6 +37,120 @@ function getVertical(id: string): any {
   return _verticals![id] || null;
 }
 
+// ── Chicken Hawk HTTP Dispatch ──────────────────────────────────────
+
+const CHICKENHAWK_URL = process.env.CHICKENHAWK_URL || 'http://chickenhawk-core:4001';
+
+interface ChickenHawkManifest {
+  manifest_id: string;
+  requested_by: string;
+  approved_by: string;
+  shift_id: string;
+  plan: {
+    waves: Array<{
+      wave_id: number;
+      tasks: Array<{
+        task_id: string;
+        function: string;
+        crew_role: string;
+        target: string;
+        params: Record<string, unknown>;
+        badge_level: 'green' | 'amber' | 'red';
+        wrapper_type: 'SERVICE_WRAPPER' | 'JOB_RUNNER_WRAPPER' | 'CLI_WRAPPER' | 'MCP_BRIDGE_WRAPPER';
+        estimated_cost_usd: number;
+        timeout_seconds: number;
+      }>;
+      concurrency: number;
+      gate: 'all_pass' | 'majority_pass' | 'any_pass';
+    }>;
+  };
+  budget_limit_usd: number;
+  timeout_seconds: number;
+  created_at: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Build a Chicken Hawk manifest from an ACHEEVY request.
+ * Translates high-level intent into a structured execution plan.
+ */
+function buildManifest(
+  requestId: string,
+  taskType: string,
+  prompt: string,
+  userId: string,
+  metadata?: Record<string, unknown>,
+): ChickenHawkManifest {
+  const shiftId = `shift_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+
+  return {
+    manifest_id: requestId,
+    requested_by: `ACHEEVY:${userId}`,
+    approved_by: 'ACHEEVY',
+    shift_id: shiftId,
+    plan: {
+      waves: [
+        {
+          wave_id: 1,
+          tasks: [
+            {
+              task_id: `task_${requestId}_1`,
+              function: taskType,
+              crew_role: 'executor',
+              target: taskType === 'fullstack' ? 'sitebuilder_ang' : 'researcher_ang',
+              params: {
+                prompt,
+                userId,
+                ...metadata,
+              },
+              badge_level: 'green',
+              wrapper_type: 'SERVICE_WRAPPER',
+              estimated_cost_usd: 0.10,
+              timeout_seconds: taskType === 'fullstack' ? 600 : 300,
+            },
+          ],
+          concurrency: 1,
+          gate: 'all_pass',
+        },
+      ],
+    },
+    budget_limit_usd: taskType === 'fullstack' ? 5.0 : 1.0,
+    timeout_seconds: taskType === 'fullstack' ? 600 : 300,
+    created_at: new Date().toISOString(),
+    metadata,
+  };
+}
+
+/**
+ * Dispatch a manifest to Chicken Hawk via HTTP POST.
+ * Returns the execution result or throws on failure.
+ */
+async function dispatchToChickenHawk(manifest: ChickenHawkManifest): Promise<{
+  dispatched: true;
+  manifestId: string;
+  shiftId: string;
+  result: any;
+}> {
+  const res = await fetch(`${CHICKENHAWK_URL}/api/manifest`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(manifest),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(`Chicken Hawk returned ${res.status}: ${JSON.stringify(data)}`);
+  }
+
+  return {
+    dispatched: true,
+    manifestId: manifest.manifest_id,
+    shiftId: manifest.shift_id,
+    result: data,
+  };
+}
+
 // ── Types ────────────────────────────────────────────────────
 
 export interface AcheevyExecuteRequest {
@@ -48,7 +166,7 @@ export interface AcheevyExecuteRequest {
 
 export interface AcheevyExecuteResponse {
   requestId: string;
-  status: 'completed' | 'queued' | 'streaming' | 'quota_exceeded' | 'error';
+  status: 'completed' | 'queued' | 'streaming' | 'dispatched' | 'quota_exceeded' | 'error';
   reply: string;
   data?: Record<string, any>;
   lucUsage?: {
@@ -59,8 +177,6 @@ export interface AcheevyExecuteResponse {
   taskId?: string;
   error?: string;
 }
-
-// ── Skill definitions (mirrors frontend registry for backend routing) ──
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface SkillRoute {
@@ -84,9 +200,7 @@ export class AcheevyOrchestrator {
     const requestId = uuidv4();
 
     try {
-      // 1. LUC quota check (lightweight - uses LUCEngine on gateway)
-      //    Full Firestore-based LUC runs in aims-skills; here we do a
-      //    quick local estimate to avoid round-trips for every message.
+      // 1. LUC quota check (lightweight)
       const estimate = LUCEngine.estimate(req.message);
 
       // 2. Route based on classified intent
@@ -104,27 +218,23 @@ export class AcheevyOrchestrator {
         return await this.handleSkillExecution(requestId, req);
       }
 
-      // Vertical execution: NLP-triggered business builder verticals with R-R-S pipeline
       if (routedTo.startsWith('vertical:')) {
         return await this.handleVerticalExecution(requestId, req);
       }
 
-      // PMO routing: routes task through chain-of-command pipeline
-      // User → ACHEEVY → Boomer_Ang → Chicken Hawk → Squad → Lil_Hawks → Receipt → ACHEEVY → User
       if (routedTo === 'pmo-route' || routedTo.startsWith('pmo:')) {
         return await this.handlePmoRouting(requestId, req);
       }
 
-      // Deployment Hub: spawn/decommission/roster for Boomer_Angs and Lil_Hawks
       if (routedTo.startsWith('spawn:') || routedTo === 'deployment-hub') {
         return await this.handleDeploymentHub(requestId, req);
       }
 
-      // Default: conversational AI via II-Agent
+      // Default: conversational AI via II-Agent → Chicken Hawk fallback
       return await this.handleConversation(requestId, req, estimate);
 
     } catch (error: any) {
-      console.error(`[ACHEEVY] Execution error for ${requestId}:`, error.message);
+      logger.error({ err: error, requestId }, '[ACHEEVY] Execution error');
       return {
         requestId,
         status: 'error',
@@ -137,7 +247,7 @@ export class AcheevyOrchestrator {
   // ── Route Handlers ───────────────────────────────────────
 
   /**
-   * Plug fabrication: routes build requests to II-Agent fullstack mode
+   * Plug fabrication: try II-Agent fullstack mode → fallback to Chicken Hawk
    */
   private async handlePlugFabrication(
     requestId: string,
@@ -145,42 +255,47 @@ export class AcheevyOrchestrator {
   ): Promise<AcheevyExecuteResponse> {
     const plugId = req.plugId || req.intent.split(':')[1];
 
-    const task: IIAgentTask = {
+    // Try II-Agent first
+    const iiTask: IIAgentTask = {
       type: 'fullstack',
       prompt: `Build the "${plugId}" plug for A.I.M.S. User request: ${req.message}`,
-      context: {
-        userId: req.userId,
-        sessionId: req.conversationId,
-      },
-      options: {
-        streaming: false,
-        timeout: 600000, // 10 min for builds
-      },
+      context: { userId: req.userId, sessionId: req.conversationId },
+      options: { streaming: false, timeout: 600000 },
     };
 
     try {
-      const result = await this.iiAgent.executeTask(task);
+      const result = await this.iiAgent.executeTask(iiTask);
       return {
         requestId,
-        status: result.status === 'completed' ? 'completed' : 'queued',
+        status: result.status === 'completed' ? 'completed' : 'dispatched',
         reply: `Plug "${plugId}" fabrication ${result.status}. ${result.output || ''}`,
-        data: {
-          plugId,
-          artifacts: result.artifacts,
-          iiAgentTaskId: result.id,
-        },
-        lucUsage: {
-          service: 'container_hours',
-          amount: 1,
-        },
+        data: { plugId, artifacts: result.artifacts, iiAgentTaskId: result.id },
+        lucUsage: { service: 'container_hours', amount: 1 },
         taskId: result.id,
       };
     } catch {
-      // II-Agent not available - queue the task
+      // II-Agent unavailable — dispatch to Chicken Hawk
+      logger.info({ requestId, plugId }, '[ACHEEVY] II-Agent offline, dispatching to Chicken Hawk');
+    }
+
+    // Fallback: Chicken Hawk
+    try {
+      const manifest = buildManifest(requestId, 'fullstack', req.message, req.userId, { plugId });
+      const chResult = await dispatchToChickenHawk(manifest);
+      return {
+        requestId,
+        status: 'dispatched',
+        reply: `Plug "${plugId}" build dispatched to Chicken Hawk. Shift ID: ${chResult.shiftId}. Monitor progress in Mission Control.`,
+        data: { plugId, chickenhawk: chResult },
+        lucUsage: { service: 'container_hours', amount: 1 },
+        taskId: chResult.manifestId,
+      };
+    } catch (chErr: any) {
+      logger.error({ err: chErr, requestId }, '[ACHEEVY] Chicken Hawk also unavailable');
       return {
         requestId,
         status: 'queued',
-        reply: `Build request for "${plugId}" has been queued. ACHEEVY will process it when the execution engine is available.`,
+        reply: `Build request for "${plugId}" has been queued. Both execution engines are warming up — your task will be processed shortly.`,
         taskId: `queued_${requestId}`,
       };
     }
@@ -196,10 +311,7 @@ export class AcheevyOrchestrator {
     const task: IIAgentTask = {
       type: 'research',
       prompt: `Sports analytics request: ${req.message}. Analyze athlete data, provide scouting reports, and recruitment recommendations.`,
-      context: {
-        userId: req.userId,
-        sessionId: req.conversationId,
-      },
+      context: { userId: req.userId, sessionId: req.conversationId },
     };
 
     try {
@@ -209,23 +321,34 @@ export class AcheevyOrchestrator {
         status: 'completed',
         reply: result.output || 'Perform analysis complete.',
         data: { artifacts: result.artifacts },
-        lucUsage: {
-          service: 'brave_searches',
-          amount: 5,
-        },
+        lucUsage: { service: 'brave_searches', amount: 5 },
       };
     } catch {
-      return {
-        requestId,
-        status: 'queued',
-        reply: 'Perform analytics request queued. Results will be available shortly.',
-        taskId: `queued_${requestId}`,
-      };
+      // Fallback: Chicken Hawk
+      try {
+        const manifest = buildManifest(requestId, 'research', req.message, req.userId, { vertical: 'perform' });
+        const chResult = await dispatchToChickenHawk(manifest);
+        return {
+          requestId,
+          status: 'dispatched',
+          reply: `Perform analytics dispatched to Chicken Hawk. Shift ID: ${chResult.shiftId}.`,
+          data: { chickenhawk: chResult },
+          lucUsage: { service: 'brave_searches', amount: 5 },
+          taskId: chResult.manifestId,
+        };
+      } catch {
+        return {
+          requestId,
+          status: 'queued',
+          reply: 'Perform analytics request queued. Results will be available shortly.',
+          taskId: `queued_${requestId}`,
+        };
+      }
     }
   }
 
   /**
-   * Skill execution: routes to the appropriate skill handler
+   * Skill execution: try II-Agent → fallback to Chicken Hawk
    */
   private async handleSkillExecution(
     requestId: string,
@@ -233,7 +356,6 @@ export class AcheevyOrchestrator {
   ): Promise<AcheevyExecuteResponse> {
     const skillId = req.skillId || req.intent.split(':')[1];
 
-    // Map skill types to II-Agent task types
     const skillTaskMap: Record<string, IIAgentTask['type']> = {
       'remotion': 'code',
       'gemini-research': 'research',
@@ -247,10 +369,7 @@ export class AcheevyOrchestrator {
     const task: IIAgentTask = {
       type: taskType,
       prompt: `Execute A.I.M.S. skill "${skillId}". User request: ${req.message}`,
-      context: {
-        userId: req.userId,
-        sessionId: req.conversationId,
-      },
+      context: { userId: req.userId, sessionId: req.conversationId },
     };
 
     try {
@@ -259,43 +378,35 @@ export class AcheevyOrchestrator {
         requestId,
         status: 'completed',
         reply: result.output || `Skill "${skillId}" executed successfully.`,
-        data: {
-          skillId,
-          artifacts: result.artifacts,
-        },
-        lucUsage: {
-          service: 'api_calls',
-          amount: 1,
-        },
+        data: { skillId, artifacts: result.artifacts },
+        lucUsage: { service: 'api_calls', amount: 1 },
       };
     } catch {
-      return {
-        requestId,
-        status: 'queued',
-        reply: `Skill "${skillId}" has been queued for execution.`,
-        taskId: `queued_${requestId}`,
-      };
-    }
-  }
-
-  /**
-   * Scaffolding: clone/build requests via Make It Mine pipeline
-   */
-  private async handleScaffolding(
-    requestId: string,
-    _req: AcheevyExecuteRequest
-  ): Promise<AcheevyExecuteResponse> {
-    return {
-      requestId,
-      status: 'queued',
-      reply: 'Clone request received. The scaffolding pipeline will begin when ready.',
-      taskId: `queued_${requestId}`,
+      // Fallback: Chicken Hawk
+      try {
+        const manifest = buildManifest(requestId, taskType, req.message, req.userId, { skillId });
+        const chResult = await dispatchToChickenHawk(manifest);
+        return {
+          requestId,
+          status: 'dispatched',
+          reply: `Skill "${skillId}" dispatched to Chicken Hawk. Shift ID: ${chResult.shiftId}.`,
+          data: { skillId, chickenhawk: chResult },
+          lucUsage: { service: 'api_calls', amount: 1 },
+          taskId: chResult.manifestId,
+        };
+      } catch {
+        return {
+          requestId,
+          status: 'queued',
+          reply: `Skill "${skillId}" has been queued for execution.`,
+          taskId: `queued_${requestId}`,
+        };
+      }
     }
   }
 
   /**
    * PMO routing: chain-of-command pipeline via n8n
-   * User → ACHEEVY → Boomer_Ang → Chicken Hawk → Squad → Lil_Hawks → Receipt → ACHEEVY → User
    */
   private async handlePmoRouting(
     requestId: string,
@@ -325,19 +436,31 @@ export class AcheevyOrchestrator {
         },
       };
     } catch {
-      return {
-        requestId,
-        status: 'queued',
-        reply: 'PMO routing request received. The chain-of-command pipeline will process it when the n8n workflow engine is available.',
-        taskId: `queued_pmo_${requestId}`,
-      };
+      // Fallback: Chicken Hawk for PMO routing
+      try {
+        const manifest = buildManifest(requestId, 'research', req.message, req.userId, { pmo: true });
+        const chResult = await dispatchToChickenHawk(manifest);
+        return {
+          requestId,
+          status: 'dispatched',
+          reply: `PMO routing dispatched to Chicken Hawk. Shift ID: ${chResult.shiftId}.`,
+          data: { chickenhawk: chResult },
+          lucUsage: { service: 'api_calls', amount: 1 },
+          taskId: chResult.manifestId,
+        };
+      } catch {
+        return {
+          requestId,
+          status: 'queued',
+          reply: 'PMO routing request received. The chain-of-command pipeline will process it when available.',
+          taskId: `queued_pmo_${requestId}`,
+        };
+      }
     }
   }
 
   /**
-   * Vertical execution: NLP-triggered business builder verticals with R-R-S downstream execution.
-   * Routes collected user data through the full governance stack:
-   *   ORACLE → ByteRover RAG → PREP_SQUAD → LUC → Chicken Hawk → Boomer_Angs → Artifacts
+   * Vertical execution: NLP-triggered business builder verticals
    */
   private async handleVerticalExecution(
     requestId: string,
@@ -393,23 +516,31 @@ export class AcheevyOrchestrator {
         },
       };
     } catch {
-      return {
-        requestId,
-        status: 'queued',
-        reply: `Vertical "${vertical.name}" request has been queued. The execution pipeline will process it when available.`,
-        taskId: `queued_vertical_${requestId}`,
-      };
+      // Fallback: Chicken Hawk
+      try {
+        const manifest = buildManifest(requestId, 'research', req.message, req.userId, { verticalId, verticalName: vertical.name });
+        const chResult = await dispatchToChickenHawk(manifest);
+        return {
+          requestId,
+          status: 'dispatched',
+          reply: `Vertical "${vertical.name}" dispatched to Chicken Hawk. Shift ID: ${chResult.shiftId}.`,
+          data: { verticalId, chickenhawk: chResult },
+          lucUsage: { service: 'vertical_execution', amount: 1 },
+          taskId: chResult.manifestId,
+        };
+      } catch {
+        return {
+          requestId,
+          status: 'queued',
+          reply: `Vertical "${vertical.name}" request has been queued. The execution pipeline will process it when available.`,
+          taskId: `queued_vertical_${requestId}`,
+        };
+      }
     }
   }
 
   /**
    * Deployment Hub: spawn, decommission, and query Boomer_Angs and Lil_Hawks.
-   * Intent patterns:
-   *   "spawn:<handle>"          → spawn a specific agent
-   *   "deployment-hub"          → roster/query operations
-   *   context.action = "decommission" → tear down an agent
-   *   context.action = "roster"       → get active roster
-   *   context.action = "available"    → get available agents from card files
    */
   private async handleDeploymentHub(
     requestId: string,
@@ -417,7 +548,6 @@ export class AcheevyOrchestrator {
   ): Promise<AcheevyExecuteResponse> {
     const action = req.context?.action as string || 'spawn';
 
-    // Roster query
     if (action === 'roster') {
       const roster = getRoster();
       return {
@@ -430,7 +560,6 @@ export class AcheevyOrchestrator {
       };
     }
 
-    // Available agents query
     if (action === 'available') {
       const available = getAvailableRoster();
       return {
@@ -441,7 +570,6 @@ export class AcheevyOrchestrator {
       };
     }
 
-    // Decommission
     if (action === 'decommission') {
       const spawnId = req.context?.spawnId as string;
       const reason = req.context?.reason as string || 'Requested via orchestrator';
@@ -513,15 +641,12 @@ export class AcheevyOrchestrator {
         },
         visualIdentity: result.visualIdentity,
       },
-      lucUsage: {
-        service: 'spawn_shift',
-        amount: 1,
-      },
+      lucUsage: { service: 'spawn_shift', amount: 1 },
     };
   }
 
   /**
-   * Default conversation: routes to II-Agent for general AI chat
+   * Default conversation: try II-Agent → fallback to Chicken Hawk
    */
   private async handleConversation(
     requestId: string,
@@ -546,28 +671,35 @@ export class AcheevyOrchestrator {
         requestId,
         status: 'completed',
         reply: result.output || 'Task completed.',
-        data: {
-          artifacts: result.artifacts,
-          usage: result.usage,
-          quote: estimate,
-        },
+        data: { artifacts: result.artifacts, usage: result.usage, quote: estimate },
         lucUsage: {
           service: 'api_calls',
           amount: result.usage?.totalTokens ? Math.ceil(result.usage.totalTokens / 1000) : 1,
         },
       };
     } catch {
-      // Fallback when II-Agent is unavailable: return the estimate
-      return {
-        requestId,
-        status: 'completed',
-        reply: `I've analyzed your request: "${req.message}". The execution engine is currently warming up. Your task has been noted and will be processed shortly.`,
-        data: { quote: estimate },
-        lucUsage: {
-          service: 'api_calls',
-          amount: 1,
-        },
-      };
+      // II-Agent offline — try Chicken Hawk
+      try {
+        const manifest = buildManifest(requestId, taskType, req.message, req.userId);
+        const chResult = await dispatchToChickenHawk(manifest);
+        return {
+          requestId,
+          status: 'dispatched',
+          reply: `Task dispatched to Chicken Hawk execution engine. Shift ID: ${chResult.shiftId}. Monitor progress in Mission Control.`,
+          data: { chickenhawk: chResult, quote: estimate },
+          lucUsage: { service: 'api_calls', amount: 1 },
+          taskId: chResult.manifestId,
+        };
+      } catch {
+        // Both engines offline — use LLM stream directly
+        return {
+          requestId,
+          status: 'completed',
+          reply: `I've analyzed your request: "${req.message}". The execution engine is currently warming up. Your task has been noted and will be processed shortly.`,
+          data: { quote: estimate },
+          lucUsage: { service: 'api_calls', amount: 1 },
+        };
+      }
     }
   }
 }

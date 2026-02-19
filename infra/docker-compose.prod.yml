@@ -183,6 +183,9 @@ services:
       - N8N_URL=http://n8n:5678
       - RESEARCH_ANG_URL=http://research-ang:3020
       - ROUTER_ANG_URL=http://router-ang:3021
+      - CHICKENHAWK_URL=http://chickenhawk-core:4001
+      - II_AGENT_HTTP_URL=http://ii-agent:8000
+      - II_AGENT_WS_URL=http://ii-agent:8000
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - INTERNAL_API_KEY=${INTERNAL_API_KEY}
       # Hugging Face — Nvidia models
@@ -465,6 +468,48 @@ services:
       - ii-agents
 
   # ---------------------------------------------------------------------------
+  # Chicken Hawk — Core Execution Engine
+  # Receives manifests from ACHEEVY orchestrator, spawns Lil_Hawk squads,
+  # executes waves, collects evidence, reports up.
+  # Command chain: ACHEEVY → Boomer_Ang → Chicken Hawk → Squad → Lil_Hawk
+  # ---------------------------------------------------------------------------
+  chickenhawk-core:
+    build:
+      context: ../services/chicken-hawk
+      dockerfile: Dockerfile
+    expose:
+      - "4001"
+    environment:
+      - PORT=4001
+      - NODE_ENV=production
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - UEF_GATEWAY_URL=http://uef-gateway:3001
+      - AGENT_BRIDGE_URL=http://agent-bridge:3010
+      - N8N_URL=http://n8n:5678
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-aims_redis_secret}@redis:6379
+      - CORS_ORIGIN=${CORS_ORIGIN}
+    depends_on:
+      uef-gateway:
+        condition: service_healthy
+      agent-bridge:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:4001/health',r=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - aims-network
+      - sandbox-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  # ---------------------------------------------------------------------------
   # n8n — Core Workflow Automation Engine
   # Factory floor for Boomer_Ang dispatch, Chicken Hawk builds,
   # Lil_Hawk workflows, PMO pipeline, and all automation tasks.
@@ -534,6 +579,135 @@ services:
         limits:
           cpus: '0.25'
           memory: 128M
+
+  # ---------------------------------------------------------------------------
+  # II-Agent — Autonomous Execution Backend (Socket.IO on port 8000)
+  # Full-stack dev, deep research, browser automation, code execution.
+  # ACHEEVY orchestrator connects via IIAgentClient (Socket.IO bridge).
+  # ---------------------------------------------------------------------------
+  ii-agent:
+    build:
+      context: ../backend/ii-agent
+      dockerfile: docker/backend/Dockerfile
+    expose:
+      - "8000"
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8000
+      - DATABASE_URL=postgresql://${II_AGENT_DB_USER:-iiagent}:${II_AGENT_DB_PASSWORD:-iiagent}@ii-agent-postgres:5432/${II_AGENT_DB_NAME:-iiagentdev}
+      - REDIS_SESSION_URL=redis://:${REDIS_PASSWORD:-aims_redis_secret}@redis:6379/2
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SANDBOX_SERVER_URL=http://ii-agent-sandbox:8100
+      - TOOL_SERVER_URL=http://ii-agent-tools:1236
+      - FILE_STORE_PATH=/.ii_agent
+    depends_on:
+      ii-agent-postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    volumes:
+      - ii-agent-filestore:/.ii_agent
+    networks:
+      - aims-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+  ii-agent-postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=${II_AGENT_DB_USER:-iiagent}
+      - POSTGRES_PASSWORD=${II_AGENT_DB_PASSWORD:-iiagent}
+      - POSTGRES_DB=${II_AGENT_DB_NAME:-iiagentdev}
+    volumes:
+      - ii-agent-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${II_AGENT_DB_USER:-iiagent}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - aims-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  ii-agent-tools:
+    build:
+      context: ../backend/ii-agent
+      dockerfile: docker/backend/Dockerfile
+    expose:
+      - "1236"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        exec uvicorn ii_tool.integrations.app.main:app
+        --host 0.0.0.0
+        --port 1236
+    environment:
+      - DATABASE_URL=postgresql://${II_AGENT_DB_USER:-iiagent}:${II_AGENT_DB_PASSWORD:-iiagent}@ii-agent-postgres:5432/${II_AGENT_DB_NAME:-iiagentdev}
+    depends_on:
+      ii-agent-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:1236/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    volumes:
+      - ii-agent-filestore:/.ii_agent
+    networks:
+      - aims-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  ii-agent-sandbox:
+    build:
+      context: ../backend/ii-agent
+      dockerfile: docker/backend/Dockerfile
+    expose:
+      - "8100"
+    entrypoint: ["/bin/bash", "/app/start_sandbox_server.sh"]
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8100
+      - DATABASE_URL=postgresql://${II_AGENT_DB_USER:-iiagent}:${II_AGENT_DB_PASSWORD:-iiagent}@ii-agent-postgres:5432/${II_AGENT_DB_NAME:-iiagentdev}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-aims_redis_secret}@redis:6379/3
+    depends_on:
+      ii-agent-postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8100/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - aims-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
 
   # ---------------------------------------------------------------------------
   # LAYER 5: PER|FORM PLATFORM — Sports Analytics
@@ -672,6 +846,8 @@ volumes:
   perform-debate-logs:
   perform-rankings:
   perform-content:
+  ii-agent-filestore:
+  ii-agent-pgdata:
 
 networks:
   aims-network:

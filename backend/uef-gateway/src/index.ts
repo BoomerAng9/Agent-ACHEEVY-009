@@ -539,6 +539,76 @@ app.post('/acheevy/classify', (req, res) => {
 });
 
 // --------------------------------------------------------------------------
+// Chicken Hawk — Execution Engine Proxy
+// Forwards manifests to the Chicken Hawk Core service for real execution.
+// Command chain: ACHEEVY → Boomer_Ang → Chicken Hawk → Squad → Lil_Hawk
+// --------------------------------------------------------------------------
+const CHICKENHAWK_URL = process.env.CHICKENHAWK_URL || 'http://chickenhawk-core:4001';
+
+app.post('/chickenhawk/manifest', async (req, res) => {
+  try {
+    const manifest = req.body;
+    if (!manifest.manifest_id || !manifest.shift_id || !manifest.plan?.waves) {
+      res.status(400).json({ error: 'Invalid manifest: requires manifest_id, shift_id, and plan.waves' });
+      return;
+    }
+    logger.info({ manifestId: manifest.manifest_id }, '[CH] Forwarding manifest to Chicken Hawk');
+    const chRes = await fetch(`${CHICKENHAWK_URL}/api/manifest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(manifest),
+    });
+    const data = await chRes.json();
+    res.status(chRes.status).json(data);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Chicken Hawk unreachable';
+    logger.error({ err }, '[CH] Manifest dispatch error');
+    res.status(502).json({ error: `Chicken Hawk unreachable: ${msg}` });
+  }
+});
+
+app.get('/chickenhawk/status', async (_req, res) => {
+  try {
+    const chRes = await fetch(`${CHICKENHAWK_URL}/status`);
+    const data = await chRes.json();
+    res.json(data);
+  } catch (err) {
+    res.status(502).json({ error: 'Chicken Hawk unreachable' });
+  }
+});
+
+app.get('/chickenhawk/health', async (_req, res) => {
+  try {
+    const chRes = await fetch(`${CHICKENHAWK_URL}/health`);
+    const data = await chRes.json();
+    res.json(data);
+  } catch (err) {
+    res.status(502).json({ error: 'Chicken Hawk offline' });
+  }
+});
+
+app.get('/chickenhawk/squads', async (_req, res) => {
+  try {
+    const chRes = await fetch(`${CHICKENHAWK_URL}/api/squads`);
+    const data = await chRes.json();
+    res.json(data);
+  } catch (err) {
+    res.status(502).json({ error: 'Chicken Hawk unreachable' });
+  }
+});
+
+app.post('/chickenhawk/emergency-stop', async (_req, res) => {
+  try {
+    logger.warn('[CH] EMERGENCY STOP triggered via gateway');
+    const chRes = await fetch(`${CHICKENHAWK_URL}/api/emergency-stop`, { method: 'POST' });
+    const data = await chRes.json();
+    res.json(data);
+  } catch (err) {
+    res.status(502).json({ error: 'Chicken Hawk unreachable for emergency stop' });
+  }
+});
+
+// --------------------------------------------------------------------------
 // Verticals — External Tool Integrations (II Agent, II Commons)
 // --------------------------------------------------------------------------
 app.get('/verticals', (_req, res) => {
