@@ -266,7 +266,19 @@
 - **What happened:** `demo-ssl.conf.template` exists but `deploy.sh` has no `--demo-domain` flag. Must be manually configured.
 - **Lesson:** If it exists in config, it must be in the deploy script. No manual steps in production deploys.
 
-### 9.4 SSL Session Cache Name Collisions
+### 9.5 Global PORT=3001 Leaking Into Frontend (Live Deploy, Feb 19)
+- **What happened:** `.env.production` had `PORT=3001` (intended for the UEF gateway). Docker Compose passes ALL env vars from the env file to every service. The Next.js frontend picked up `PORT=3001` and listened on 3001 instead of its default 3000. But the health check was still pinging `http://localhost:3000` — so the frontend was marked **unhealthy** forever despite being perfectly functional on port 3001.
+- **sed didn't stick:** An earlier `sed -i '/^PORT=3001/d'` ran, but the deploy script re-wrote `.env.production` afterward, restoring the line. The fix had to be applied *after* all file mutations completed, then containers `--force-recreate`d.
+- **Fix:** Removed `PORT=` from `.env.production` entirely. The UEF gateway Dockerfile sets its own `ENV PORT=3001` internally. Never rely on a global PORT in the env file.
+- **Lesson:** (1) Never put `PORT=` in a shared `.env` file — each service should define its own port in its Dockerfile. (2) When a container is "unhealthy," always compare the health check target port vs the actual listening port. (3) `sed` fixes don't persist if another process re-writes the file afterward.
+
+### 9.6 n8n Empty Password Prevents Startup
+- **What happened:** `.env.production` has `N8N_AUTH_PASSWORD=` (blank). The compose file maps it to `N8N_BASIC_AUTH_PASSWORD=${N8N_AUTH_PASSWORD}` with **no default fallback** (unlike `N8N_BASIC_AUTH_USER` which defaults to `aims`). With `N8N_BASIC_AUTH_ACTIVE=true` and an empty password, n8n refuses to start or crash-loops.
+- **Additional risk:** n8n v1.x deprecated `N8N_BASIC_AUTH_*` in favor of the newer user management system. Using `n8nio/n8n:latest` means the image version is unpinned — a new pull could break the auth config entirely.
+- **Fix needed:** Set `N8N_AUTH_PASSWORD` to a real value. Pin n8n image to a specific version (e.g., `n8nio/n8n:1.76.1`).
+- **Lesson:** (1) Every env var in docker-compose that has no `:-default` MUST be validated in deploy.sh's pre-flight check. (2) Never use `:latest` for production images — pin to a specific version.
+
+### 9.7 SSL Session Cache Name Collisions
 - **What happened:** Three SSL configs use different cache names (`SSL`, `LANDING_SSL`, `DEMO_SSL`) but this is undocumented and could cause confusion if someone copies a template.
 - **Lesson:** Document SSL session cache naming convention in the nginx readme.
 
@@ -408,8 +420,12 @@ From `docs/audit-report-feb-2026.md`:
 ### Pre-Deploy Checklist
 - [ ] Docker production build tested locally
 - [ ] All env vars validated (deploy.sh pre-flight)
+- [ ] No global `PORT=` in shared `.env` files — each service owns its port via Dockerfile
+- [ ] Every env var referenced in docker-compose with no `:-default` has a non-empty value
+- [ ] All Docker images pinned to specific versions (no `:latest` in production)
 - [ ] SSL certs include all domain SANs (including www, demo)
 - [ ] Health checks verify the container itself, not downstream deps
+- [ ] Health check port matches the actual port the service listens on
 - [ ] Resource limits set on ALL containers
 - [ ] `postcss.config.js` present (Tailwind)
 - [ ] Fonts validated against Google Fonts API
@@ -442,7 +458,8 @@ From `docs/audit-report-feb-2026.md`:
 | Feb 15 | #36-#53 | Mass PR day: 18 PRs (Bolt, Jules, Claude). Performance optimizations, security audit, Kling AI, LUC fixes |
 | Feb 16-17 | #54-#62 | More Bolt PRs, SSH key switch, pricing rewrite, submodule fix, peer dep fix |
 | Feb 18 | #63-#66 | Cloud Build pipeline: 4 PRs of fixes (substitutions, lint, PORT, better-sqlite3) |
-| Feb 19 | #67-#68 | UI optimization consolidation, VPS deployment hardening (current) |
+| Feb 19 | #67-#68 | UI optimization consolidation, VPS deployment hardening |
+| Feb 19 | (live) | VPS live deploy: PORT=3001 leak → frontend unhealthy, sed fix didn't persist, n8n empty password crash loop. All 10 containers healthy after manual fix. Both domains live on HTTPS. |
 
 ---
 
