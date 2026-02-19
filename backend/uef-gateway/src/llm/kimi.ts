@@ -154,7 +154,7 @@ class KimiClient {
 
   private async callFireworks(body: Record<string, unknown>, mode: KimiMode): Promise<KimiResult> {
     // Fireworks uses chat_template_kwargs instead of top-level thinking key
-    const fireworksBody = { ...body, model: FIREWORKS_MODEL };
+    const fireworksBody: Record<string, unknown> = { ...body, model: FIREWORKS_MODEL };
     if (mode === 'instant') {
       delete fireworksBody['thinking'];
       (fireworksBody as Record<string, unknown>)['chat_template_kwargs'] = { thinking: false };
