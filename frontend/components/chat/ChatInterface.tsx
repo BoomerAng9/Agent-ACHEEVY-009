@@ -16,6 +16,7 @@ import Image from 'next/image';
 import { useStreamingChat } from '@/hooks/useStreamingChat';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useVoiceOutput } from '@/hooks/useVoiceOutput';
+import { useAudioLevel } from '@/hooks/useAudioLevel';
 import { useOrchestration } from '@/hooks/useOrchestration';
 import { useChangeOrder } from '@/hooks/useChangeOrder';
 import { OperationsOverlay, OperationsPulse } from '@/components/orchestration/OperationsOverlay';
@@ -270,12 +271,13 @@ function MessageBubble({ message, onSpeak, onCopy, isLast }: MessageBubbleProps)
 interface VoiceInputButtonProps {
   isListening: boolean;
   isProcessing: boolean;
-  audioLevel: number;
+  stream: MediaStream | null;
   onStart: () => void;
   onStop: () => void;
 }
 
-function VoiceInputButton({ isListening, isProcessing, audioLevel, onStart, onStop }: VoiceInputButtonProps) {
+function VoiceInputButton({ isListening, isProcessing, stream, onStart, onStop }: VoiceInputButtonProps) {
+  const audioLevel = useAudioLevel(stream, isListening);
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -492,6 +494,7 @@ export function ChatInterface({
       // Focus the textarea so user can edit immediately
       setTimeout(() => textareaRef.current?.focus(), 100);
     },
+    enableAudioLevelState: false,
   });
 
   // Voice output
@@ -751,7 +754,7 @@ export function ChatInterface({
             <VoiceInputButton
               isListening={voiceInput.isListening}
               isProcessing={voiceInput.isProcessing}
-              audioLevel={voiceInput.audioLevel}
+              stream={voiceInput.stream}
               onStart={voiceInput.startListening}
               onStop={() => voiceInput.stopListening()}
             />
