@@ -97,7 +97,7 @@ Every job must:
 | P2.4 | Cloud Run autonomous jobs | **MISSING** — no Cloud Run configs yet |
 | P2.5 | CDN deploy for generated sites | **MISSING** — deploy-dock UI exists but no CDN push mechanism |
 | P2.6 | PersonaPlex full-duplex voice | **MISSING** — skill spec exists, no integration code |
-| P2.7 | Competitor parity (Manus/Genspark/Flow) | **MISSING** — no analysis done yet |
+| P2.7 | Competitor parity (Manus/Genspark/Flow) | **DONE** — see `docs/COMPETITOR_PARITY_ANALYSIS.md` (feature matrix, gap analysis, roadmap) |
 
 ---
 
@@ -147,7 +147,7 @@ Every job must:
 - [ ] CDN deploy pipeline for generated sites
 - [ ] LiveSim WebSocket real-time agent feed
 - [ ] PersonaPlex voice integration
-- [ ] Competitor capability analysis + parity table
+- [x] Competitor capability analysis + parity table → `docs/COMPETITOR_PARITY_ANALYSIS.md`
 
 ### Phase 5: POLISH + SCALE
 **Target:** Production-grade platform with monitoring
@@ -189,10 +189,10 @@ P2.3  BOOMERANG_VISUAL_3D        DONE
 P2.4  CLOUD_RUN_JOBS             MISSING
 P2.5  CDN_DEPLOY_PIPELINE        MISSING
 P2.6  PERSONAPLEX_VOICE          MISSING
-P2.7  COMPETITOR_PARITY          MISSING
+P2.7  COMPETITOR_PARITY          DONE
 ```
 
-**Score: 8 DONE / 10 PARTIAL / 5 MISSING = 39% complete** (was 26%)
+**Score: 9 DONE / 10 PARTIAL / 4 MISSING = 43% complete** (was 39%)
 
 ---
 
