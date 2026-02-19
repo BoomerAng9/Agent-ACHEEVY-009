@@ -177,9 +177,8 @@ export const MODELS: Record<string, ModelSpec> = {
     tier: 'economy',
   },
 
-  // ── Visual Agentic / Agent Swarm ────────────────────────────────────
-  // Routed via Together.ai or Fireworks.ai — NOT through OpenRouter.
-  // Use kimi client: import { kimi } from './kimi'
+  // ── Together.ai Models ───────────────────────────────────────────────
+  // Routed via Together.ai direct — use dedicated clients, NOT OpenRouter.
   'kimi-k2.5': {
     id: 'moonshotai/Kimi-K2.5',
     name: 'Kimi K2.5',
@@ -188,6 +187,15 @@ export const MODELS: Record<string, ModelSpec> = {
     outputPer1M: 0.90,
     contextWindow: 262144, // 256K
     tier: 'premium',
+  },
+  'llama-4-maverick': {
+    id: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
+    name: 'Llama 4 Maverick',
+    provider: 'Meta (Together.ai)',
+    inputPer1M: 0.27,
+    outputPer1M: 0.85,
+    contextWindow: 1048576, // 1M
+    tier: 'economy',
   },
 };
 
