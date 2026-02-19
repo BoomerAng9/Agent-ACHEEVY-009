@@ -245,7 +245,12 @@
 - **What happened:** Several PRs with 50-400+ changed files had only the default template body (no description). Example: PR #60 deleted 71,059 lines with no explanation.
 - **Lesson:** Require PR descriptions in the template (use `required` label or CI check). Block merges without a summary.
 
-### 8.3 Self-Referencing Submodule (PR #58)
+### 8.3 Merge Conflict from Parallel Component Extraction (PR #67 vs #68)
+- **What happened:** PR #67 (Bolt) extracted the inline `VoiceWaveform` component from `AcheevyChat.tsx` into a standalone `VoiceVisualizer` at `components/ui/VoiceVisualizer.tsx`. Meanwhile PR #68 (Claude) still had the inline `VoiceWaveform` plus an import of the new `VoiceVisualizer`. Merging main into #68 created a conflict: the inline component block existed in HEAD but was deleted in main.
+- **Fix:** Accepted main's deletion — the extracted component is the better architecture. Removed the dead inline `VoiceWaveform` and the unused `memo` import.
+- **Lesson:** When two agents work on the same component simultaneously, coordinate via PR descriptions or a shared "in progress" label. The agent that extracts/refactors should close competing PRs that touch the same code.
+
+### 8.4 Self-Referencing Submodule (PR #58)
 - **What happened:** The AIMS repo was added as a submodule of itself (`AIMS` gitlink pointing to the same repo).
 - **Lesson:** Add a CI check: `git submodule foreach` should never resolve to the current repo URL.
 
