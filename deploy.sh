@@ -2,19 +2,15 @@
 # =============================================================================
 # A.I.M.S. Production Deployment Script
 # =============================================================================
-# Builds, deploys, and optionally provisions SSL certificates.
-# SSL is managed by certbot installed on the HOST (not in a container).
-# Certs are bind-mounted into the nginx container at /etc/letsencrypt.
-#
+# Builds, deploys, and activates SSL for configured domains.
+# SSL managed by host certbot (apt) — certs at /etc/letsencrypt, bind-mounted into nginx.
 # Supports dual-domain architecture:
 #   --domain          = plugmein.cloud (functional app)
 #   --landing-domain  = aimanagedsolutions.cloud (father site)
 #
 # Usage:
-#   ./deploy.sh                                                  # HTTP only
-#   ./deploy.sh --domain plugmein.cloud --email a@b              # App SSL only
-#   ./deploy.sh --domain plugmein.cloud --landing-domain aimanagedsolutions.cloud --email a@b  # Both
-#   ./deploy.sh --landing-domain aimanagedsolutions.cloud --email a@b  # Landing SSL only
+#   ./deploy.sh --domain plugmein.cloud --landing-domain aimanagedsolutions.cloud  # Standard deploy
+#   ./deploy.sh --domain plugmein.cloud --email a@b              # Issue new cert + deploy
 #   ./deploy.sh --ssl-renew                                      # Renew all certs
 #   ./deploy.sh --no-cache                                       # Force rebuild
 # =============================================================================
@@ -45,6 +41,7 @@ LANDING_DOMAIN=""
 EMAIL=""
 SSL_RENEW=false
 NO_CACHE=false
+SSL_CHANGED=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -59,12 +56,13 @@ while [[ $# -gt 0 ]]; do
             echo "Options:"
             echo "  --domain DOMAIN           Functional app domain (e.g. plugmein.cloud)"
             echo "  --landing-domain DOMAIN   Landing/brand domain (e.g. aimanagedsolutions.cloud)"
-            echo "  --email EMAIL             Email for Let's Encrypt registration"
+            echo "  --email EMAIL             Email for initial cert issuance (optional if certs exist)"
             echo "  --ssl-renew               Force renewal of all SSL certificates"
             echo "  --no-cache                Force fresh Docker image rebuild"
             echo ""
             echo "Examples:"
-            echo "  ./deploy.sh --domain plugmein.cloud --landing-domain aimanagedsolutions.cloud --email acheevy@aimanagedsolutions.cloud"
+            echo "  ./deploy.sh --domain plugmein.cloud --landing-domain aimanagedsolutions.cloud"
+            echo "  ./deploy.sh --domain plugmein.cloud --email acheevy@aimanagedsolutions.cloud  # first-time cert"
             echo "  ./deploy.sh --ssl-renew"
             exit 0 ;;
         *) error "Unknown option: $1"; exit 1 ;;
@@ -123,7 +121,7 @@ check_env() {
 
 header "Environment Validation"
 check_env "NEXTAUTH_SECRET"         "critical" "Auth will not work without this"
-check_env "INTERNAL_API_KEY"        "critical" "Frontend ↔ backend communication key"
+check_env "INTERNAL_API_KEY"        "critical" "Frontend <-> backend communication key"
 check_env "OPENROUTER_API_KEY"      "critical" "LLM inference (all Boomer_Angs)"
 check_env "REDIS_PASSWORD"          "critical" "Redis auth (sessions + cache)"
 check_env "N8N_AUTH_PASSWORD"       "critical" "n8n admin UI has no password — exposed"
@@ -217,148 +215,97 @@ if [ $WAITED -ge $MAX_WAIT ]; then
 fi
 
 # =============================================================================
-# SSL: Ensure certbot is installed on HOST (not in a container)
+# SSL Certificate Setup — App Domain (plugmein.cloud)
+# Uses host certbot (apt-installed). Certs live at /etc/letsencrypt on the host,
+# bind-mounted into the nginx container.
 # =============================================================================
-ensure_certbot() {
-    if ! command -v certbot &> /dev/null; then
-        info "Installing certbot on host..."
-        if command -v apt-get &> /dev/null; then
-            apt-get update -qq && apt-get install -y -qq certbot
-        elif command -v yum &> /dev/null; then
-            yum install -y certbot
-        else
-            error "Cannot auto-install certbot. Install it manually: https://certbot.eff.org"
-            return 1
-        fi
-        info "certbot installed."
-    fi
-    # Ensure webroot directory exists on host
-    mkdir -p /var/www/certbot
-}
+if [ -n "${DOMAIN}" ]; then
+    header "SSL Setup — App Domain (${DOMAIN})"
 
-# =============================================================================
-# SSL Certificate Provisioning — App Domain (plugmein.cloud)
-# Certs are issued by HOST certbot and bind-mounted into the nginx container.
-# =============================================================================
-if [ -n "${DOMAIN}" ] && [ -n "${EMAIL}" ]; then
-    header "SSL Certificate Setup — App Domain (${DOMAIN})"
-    ensure_certbot
-
-    if [ -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" ] && [ "${SSL_RENEW}" = "false" ]; then
-        info "SSL certificate already exists for ${DOMAIN}."
-    else
-        info "Requesting SSL certificate for ${DOMAIN}..."
-        certbot certonly \
-    # Check if certs already exist (--entrypoint "" overrides the renewal-loop entrypoint)
-    CERT_EXISTS=$(${COMPOSE_CMD} -f "${COMPOSE_FILE}" run --rm --entrypoint "" certbot \
-        sh -c "test -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem && echo 'yes' || echo 'no'" 2>/dev/null || echo "no")
-
-    if [ "${CERT_EXISTS}" = "yes" ] && [ "${SSL_RENEW}" = "false" ]; then
-        info "SSL certificate already exists for ${DOMAIN}."
-    else
-        info "Requesting SSL certificate for ${DOMAIN}..."
-
-        # Issue certificate via webroot challenge (includes www subdomain)
-        ${COMPOSE_CMD} -f "${COMPOSE_FILE}" run --rm --entrypoint "" certbot \
+    # Issue cert only if --email provided AND certs don't exist (or --ssl-renew)
+    if [ -n "${EMAIL}" ]; then
+        if [ ! -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" ] || [ "${SSL_RENEW}" = "true" ]; then
+            info "Requesting SSL certificate for ${DOMAIN}..."
             certbot certonly \
-            --webroot \
-            -w /var/www/certbot \
-            -d "${DOMAIN}" \
-            -d "www.${DOMAIN}" \
-            --email "${EMAIL}" \
-            --agree-tos \
-            --no-eff-email \
-            --force-renewal
-        info "SSL certificate issued for ${DOMAIN}."
+                --webroot \
+                -w /var/www/certbot \
+                -d "${DOMAIN}" \
+                -d "www.${DOMAIN}" \
+                --email "${EMAIL}" \
+                --agree-tos \
+                --no-eff-email \
+                --force-renewal
+            info "SSL certificate issued for ${DOMAIN}."
+        else
+            info "SSL certificate already exists for ${DOMAIN}."
+        fi
     fi
 
-    # Activate HTTPS nginx config for app domain
-    info "Activating HTTPS server block for ${DOMAIN}..."
-    SSL_CONF=$(sed "s/DOMAIN_PLACEHOLDER/${DOMAIN}/g" "${SSL_TEMPLATE}")
-
-    # Write SSL config into the nginx conf.d volume
-    ${COMPOSE_CMD} -f "${COMPOSE_FILE}" exec -T nginx \
-        sh -c "cat > /etc/nginx/conf.d/ssl.conf" <<< "${SSL_CONF}"
-
-    info "App domain HTTPS config written."
+    # Activate HTTPS config if certs exist on disk
+    if [ -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" ]; then
+        info "Activating HTTPS server block for ${DOMAIN}..."
+        SSL_CONF=$(sed "s/DOMAIN_PLACEHOLDER/${DOMAIN}/g" "${SSL_TEMPLATE}")
+        ${COMPOSE_CMD} -f "${COMPOSE_FILE}" exec -T nginx \
+            sh -c "cat > /etc/nginx/conf.d/ssl.conf" <<< "${SSL_CONF}"
+        info "App domain HTTPS config written."
+        SSL_CHANGED=true
+    else
+        warn "No SSL cert found for ${DOMAIN}. Run with --email to issue one."
+    fi
 fi
 
 # =============================================================================
-# SSL Certificate Provisioning — Landing Domain (aimanagedsolutions.cloud)
+# SSL Certificate Setup — Landing Domain (aimanagedsolutions.cloud)
 # =============================================================================
-if [ -n "${LANDING_DOMAIN}" ] && [ -n "${EMAIL}" ]; then
-    header "SSL Certificate Setup — Landing Domain (${LANDING_DOMAIN})"
-    ensure_certbot
+if [ -n "${LANDING_DOMAIN}" ]; then
+    header "SSL Setup — Landing Domain (${LANDING_DOMAIN})"
 
-    if [ -f "/etc/letsencrypt/live/${LANDING_DOMAIN}/fullchain.pem" ] && [ "${SSL_RENEW}" = "false" ]; then
-        info "SSL certificate already exists for ${LANDING_DOMAIN}."
-    else
-        info "Requesting SSL certificate for ${LANDING_DOMAIN} + www.${LANDING_DOMAIN}..."
-        certbot certonly \
-    # Check if certs already exist (--entrypoint "" overrides the renewal-loop entrypoint)
-    LANDING_CERT_EXISTS=$(${COMPOSE_CMD} -f "${COMPOSE_FILE}" run --rm --entrypoint "" certbot \
-        sh -c "test -f /etc/letsencrypt/live/${LANDING_DOMAIN}/fullchain.pem && echo 'yes' || echo 'no'" 2>/dev/null || echo "no")
-
-    if [ "${LANDING_CERT_EXISTS}" = "yes" ] && [ "${SSL_RENEW}" = "false" ]; then
-        info "SSL certificate already exists for ${LANDING_DOMAIN}."
-    else
-        info "Requesting SSL certificate for ${LANDING_DOMAIN} + www.${LANDING_DOMAIN}..."
-
-        # Issue certificate via webroot challenge (includes www subdomain)
-        ${COMPOSE_CMD} -f "${COMPOSE_FILE}" run --rm --entrypoint "" certbot \
+    # Issue cert only if --email provided AND certs don't exist (or --ssl-renew)
+    if [ -n "${EMAIL}" ]; then
+        if [ ! -f "/etc/letsencrypt/live/${LANDING_DOMAIN}/fullchain.pem" ] || [ "${SSL_RENEW}" = "true" ]; then
+            info "Requesting SSL certificate for ${LANDING_DOMAIN} + www.${LANDING_DOMAIN}..."
             certbot certonly \
-            --webroot \
-            -w /var/www/certbot \
-            -d "${LANDING_DOMAIN}" \
-            -d "www.${LANDING_DOMAIN}" \
-            --email "${EMAIL}" \
-            --agree-tos \
-            --no-eff-email \
-            --force-renewal
-        info "SSL certificate issued for ${LANDING_DOMAIN}."
+                --webroot \
+                -w /var/www/certbot \
+                -d "${LANDING_DOMAIN}" \
+                -d "www.${LANDING_DOMAIN}" \
+                --email "${EMAIL}" \
+                --agree-tos \
+                --no-eff-email \
+                --force-renewal
+            info "SSL certificate issued for ${LANDING_DOMAIN}."
+        else
+            info "SSL certificate already exists for ${LANDING_DOMAIN}."
+        fi
     fi
 
-    # Activate HTTPS nginx config for landing domain
-    info "Activating HTTPS server block for ${LANDING_DOMAIN}..."
-    SSL_LANDING_CONF=$(sed "s/LANDING_DOMAIN_PLACEHOLDER/${LANDING_DOMAIN}/g" "${SSL_LANDING_TEMPLATE}")
-
-    # Write SSL config into the nginx conf.d volume (separate file from app domain)
-    ${COMPOSE_CMD} -f "${COMPOSE_FILE}" exec -T nginx \
-        sh -c "cat > /etc/nginx/conf.d/ssl-landing.conf" <<< "${SSL_LANDING_CONF}"
-
-    info "Landing domain HTTPS config written."
+    # Activate HTTPS config if certs exist on disk
+    if [ -f "/etc/letsencrypt/live/${LANDING_DOMAIN}/fullchain.pem" ]; then
+        info "Activating HTTPS server block for ${LANDING_DOMAIN}..."
+        SSL_LANDING_CONF=$(sed "s/LANDING_DOMAIN_PLACEHOLDER/${LANDING_DOMAIN}/g" "${SSL_LANDING_TEMPLATE}")
+        ${COMPOSE_CMD} -f "${COMPOSE_FILE}" exec -T nginx \
+            sh -c "cat > /etc/nginx/conf.d/ssl-landing.conf" <<< "${SSL_LANDING_CONF}"
+        info "Landing domain HTTPS config written."
+        SSL_CHANGED=true
+    else
+        warn "No SSL cert found for ${LANDING_DOMAIN}. Run with --email to issue one."
+    fi
 fi
 
 # =============================================================================
 # Reload nginx (once, after all SSL configs are written)
 # =============================================================================
-if [ -n "${DOMAIN}" ] || [ -n "${LANDING_DOMAIN}" ]; then
-    if [ -n "${EMAIL}" ]; then
-        info "Testing and reloading nginx..."
-        ${COMPOSE_CMD} -f "${COMPOSE_FILE}" exec -T nginx \
-            sh -c "nginx -t && nginx -s reload"
-        info "HTTPS activated. nginx reloaded."
-    fi
-elif [ "${SSL_RENEW}" = "true" ]; then
+if [ "${SSL_CHANGED}" = "true" ]; then
+    info "Testing and reloading nginx..."
+    ${COMPOSE_CMD} -f "${COMPOSE_FILE}" exec -T nginx \
+        sh -c "nginx -t && nginx -s reload"
+    info "HTTPS activated. nginx reloaded."
+fi
+if [ "${SSL_RENEW}" = "true" ] && [ -z "${DOMAIN}" ] && [ -z "${LANDING_DOMAIN}" ]; then
     header "SSL Certificate Renewal"
-    ensure_certbot
-    certbot renew --webroot -w /var/www/certbot --quiet
+    certbot renew --webroot -w /var/www/certbot
     ${COMPOSE_CMD} -f "${COMPOSE_FILE}" exec -T nginx sh -c "nginx -s reload"
     info "Certificates renewed and nginx reloaded."
-fi
-
-# =============================================================================
-# SSL Auto-Renewal Cron (host-level, runs twice daily)
-# =============================================================================
-if [ -n "${EMAIL}" ] && ([ -n "${DOMAIN}" ] || [ -n "${LANDING_DOMAIN}" ]); then
-    CRON_CMD="0 2,14 * * * certbot renew --webroot -w /var/www/certbot --quiet --deploy-hook '${COMPOSE_CMD} -f ${COMPOSE_FILE} exec -T nginx nginx -s reload'"
-    if ! crontab -l 2>/dev/null | grep -qF "certbot renew"; then
-        info "Installing SSL auto-renewal cron (twice daily)..."
-        (crontab -l 2>/dev/null; echo "${CRON_CMD}") | crontab -
-        info "Cron installed. Certs will auto-renew."
-    else
-        info "SSL auto-renewal cron already installed."
-    fi
 fi
 
 # =============================================================================
