@@ -45,7 +45,9 @@ const PROSPECTS = [
 
 export default function HomePage() {
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="relative flex flex-col min-h-screen bg-obsidian">
+      {/* Stitch Nano: noise texture overlay (retro-futurism layer) */}
+      <div className="texture-noise" aria-hidden="true" />
       <SiteHeader />
       <Hero />
       <LiveNowSection />
@@ -159,8 +161,8 @@ function LiveNowSection() {
 /* ─── Conferences ──────────────────────────────────────────── */
 
 function ConferenceCard({ conf }: { conf: Conference }) {
-  // Show up to 6 team color dots
-  const teamColors = conf.teams.slice(0, 8).map((t) => t.colors[0]?.hex || "#666");
+  const visibleTeams = conf.teams.slice(0, 5);
+  const remaining = conf.teams.length - visibleTeams.length;
 
   return (
     <Link
@@ -182,20 +184,23 @@ function ConferenceCard({ conf }: { conf: Conference }) {
       <p className="text-xs text-white/40 mb-3 truncate">
         {conf.name}
       </p>
-      {/* Team color strip */}
-      <div className="flex gap-1.5 flex-wrap">
-        {teamColors.map((hex, i) => (
-          <div
-            key={i}
-            className="w-4 h-4 rounded-full border border-white/10"
-            style={{ backgroundColor: hex }}
-            title={conf.teams[i]?.commonName}
-          />
-        ))}
-        {conf.teams.length > 8 && (
-          <div className="w-4 h-4 rounded-full border border-white/10 bg-white/5 flex items-center justify-center">
-            <span className="text-[8px] text-white/40">+{conf.teams.length - 8}</span>
+      {/* Team list with color indicators */}
+      <div className="flex flex-col gap-1">
+        {visibleTeams.map((team) => (
+          <div key={team.id} className="flex items-center gap-2">
+            <div
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0 border border-white/10"
+              style={{ backgroundColor: team.colors[0]?.hex || "#666" }}
+            />
+            <span className="text-[11px] text-white/50 truncate group-hover:text-white/70 transition-colors">
+              {team.commonName}
+            </span>
           </div>
+        ))}
+        {remaining > 0 && (
+          <span className="text-[10px] text-white/30 pl-[18px]">
+            +{remaining} more
+          </span>
         )}
       </div>
     </Link>
@@ -284,9 +289,58 @@ function BigBoardSection() {
           </p>
         </div>
 
-        {/* Prospect table */}
-        <div className="overflow-x-auto rounded-xl border border-white/[0.06] bg-black/40">
-          <table className="w-full min-w-[700px]">
+        {/* Mobile: card layout */}
+        <div className="flex flex-col gap-3 md:hidden">
+          {PROSPECTS.map((p) => {
+            const tierStyle = TIER_STYLES[p.tier];
+            const trendStyle = TREND_STYLES[p.trend];
+            const scoreColor = getScoreColor(p.paiScore);
+            const delta = p.trend === "UP" && p.previousRank > 0
+              ? p.previousRank - p.nationalRank
+              : 0;
+
+            return (
+              <Link
+                key={p.slug}
+                href={`/sandbox/perform/prospects/${p.slug}`}
+                className="wireframe-card p-4 hover:border-gold/30 transition-all duration-300"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-mono text-white/30">#{p.nationalRank}</span>
+                      <span className="text-xs font-mono text-white/60 bg-white/[0.04] rounded px-1.5 py-0.5">
+                        {p.position}
+                      </span>
+                      <span className="text-xs text-white/40">{p.classYear}</span>
+                    </div>
+                    <h4 className="text-sm font-semibold text-white truncate">{p.name}</h4>
+                    <p className="text-xs text-white/40">{p.school}, {p.state}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                    <span className={`text-2xl font-bold font-display ${scoreColor}`}>
+                      {p.paiScore}
+                    </span>
+                    <span className={`text-[10px] font-mono uppercase tracking-wider rounded-full px-2 py-0.5 ${tierStyle.bg} ${tierStyle.border} ${tierStyle.text} border`}>
+                      {tierStyle.label}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04]">
+                  <span className={`text-xs font-mono ${trendStyle.color}`}>
+                    {trendStyle.icon}
+                    {delta > 0 && <span className="ml-0.5">+{delta}</span>}
+                  </span>
+                  <span className="text-xs text-white/40">{p.nilEstimate}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Desktop: table layout */}
+        <div className="hidden md:block overflow-x-auto rounded-xl border border-white/[0.06] bg-black/40">
+          <table className="w-full">
             <thead>
               <tr className="border-b border-white/[0.06]">
                 <th className="p-3 text-left text-[10px] font-mono uppercase tracking-wider text-white/30 w-12">#</th>
@@ -404,8 +458,9 @@ const PLATFORM_PILLARS = [
 
 function WhyAIMSSection() {
   return (
-    <section className="border-t border-white/[0.06] bg-[#080808]">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+    <section className="relative border-t border-white/[0.06] bg-[#080808]">
+      <div className="absolute inset-0 bg-dots opacity-30 pointer-events-none" aria-hidden="true" />
+      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
         <div className="text-center mb-16">
           <p className="text-xs font-mono uppercase tracking-[0.2em] text-gold/60 mb-3">
             The Platform
@@ -439,7 +494,7 @@ function WhyAIMSSection() {
             </div>
           ))}
         </div>
-      </div>
+      </div>  {/* closes relative wrapper */}
     </section>
   );
 }
@@ -568,8 +623,9 @@ function RoadmapSection() {
 
 function FinalCTASection() {
   return (
-    <section className="border-t border-white/[0.06] bg-[#080808]">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+    <section className="relative border-t border-white/[0.06] bg-[#080808]">
+      <div className="absolute inset-0 vignette-overlay" aria-hidden="true" />
+      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
         <div className="wireframe-card relative overflow-hidden p-8 sm:p-12 lg:p-16 text-center">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.05)_0%,transparent_60%)]" />
 
