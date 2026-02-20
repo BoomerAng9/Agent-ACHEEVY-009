@@ -17,34 +17,34 @@ const RUN_OF_SHOW: BroadcastSegment[] = [
     {
         id: 'intro',
         type: 'HUMAN_ANCHOR_FEED',
-        title: 'Per|Form Draft Center Live',
+        title: 'Per|Form Draft Center',
         durationSeconds: 15,
         host: 'HUMAN',
-        topic: 'Welcome to the 2026 NFL Draft Center',
+        topic: `Welcome to the ${new Date().getFullYear()} NFL Draft Coverage`,
     },
     {
         id: 'top-prospects',
         type: 'BIG_BOARD',
-        title: 'The Elite Tier',
+        title: 'Top Prospects',
         durationSeconds: 20,
         host: 'ACHEEVY',
-        topic: 'Breaking down the consensus Top 5',
+        topic: 'Breaking down the consensus Top 5 entering the Draft',
     },
     {
         id: 'team-needs',
         type: 'MOCK_DRAFT_DESK',
-        title: 'Mock Draft 1.0',
+        title: `NFL Draft ${new Date().getFullYear()}`,
         durationSeconds: 25,
         host: 'BOOMER_ANG',
-        topic: 'What will the Raiders do at #1?',
+        topic: 'On The Clock — Who goes #1 Overall?',
     },
     {
         id: 'closing-debate',
         type: 'WAR_ROOM_DEBATE',
-        title: 'The Great Debate',
+        title: 'War Room Debate',
         durationSeconds: 12,
         host: 'BOOMER_ANG',
-        topic: 'Jermod McCoy: Top 10 Talent or Medical Risk?',
+        topic: 'Bull vs. Bear: Breaking down the top Draft storylines',
     }
 ];
 

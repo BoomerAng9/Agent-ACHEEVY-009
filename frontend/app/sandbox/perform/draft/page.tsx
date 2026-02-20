@@ -34,8 +34,8 @@ function NetworkControls() {
     <button
       onClick={isLive ? stopBroadcast : startBroadcast}
       className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[0.6rem] font-bold tracking-[0.2em] uppercase transition-all ${isLive
-          ? 'bg-red-600/20 text-red-500 border-red-500/50 hover:bg-red-600/30'
-          : 'bg-gold/10 text-gold border-gold/30 hover:bg-gold/20 shadow-[0_0_15px_rgba(218,165,32,0.1)]'
+        ? 'bg-red-600/20 text-red-500 border-red-500/50 hover:bg-red-600/30'
+        : 'bg-gold/10 text-gold border-gold/30 hover:bg-gold/20 shadow-[0_0_15px_rgba(218,165,32,0.1)]'
         }`}
     >
       <Radio size={12} className={isLive ? 'animate-pulse text-red-500' : 'text-gold'} />
@@ -503,8 +503,8 @@ function DraftPageContent() {
                 <span className="text-gold">Command Center</span>
               </h1>
               <p className="text-sm md:text-base text-white/60 max-w-xl font-sans leading-relaxed mb-6">
-                P.A.I.-graded prospects. AGI-generated mock drafts. Interactive simulator.
-                Every pick backed by our proprietary Performance, Athleticism &amp; Intangibles engine.
+                AI-scored prospects. Automated mock drafts. Interactive simulator.
+                Every pick is backed by the A.I.M.S. Scoring &amp; Grading System.
               </p>
 
               <div className="flex flex-wrap items-center gap-3">
@@ -617,7 +617,7 @@ function DraftPageContent() {
                   <BarChart3 size={16} className="text-gold" />
                   <h3 className="text-lg font-display font-bold text-white">Mock Drafts</h3>
                 </div>
-                <p className="text-xs text-white/40 font-mono leading-relaxed">Full 7-round projections powered by P.A.I. grading and adversarial debate analysis.</p>
+                <p className="text-xs text-white/40 font-mono leading-relaxed">Full 7-round projections ranked using the A.I.M.S. Scoring &amp; Grading System with adversarial debate analysis.</p>
                 <ChevronRight size={16} className="absolute top-5 right-5 text-white/10 group-hover:text-gold transition-colors" />
               </div>
             </Link>
@@ -640,7 +640,7 @@ function DraftPageContent() {
                   <Gamepad2 size={16} className="text-emerald-400" />
                   <h3 className="text-lg font-display font-bold text-white">Draft Simulator</h3>
                 </div>
-                <p className="text-xs text-white/40 font-mono leading-relaxed">Step into the war room. You make the picks — the AGI evaluates every move.</p>
+                <p className="text-xs text-white/40 font-mono leading-relaxed">Step into the war room. You make the picks — AI (Artificial General Intelligence) evaluates every move.</p>
                 <ChevronRight size={16} className="absolute top-5 right-5 text-white/10 group-hover:text-emerald-400 transition-colors" />
               </div>
             </Link>
@@ -659,7 +659,7 @@ function DraftPageContent() {
                   <Users size={16} className="text-blue-400" />
                   <h3 className="text-lg font-display font-bold text-white">Prospect Board</h3>
                 </div>
-                <p className="text-xs text-white/40 font-mono leading-relaxed">Top prospects ranked by pure production and P.A.I. scoring.</p>
+                <p className="text-xs text-white/40 font-mono leading-relaxed">Top prospects ranked by pure production using the A.I.M.S. Scoring &amp; Grading System.</p>
                 <ChevronRight size={16} className="absolute top-5 right-5 text-white/10 group-hover:text-blue-400 transition-colors" />
               </div>
             </Link>
@@ -739,7 +739,7 @@ function DraftPageContent() {
                   <span className="text-[0.55rem] font-mono text-white/30 uppercase tracking-widest">Prospect</span>
                   <span className="text-[0.55rem] font-mono text-white/30 uppercase tracking-widest">College</span>
                   <span className="text-[0.55rem] font-mono text-white/30 uppercase tracking-widest">Tier</span>
-                  <span className="text-[0.55rem] font-mono text-white/30 uppercase tracking-widest">P.A.I.</span>
+                  <span className="text-[0.55rem] font-mono text-white/30 uppercase tracking-widest">A.I.M.S. Score</span>
                   <span className="text-[0.55rem] font-mono text-white/30 uppercase tracking-widest">Projected</span>
                   <span className="text-[0.55rem] font-mono text-white/30 uppercase tracking-widest">Trend</span>
                 </div>
@@ -784,7 +784,7 @@ function DraftPageContent() {
                       </div>
 
                       <div>
-                        <span className="md:hidden text-[0.55rem] font-mono text-white/25 uppercase mr-2">P.A.I.</span>
+                        <span className="md:hidden text-[0.55rem] font-mono text-white/25 uppercase mr-2">A.I.M.S.</span>
                         <span className={`text-sm font-mono font-bold ${getScoreColor(p.paiScore)}`}>
                           {p.paiScore}
                         </span>

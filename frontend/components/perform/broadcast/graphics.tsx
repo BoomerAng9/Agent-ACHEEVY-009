@@ -44,7 +44,12 @@ export function LowerThird({ title, topic, host }: { title: string; topic: strin
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-1">
                         <span className="px-2 py-0.5 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-sm">
-                            {host === 'HUMAN' ? 'Analyst Desk' : host.replace('_', ' ')}
+                            {({
+                                HUMAN: 'Analyst Desk',
+                                ACHEEVY: 'Draft Intelligence',
+                                BOOMER_ANG: 'Draft Analyst',
+                                LIL_HAWK: 'Draft Analyst',
+                            } as Record<string, string>)[host] ?? 'Per|Form Network'}
                         </span>
                     </div>
                     <h2 className="text-3xl font-black text-white uppercase tracking-tight leading-none mb-2">

@@ -18,6 +18,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db/prisma';
+import { getCollegeInfo } from '@/lib/perform/cfb-data';
 
 interface AnalystProfile {
     name: string;
@@ -100,12 +101,17 @@ export async function POST(req: NextRequest) {
             });
 
             if (prospect) {
+                // Fetch dynamic metadata from the CFB datasets
+                const collegeData = prospect.college ? getCollegeInfo(prospect.college) : null;
+                const stadiumCallout = collegeData ? ` Playing in front of those ${collegeData.mascot} fans in ${collegeData.city}, ${collegeData.state} built different!` : '';
+                const schemeCallout = collegeData ? ` Even in the ${collegeData.conference}, there are concerns.` : '';
+
                 // Use REAL bull/bear cases from the seed data
                 if (prospect.bullCase) {
-                    bullTake = `${pickRandom(bullAnalyst.catchphrases)} ${prospect.bullCase}`;
+                    bullTake = `${pickRandom(bullAnalyst.catchphrases)} ${prospect.bullCase}${stadiumCallout}`;
                 }
                 if (prospect.bearCase) {
-                    bearTake = `${pickRandom(bearAnalyst.catchphrases)} ${prospect.bearCase}`;
+                    bearTake = `${pickRandom(bearAnalyst.catchphrases)} ${prospect.bearCase}${schemeCallout}`;
                 }
                 if (prospect.mediationVerdict) {
                     verdict = prospect.mediationVerdict;
