@@ -78,7 +78,7 @@ Every job must:
 
 | # | Requirement | Status |
 |---|------------|--------|
-| P1.1 | 12 revenue verticals (Phase A conversational chains) | **PARTIAL** — definitions exist in `vertical-definitions.ts`, gateway has execution engine |
+| P1.1 | 12 revenue verticals (Phase A conversational chains) | **PARTIAL** — definitions exist, classifier now detects all 14 verticals via NLP triggers in `/acheevy/classify` |
 | P1.2 | Single ACHEEVY chat component everywhere | **PARTIAL** — `AcheevyChat.tsx` (694L) exists, not wired to all surfaces |
 | P1.3 | Onboarding flow for new users | **PARTIAL** — pages + hooks exist |
 | P1.4 | Per\|Form sports lobby | **PARTIAL** — sandbox routes exist, gridiron services built |
@@ -98,6 +98,9 @@ Every job must:
 | P2.5 | CDN deploy for generated sites | **MISSING** — deploy-dock UI exists but no CDN push mechanism |
 | P2.6 | PersonaPlex full-duplex voice | **MISSING** — skill spec exists, no integration code |
 | P2.7 | Competitor parity (Manus/Genspark/Flow) | **DONE** — see `docs/COMPETITOR_PARITY_ANALYSIS.md` (feature matrix, gap analysis, roadmap) |
+| P2.8 | Custom Lil_Hawks (user-created bots) | **DONE** — types, engine, API routes, skill, vertical definition all wired |
+| P2.9 | Playground/Sandbox system | **DONE** — 5 playground types (code, prompt, agent, training, education), API routes wired |
+| P2.10 | Competitor parity v2 (Flowith/Agent Neo/MoltBook) | **DONE** — competitor profiles, feature matrix updated, advantage analysis |
 
 ---
 
@@ -131,14 +134,22 @@ Every job must:
 - [ ] Test full flow: auth → chat → LLM response → voice playback
 - [ ] VPS deploy + live smoke test
 
-### Phase 3: REVENUE VERTICALS
-**Target:** 12 verticals work through Phase A conversational chains
+### Phase 3: REVENUE VERTICALS + CUSTOM HAWKS
+**Target:** 14 verticals work through Phase A conversational chains, Custom Lil_Hawks live
 
-- [ ] Wire vertical detection to chat flow
+- [x] Wire vertical detection to chat flow ← DONE: `/acheevy/classify` now detects all 14 verticals via NLP trigger patterns
 - [ ] Implement Phase A step progression UI
 - [ ] Connect Phase B execution to Chicken Hawk dispatch
 - [ ] Enable n8n workflow triggers for automation verticals
 - [ ] Per|Form lobby with live gridiron data
+- [x] Custom Lil_Hawks engine (types, engine, API routes, skill, vertical) ← DONE
+- [x] Playground/Sandbox engine (5 types, API routes, skill, vertical) ← DONE
+- [x] Wire Custom Hawks creation flow into dashboard UI ← DONE: `/dashboard/custom-hawks` with 4-step creator wizard
+- [x] Wire Playground UI into dashboard ← DONE: `/dashboard/playground` with code editor + prompt tester
+- [x] Connect E2B API to code playground ← DONE: `/api/code/execute` production route (E2B + gateway fallback)
+- [x] Agent Viewport / Collaboration Feed UI ← DONE: `CollaborationFeed.tsx` + `CollaborationSidebar` in chat (G2 closed)
+- [x] File generation & download pipeline ← DONE: `/api/files/generate` supports md/json/csv/txt/html (G4 closed)
+- [ ] Enable hawk scheduling via n8n cron triggers
 
 ### Phase 4: AUTONOMY + CLOUD RUN
 **Target:** Agents work autonomously, jobs deploy to right targets
@@ -190,9 +201,13 @@ P2.4  CLOUD_RUN_JOBS             MISSING
 P2.5  CDN_DEPLOY_PIPELINE        MISSING
 P2.6  PERSONAPLEX_VOICE          MISSING
 P2.7  COMPETITOR_PARITY          DONE
+P2.8  CUSTOM_LIL_HAWKS           DONE       ← NEW: user-created bots system
+P2.9  PLAYGROUND_SANDBOX          DONE       ← NEW: 5-type sandbox engine
+P2.10 COMPETITOR_PARITY_V2        DONE       ← NEW: Flowith/Agent Neo/MoltBook
 ```
 
-**Score: 9 DONE / 10 PARTIAL / 4 MISSING = 43% complete** (was 39%)
+**Score: 13 DONE / 10 PARTIAL / 4 MISSING = 48% complete** (was 43%)
+**Phase 3 progress: 8/12 items complete** — vertical classifier, playground UI, custom hawks UI, code sandbox, agent viewport, file downloads all wired
 
 ---
 

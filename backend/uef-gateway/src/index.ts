@@ -49,6 +49,22 @@ import { ossModels } from './llm/oss-models';
 import { personaplex } from './llm/personaplex';
 import logger from './logger';
 
+// Custom Lil_Hawks — User-Created Bots
+import {
+  createCustomHawk, listUserHawks, getHawk, updateHawkStatus, deleteHawk,
+  executeHawk, getAvailableDomains, getAvailableTools, getHawkExecutionHistory,
+  getGlobalStats as getHawkGlobalStats,
+} from './custom-hawks';
+import type { CustomHawkSpec, HawkExecutionRequest } from './custom-hawks';
+
+// Playground/Sandbox — Isolated Execution Environments
+import {
+  createPlayground, executeInPlayground, getPlayground, listPlaygrounds,
+  pausePlayground, resumePlayground, completePlayground, addFile,
+  getPlaygroundStats,
+} from './playground';
+import type { CreatePlaygroundRequest, ExecuteInPlaygroundRequest } from './playground';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY || '';
@@ -499,11 +515,199 @@ app.post('/acheevy/classify', (req, res) => {
       return;
     }
 
-    // Intent classification based on keywords
+    // ── Vertical Trigger Patterns ────────────────────────────────
+    // Mirrors aims-skills/acheevy-verticals/vertical-definitions.ts
+    // Each vertical has NLP trigger patterns; we test them in priority order.
+    const VERTICAL_TRIGGERS: Array<{ id: string; name: string; patterns: RegExp[] }> = [
+      // Custom Hawk creation (high priority — user wants to create a bot)
+      {
+        id: 'custom-hawk',
+        name: 'Custom Lil_Hawks',
+        patterns: [
+          /custom\s*(hawk|bot|agent)/i,
+          /create\s*(a|my|an?)?\s*(hawk|bot|agent)/i,
+          /make\s*(a|my|an?)?\s*(hawk|bot|agent)/i,
+          /build\s*me\s*(a|an?)?\s*(hawk|bot|agent)/i,
+          /my\s*own\s*(hawk|bot|agent|assistant)/i,
+          /personal\s*(assistant|agent|bot)/i,
+          /lil_\w+_hawk/i,
+        ],
+      },
+      // Playground / Sandbox (high priority — user wants to test/run code)
+      {
+        id: 'playground',
+        name: 'Playground/Sandbox',
+        patterns: [
+          /playground/i,
+          /sandbox/i,
+          /run\s*(some|this|my)?\s*code/i,
+          /test\s*(some|this|my)?\s*(code|prompt|agent)/i,
+          /code\s*sandbox/i,
+          /training\s*(data|task|annotation)/i,
+          /student\s*workspace/i,
+          /prompt\s*(test|playground)/i,
+        ],
+      },
+      // Chicken Hawk (code/deploy agent)
+      {
+        id: 'chicken-hawk',
+        name: 'Chicken Hawk Code Agent',
+        patterns: [
+          /chicken\s*hawk/i,
+          /build\s*me\s*(an?\s*)?(app|tool|website|api|service)/i,
+          /deploy\s*(my|this|the)\s*(app|project|code)/i,
+          /claw\s*(agent|build|code)/i,
+          /code\s*agent/i,
+        ],
+      },
+      // LiveSim
+      {
+        id: 'livesim',
+        name: 'LiveSim Agent Space',
+        patterns: [
+          /live\s*sim/i,
+          /simulation\s*space/i,
+          /autonomous\s*space/i,
+          /agent\s*simulation/i,
+          /let\s*the\s*agents?\s*work/i,
+          /watch\s*the\s*team/i,
+        ],
+      },
+      // Business Idea Generator
+      {
+        id: 'idea-generator',
+        name: 'Business Idea Generator',
+        patterns: [
+          /business\s*ideas?/i,
+          /startup\s*ideas?/i,
+          /what\s*should\s*i\s*build/i,
+          /suggest.*ideas/i,
+          /start(ing)?\s*(a|my)?\s*business/i,
+          /entrepreneur/i,
+          /side\s*hustle/i,
+        ],
+      },
+      // Pain Points
+      {
+        id: 'pain-points',
+        name: 'Customer Pain Point Finder',
+        patterns: [
+          /pain\s*points?/i,
+          /problems?\s*in/i,
+          /market\s*gaps?/i,
+          /customer\s*frustrations?/i,
+        ],
+      },
+      // Brand Name
+      {
+        id: 'brand-name',
+        name: 'Brand Name Generator',
+        patterns: [
+          /brand\s*name/i,
+          /company\s*name/i,
+          /what\s*to\s*call/i,
+          /name.*business/i,
+        ],
+      },
+      // Value Proposition
+      {
+        id: 'value-prop',
+        name: 'Value Proposition Builder',
+        patterns: [
+          /value\s*proposition/i,
+          /why\s*us/i,
+          /unique\s*selling/i,
+          /\busp\b/i,
+        ],
+      },
+      // MVP Plan
+      {
+        id: 'mvp-plan',
+        name: 'MVP Launch Planner',
+        patterns: [
+          /\bmvp\b/i,
+          /launch\s*plan/i,
+          /get\s*started/i,
+          /first\s*steps?/i,
+          /minimum\s*viable/i,
+        ],
+      },
+      // Customer Persona
+      {
+        id: 'persona',
+        name: 'Customer Persona Builder',
+        patterns: [
+          /target\s*customer/i,
+          /who\s*buys/i,
+          /ideal\s*customer/i,
+          /customer\s*persona/i,
+          /buyer\s*persona/i,
+        ],
+      },
+      // Social Hooks
+      {
+        id: 'social-hooks',
+        name: 'Social Media Hooks',
+        patterns: [
+          /launch\s*tweet/i,
+          /social\s*post/i,
+          /announce/i,
+          /twitter\s*hook/i,
+          /x\s*hook/i,
+        ],
+      },
+      // Cold Outreach
+      {
+        id: 'cold-outreach',
+        name: 'Cold Outreach Engine',
+        patterns: [
+          /cold\s*email/i,
+          /outreach/i,
+          /pitch\s*email/i,
+          /reach\s*out/i,
+        ],
+      },
+      // Automation
+      {
+        id: 'automation',
+        name: 'Automation Builder',
+        patterns: [
+          /automat/i,
+          /save\s*time/i,
+          /streamline/i,
+          /repetitive\s*tasks?/i,
+        ],
+      },
+      // Content Calendar
+      {
+        id: 'content-calendar',
+        name: 'Content Calendar Planner',
+        patterns: [
+          /content\s*plan/i,
+          /posting\s*schedule/i,
+          /content\s*calendar/i,
+          /social\s*media\s*plan/i,
+        ],
+      },
+    ];
+
+    // ── Try vertical trigger matching first ────────────────────────
+    for (const vertical of VERTICAL_TRIGGERS) {
+      if (vertical.patterns.some(p => p.test(message))) {
+        res.json({
+          intent: `vertical:${vertical.id}`,
+          verticalName: vertical.name,
+          confidence: 0.9,
+          requiresAgent: true,
+        });
+        return;
+      }
+    }
+
     const lower = message.toLowerCase();
 
-    // Check for build/engineering intents
-    if (/\b(build|create|scaffold|deploy|generate|implement|code|develop|launch|mvp)\b/.test(lower)) {
+    // ── Plug fabrication (build app/site/tool) ────────────────────
+    if (/\b(build|create|scaffold|deploy|generate|implement|code|develop|launch)\b/.test(lower)) {
       if (/\b(plug|app|site|website|saas|platform|tool)\b/.test(lower)) {
         res.json({ intent: 'plug-factory:custom', confidence: 0.9, requiresAgent: true });
         return;
@@ -512,21 +716,33 @@ app.post('/acheevy/classify', (req, res) => {
       return;
     }
 
-    // Check for research intents
+    // ── Research intents ──────────────────────────────────────────
     if (/\b(research|analyze|investigate|study|compare|benchmark|audit)\b/.test(lower)) {
       res.json({ intent: 'skill:research', confidence: 0.8, requiresAgent: true });
       return;
     }
 
-    // Check for vertical/business intents
-    if (/\b(business|startup|entrepreneur|side hustle|monetize|revenue|scale)\b/.test(lower)) {
-      res.json({ intent: 'vertical:idea-generator', confidence: 0.85, requiresAgent: true });
+    // ── Broad business intent (catches anything the verticals missed) ──
+    if (/\b(business|startup|monetize|revenue|scale|profit|income)\b/.test(lower)) {
+      res.json({ intent: 'vertical:idea-generator', confidence: 0.7, requiresAgent: true });
       return;
     }
 
-    // Check for PMO/workflow intents
-    if (/\b(workflow|pipeline|automate|chain|team|assign|delegate)\b/.test(lower)) {
+    // ── Per|Form sports analytics ─────────────────────────────────
+    if (/\b(draft|prospect|athlete|scout|football|nfl|recruit|big\s*board|mock\s*draft|gridiron)\b/.test(lower)) {
+      res.json({ intent: 'perform-stack', confidence: 0.85, requiresAgent: true });
+      return;
+    }
+
+    // ── PMO/workflow routing ──────────────────────────────────────
+    if (/\b(workflow|pipeline|chain|team|assign|delegate)\b/.test(lower)) {
       res.json({ intent: 'pmo-route', confidence: 0.7, requiresAgent: true });
+      return;
+    }
+
+    // ── Spawn agent ───────────────────────────────────────────────
+    if (/\b(spawn|activate|deploy)\s*(an?\s*)?(agent|boomer|ang)\b/.test(lower)) {
+      res.json({ intent: 'deployment-hub', confidence: 0.85, requiresAgent: true });
       return;
     }
 
@@ -954,6 +1170,229 @@ app.get('/lil-hawks', (_req, res) => {
       'vision-scout': VISION_SQUAD_PROFILES,
     },
   });
+});
+
+// --------------------------------------------------------------------------
+// Custom Lil_Hawks — User-Created Bots
+// Users can create their own Lil_Hawks with custom names and specialties.
+// "Lil_Increase_My_Money_Hawk", "Lil_Grade_My_Essay_Hawk", etc.
+// --------------------------------------------------------------------------
+app.post('/custom-hawks', (req, res) => {
+  try {
+    const { userId, spec } = req.body as { userId: string; spec: CustomHawkSpec };
+    if (!userId || !spec) {
+      res.status(400).json({ error: 'Missing userId or spec' });
+      return;
+    }
+    const result = createCustomHawk(userId, spec);
+    if (!result.success) {
+      res.status(400).json(result);
+      return;
+    }
+    res.status(201).json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Custom hawk creation failed';
+    logger.error({ err }, '[CustomHawks] Create error');
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/custom-hawks', (req, res) => {
+  const userId = req.query.userId as string;
+  if (!userId) {
+    res.status(400).json({ error: 'Missing userId query param' });
+    return;
+  }
+  res.json(listUserHawks(userId));
+});
+
+app.get('/custom-hawks/domains', (_req, res) => {
+  res.json({ domains: getAvailableDomains(), tools: getAvailableTools() });
+});
+
+app.get('/custom-hawks/stats', (_req, res) => {
+  res.json(getHawkGlobalStats());
+});
+
+app.get('/custom-hawks/:hawkId', (req, res) => {
+  const userId = req.query.userId as string;
+  if (!userId) {
+    res.status(400).json({ error: 'Missing userId query param' });
+    return;
+  }
+  const hawk = getHawk(req.params.hawkId, userId);
+  if (!hawk) {
+    res.status(404).json({ error: 'Hawk not found' });
+    return;
+  }
+  res.json({ hawk });
+});
+
+app.patch('/custom-hawks/:hawkId/status', (req, res) => {
+  const { userId, status } = req.body as { userId: string; status: 'active' | 'paused' | 'retired' };
+  if (!userId || !status) {
+    res.status(400).json({ error: 'Missing userId or status' });
+    return;
+  }
+  const hawk = updateHawkStatus(req.params.hawkId, userId, status);
+  if (!hawk) {
+    res.status(404).json({ error: 'Hawk not found or not authorized' });
+    return;
+  }
+  res.json({ hawk });
+});
+
+app.delete('/custom-hawks/:hawkId', (req, res) => {
+  const userId = req.query.userId as string;
+  if (!userId) {
+    res.status(400).json({ error: 'Missing userId query param' });
+    return;
+  }
+  const deleted = deleteHawk(req.params.hawkId, userId);
+  if (!deleted) {
+    res.status(404).json({ error: 'Hawk not found or not authorized' });
+    return;
+  }
+  res.json({ deleted: true });
+});
+
+app.post('/custom-hawks/:hawkId/execute', async (req, res) => {
+  try {
+    const { userId, message, context } = req.body as HawkExecutionRequest;
+    if (!userId || !message) {
+      res.status(400).json({ error: 'Missing userId or message' });
+      return;
+    }
+    const result = await executeHawk({
+      hawkId: req.params.hawkId,
+      userId,
+      message,
+      context,
+    });
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Hawk execution failed';
+    logger.error({ err }, '[CustomHawks] Execute error');
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/custom-hawks/:hawkId/history', (req, res) => {
+  const limit = parseInt(req.query.limit as string) || 20;
+  res.json({ executions: getHawkExecutionHistory(req.params.hawkId, limit) });
+});
+
+// --------------------------------------------------------------------------
+// Playground/Sandbox — Isolated Execution Environments
+// Code sandboxes, prompt testing, agent testing, training data, education
+// --------------------------------------------------------------------------
+app.post('/playground', (req, res) => {
+  try {
+    const request = req.body as CreatePlaygroundRequest;
+    if (!request.userId || !request.type || !request.name || !request.config) {
+      res.status(400).json({ error: 'Missing required fields: userId, type, name, config' });
+      return;
+    }
+    const result = createPlayground(request);
+    if (!result.success) {
+      res.status(400).json(result);
+      return;
+    }
+    res.status(201).json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Playground creation failed';
+    logger.error({ err }, '[Playground] Create error');
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/playground', (req, res) => {
+  const userId = req.query.userId as string;
+  if (!userId) {
+    res.status(400).json({ error: 'Missing userId query param' });
+    return;
+  }
+  res.json({ sessions: listPlaygrounds(userId) });
+});
+
+app.get('/playground/stats', (_req, res) => {
+  res.json(getPlaygroundStats());
+});
+
+app.get('/playground/:sessionId', (req, res) => {
+  const userId = req.query.userId as string;
+  if (!userId) {
+    res.status(400).json({ error: 'Missing userId query param' });
+    return;
+  }
+  const session = getPlayground(req.params.sessionId, userId);
+  if (!session) {
+    res.status(404).json({ error: 'Playground session not found' });
+    return;
+  }
+  res.json({ session });
+});
+
+app.post('/playground/:sessionId/execute', async (req, res) => {
+  try {
+    const { userId, input, target } = req.body as ExecuteInPlaygroundRequest;
+    if (!userId || !input) {
+      res.status(400).json({ error: 'Missing userId or input' });
+      return;
+    }
+    const result = await executeInPlayground({
+      sessionId: req.params.sessionId,
+      userId,
+      input,
+      target,
+    });
+    res.json(result);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Playground execution failed';
+    logger.error({ err }, '[Playground] Execute error');
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post('/playground/:sessionId/pause', (req, res) => {
+  const { userId } = req.body as { userId: string };
+  if (!userId) {
+    res.status(400).json({ error: 'Missing userId' });
+    return;
+  }
+  res.json(pausePlayground(req.params.sessionId, userId));
+});
+
+app.post('/playground/:sessionId/resume', (req, res) => {
+  const { userId } = req.body as { userId: string };
+  if (!userId) {
+    res.status(400).json({ error: 'Missing userId' });
+    return;
+  }
+  res.json(resumePlayground(req.params.sessionId, userId));
+});
+
+app.post('/playground/:sessionId/complete', (req, res) => {
+  const { userId } = req.body as { userId: string };
+  if (!userId) {
+    res.status(400).json({ error: 'Missing userId' });
+    return;
+  }
+  res.json(completePlayground(req.params.sessionId, userId));
+});
+
+app.post('/playground/:sessionId/files', (req, res) => {
+  const { userId, file } = req.body as { userId: string; file: { path: string; content: string; language: string } };
+  if (!userId || !file) {
+    res.status(400).json({ error: 'Missing userId or file' });
+    return;
+  }
+  const result = addFile(req.params.sessionId, userId, {
+    ...file,
+    sizeBytes: file.content.length,
+    lastModified: new Date().toISOString(),
+  });
+  res.json(result);
 });
 
 // --------------------------------------------------------------------------

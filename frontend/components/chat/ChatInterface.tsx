@@ -22,6 +22,7 @@ import { useChangeOrder } from '@/hooks/useChangeOrder';
 import { OperationsOverlay, OperationsPulse } from '@/components/orchestration/OperationsOverlay';
 import { DepartmentBoard } from '@/components/orchestration/DepartmentBoard';
 import { UserInputModal } from '@/components/change-order/UserInputModal';
+import { CollaborationSidebar } from '@/components/collaboration/CollaborationFeed';
 import type { ChatMessage } from '@/lib/chat/types';
 import type { ChangeOrder } from '@/lib/change-order/types';
 import { formatCurrency } from '@/lib/change-order/types';
@@ -372,6 +373,7 @@ export function ChatInterface({
 }: ChatInterfaceProps) {
   const [inputValue, setInputValue] = useState('');
   const [showBoard, setShowBoard] = useState(false);
+  const [showCollabFeed, setShowCollabFeed] = useState(false);
   const [showInputModal, setShowInputModal] = useState(false);
   const [voiceTranscriptReady, setVoiceTranscriptReady] = useState(false);
   
@@ -770,6 +772,17 @@ export function ChatInterface({
               className="flex-1 bg-transparent text-white placeholder:text-white/20 resize-none outline-none text-[15px] leading-relaxed max-h-[200px] py-2"
             />
 
+            {/* Agent Viewport Toggle */}
+            {showOrchestration && (
+              <button
+                onClick={() => setShowCollabFeed(true)}
+                className="p-3 rounded-xl bg-white/5 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+                title="View Agent Viewport"
+              >
+                <GlobeIcon className="w-5 h-5" />
+              </button>
+            )}
+
             {/* Department Board Toggle */}
             {showOrchestration && (
               <button
@@ -884,6 +897,12 @@ export function ChatInterface({
         triggerQuestion={orchestration.state.blockingQuestion || 'Additional information needed'}
         requestingAgent={orchestration.state.blockingAgent || 'ACHEEVY'}
         department={orchestration.state.blockingDepartment || 'Development'}
+      />
+
+      {/* Agent Viewport (Collaboration Feed Sidebar) */}
+      <CollaborationSidebar
+        isOpen={showCollabFeed}
+        onClose={() => setShowCollabFeed(false)}
       />
 
       {/* Change Order Cost Tracker (bottom-left) */}
