@@ -515,11 +515,199 @@ app.post('/acheevy/classify', (req, res) => {
       return;
     }
 
-    // Intent classification based on keywords
+    // ── Vertical Trigger Patterns ────────────────────────────────
+    // Mirrors aims-skills/acheevy-verticals/vertical-definitions.ts
+    // Each vertical has NLP trigger patterns; we test them in priority order.
+    const VERTICAL_TRIGGERS: Array<{ id: string; name: string; patterns: RegExp[] }> = [
+      // Custom Hawk creation (high priority — user wants to create a bot)
+      {
+        id: 'custom-hawk',
+        name: 'Custom Lil_Hawks',
+        patterns: [
+          /custom\s*(hawk|bot|agent)/i,
+          /create\s*(a|my|an?)?\s*(hawk|bot|agent)/i,
+          /make\s*(a|my|an?)?\s*(hawk|bot|agent)/i,
+          /build\s*me\s*(a|an?)?\s*(hawk|bot|agent)/i,
+          /my\s*own\s*(hawk|bot|agent|assistant)/i,
+          /personal\s*(assistant|agent|bot)/i,
+          /lil_\w+_hawk/i,
+        ],
+      },
+      // Playground / Sandbox (high priority — user wants to test/run code)
+      {
+        id: 'playground',
+        name: 'Playground/Sandbox',
+        patterns: [
+          /playground/i,
+          /sandbox/i,
+          /run\s*(some|this|my)?\s*code/i,
+          /test\s*(some|this|my)?\s*(code|prompt|agent)/i,
+          /code\s*sandbox/i,
+          /training\s*(data|task|annotation)/i,
+          /student\s*workspace/i,
+          /prompt\s*(test|playground)/i,
+        ],
+      },
+      // Chicken Hawk (code/deploy agent)
+      {
+        id: 'chicken-hawk',
+        name: 'Chicken Hawk Code Agent',
+        patterns: [
+          /chicken\s*hawk/i,
+          /build\s*me\s*(an?\s*)?(app|tool|website|api|service)/i,
+          /deploy\s*(my|this|the)\s*(app|project|code)/i,
+          /claw\s*(agent|build|code)/i,
+          /code\s*agent/i,
+        ],
+      },
+      // LiveSim
+      {
+        id: 'livesim',
+        name: 'LiveSim Agent Space',
+        patterns: [
+          /live\s*sim/i,
+          /simulation\s*space/i,
+          /autonomous\s*space/i,
+          /agent\s*simulation/i,
+          /let\s*the\s*agents?\s*work/i,
+          /watch\s*the\s*team/i,
+        ],
+      },
+      // Business Idea Generator
+      {
+        id: 'idea-generator',
+        name: 'Business Idea Generator',
+        patterns: [
+          /business\s*ideas?/i,
+          /startup\s*ideas?/i,
+          /what\s*should\s*i\s*build/i,
+          /suggest.*ideas/i,
+          /start(ing)?\s*(a|my)?\s*business/i,
+          /entrepreneur/i,
+          /side\s*hustle/i,
+        ],
+      },
+      // Pain Points
+      {
+        id: 'pain-points',
+        name: 'Customer Pain Point Finder',
+        patterns: [
+          /pain\s*points?/i,
+          /problems?\s*in/i,
+          /market\s*gaps?/i,
+          /customer\s*frustrations?/i,
+        ],
+      },
+      // Brand Name
+      {
+        id: 'brand-name',
+        name: 'Brand Name Generator',
+        patterns: [
+          /brand\s*name/i,
+          /company\s*name/i,
+          /what\s*to\s*call/i,
+          /name.*business/i,
+        ],
+      },
+      // Value Proposition
+      {
+        id: 'value-prop',
+        name: 'Value Proposition Builder',
+        patterns: [
+          /value\s*proposition/i,
+          /why\s*us/i,
+          /unique\s*selling/i,
+          /\busp\b/i,
+        ],
+      },
+      // MVP Plan
+      {
+        id: 'mvp-plan',
+        name: 'MVP Launch Planner',
+        patterns: [
+          /\bmvp\b/i,
+          /launch\s*plan/i,
+          /get\s*started/i,
+          /first\s*steps?/i,
+          /minimum\s*viable/i,
+        ],
+      },
+      // Customer Persona
+      {
+        id: 'persona',
+        name: 'Customer Persona Builder',
+        patterns: [
+          /target\s*customer/i,
+          /who\s*buys/i,
+          /ideal\s*customer/i,
+          /customer\s*persona/i,
+          /buyer\s*persona/i,
+        ],
+      },
+      // Social Hooks
+      {
+        id: 'social-hooks',
+        name: 'Social Media Hooks',
+        patterns: [
+          /launch\s*tweet/i,
+          /social\s*post/i,
+          /announce/i,
+          /twitter\s*hook/i,
+          /x\s*hook/i,
+        ],
+      },
+      // Cold Outreach
+      {
+        id: 'cold-outreach',
+        name: 'Cold Outreach Engine',
+        patterns: [
+          /cold\s*email/i,
+          /outreach/i,
+          /pitch\s*email/i,
+          /reach\s*out/i,
+        ],
+      },
+      // Automation
+      {
+        id: 'automation',
+        name: 'Automation Builder',
+        patterns: [
+          /automat/i,
+          /save\s*time/i,
+          /streamline/i,
+          /repetitive\s*tasks?/i,
+        ],
+      },
+      // Content Calendar
+      {
+        id: 'content-calendar',
+        name: 'Content Calendar Planner',
+        patterns: [
+          /content\s*plan/i,
+          /posting\s*schedule/i,
+          /content\s*calendar/i,
+          /social\s*media\s*plan/i,
+        ],
+      },
+    ];
+
+    // ── Try vertical trigger matching first ────────────────────────
+    for (const vertical of VERTICAL_TRIGGERS) {
+      if (vertical.patterns.some(p => p.test(message))) {
+        res.json({
+          intent: `vertical:${vertical.id}`,
+          verticalName: vertical.name,
+          confidence: 0.9,
+          requiresAgent: true,
+        });
+        return;
+      }
+    }
+
     const lower = message.toLowerCase();
 
-    // Check for build/engineering intents
-    if (/\b(build|create|scaffold|deploy|generate|implement|code|develop|launch|mvp)\b/.test(lower)) {
+    // ── Plug fabrication (build app/site/tool) ────────────────────
+    if (/\b(build|create|scaffold|deploy|generate|implement|code|develop|launch)\b/.test(lower)) {
       if (/\b(plug|app|site|website|saas|platform|tool)\b/.test(lower)) {
         res.json({ intent: 'plug-factory:custom', confidence: 0.9, requiresAgent: true });
         return;
@@ -528,21 +716,33 @@ app.post('/acheevy/classify', (req, res) => {
       return;
     }
 
-    // Check for research intents
+    // ── Research intents ──────────────────────────────────────────
     if (/\b(research|analyze|investigate|study|compare|benchmark|audit)\b/.test(lower)) {
       res.json({ intent: 'skill:research', confidence: 0.8, requiresAgent: true });
       return;
     }
 
-    // Check for vertical/business intents
-    if (/\b(business|startup|entrepreneur|side hustle|monetize|revenue|scale)\b/.test(lower)) {
-      res.json({ intent: 'vertical:idea-generator', confidence: 0.85, requiresAgent: true });
+    // ── Broad business intent (catches anything the verticals missed) ──
+    if (/\b(business|startup|monetize|revenue|scale|profit|income)\b/.test(lower)) {
+      res.json({ intent: 'vertical:idea-generator', confidence: 0.7, requiresAgent: true });
       return;
     }
 
-    // Check for PMO/workflow intents
-    if (/\b(workflow|pipeline|automate|chain|team|assign|delegate)\b/.test(lower)) {
+    // ── Per|Form sports analytics ─────────────────────────────────
+    if (/\b(draft|prospect|athlete|scout|football|nfl|recruit|big\s*board|mock\s*draft|gridiron)\b/.test(lower)) {
+      res.json({ intent: 'perform-stack', confidence: 0.85, requiresAgent: true });
+      return;
+    }
+
+    // ── PMO/workflow routing ──────────────────────────────────────
+    if (/\b(workflow|pipeline|chain|team|assign|delegate)\b/.test(lower)) {
       res.json({ intent: 'pmo-route', confidence: 0.7, requiresAgent: true });
+      return;
+    }
+
+    // ── Spawn agent ───────────────────────────────────────────────
+    if (/\b(spawn|activate|deploy)\s*(an?\s*)?(agent|boomer|ang)\b/.test(lower)) {
+      res.json({ intent: 'deployment-hub', confidence: 0.85, requiresAgent: true });
       return;
     }
 

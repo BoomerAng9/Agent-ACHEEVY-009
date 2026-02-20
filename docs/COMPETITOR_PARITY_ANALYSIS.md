@@ -111,9 +111,9 @@ AIMS competes in the **Agentic Workspaces** category alongside Manus ($2-3B Meta
 | **Playground/Sandbox** | No | No | Yes (5 types: code, prompt, agent, training, education) | **NEW — ADVANTAGE** |
 | **Training data platform** | No | No | Yes (annotation, evaluation, comparison tasks) | **NEW — ADVANTAGE** |
 | **Sandboxed code execution** | Yes (full VM, Firecracker) | Yes (API-first) | Yes (Playground code sandbox) | **NEW — PARITY** |
-| **Real-time agent viewport** | Yes ("Manus's Computer") | Partial (reasoning viz) | No | GAP — collaboration feed spec exists |
+| **Real-time agent viewport** | Yes ("Manus's Computer") | Partial (reasoning viz) | Yes (CollaborationFeed + sidebar) | **DONE** — G2 closed: agent viewport wired into chat |
 | **Web browsing agent** | Yes (full Chromium) | Yes (AI Browser, 700+ tools) | No | GAP |
-| **File creation & download** | Yes (.doc, .xlsx, .zip) | Yes (Sparkpages, exports) | No | GAP |
+| **File creation & download** | Yes (.doc, .xlsx, .zip) | Yes (Sparkpages, exports) | Yes (md/json/csv/txt/html) | **DONE** — G4 closed: `/api/files/generate` + download UI |
 | **Deploy to live URL** | Yes | Yes (Cloudflare Pages) | Yes (Deploy Dock) | PARTIAL — UI exists, no CDN push |
 | **Parallel agent execution** | Yes (Wide Research, 100+) | Yes (multi-agent MoA) | Partial (Boomer_Ang squad model) | GAP — squad model defined, not wired |
 | **Scheduled/recurring tasks** | Yes | No | Partial (n8n cron triggers) | PARTIAL — n8n wired but not exposed |
