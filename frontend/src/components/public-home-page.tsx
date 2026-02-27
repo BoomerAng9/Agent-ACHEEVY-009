@@ -25,12 +25,12 @@ const PublicHomePage = () => {
                     className="size-10 inline dark:hidden"
                     alt="Logo"
                 />
-                <span className="text-black dark:text-white text-2xl font-semibold">
+                <span className="text-2xl font-semibold acheevy-gradient-text">
                     ACHEEVY-009
                 </span>
             </Link>
             <div className="flex-1 flex flex-col justify-center items-center mt-8 md:mt-0">
-                <p className="text-2xl md:text-[32px] font-semibold text-firefly dark:text-sky-blue">
+                <p className="text-2xl md:text-[32px] font-semibold acheevy-gradient-text">
                     Meet Agent ACHEEVY-009
                 </p>
 
@@ -54,7 +54,7 @@ const PublicHomePage = () => {
                 </p>
                 <Button
                     onClick={handleLogin}
-                    className="mt-6 h-10 md:h-12 px-4 md:px-6 rounded-3xl bg-firefly text-sky-blue dark:bg-sky-blue dark:text-black"
+                    className="mt-6 h-10 md:h-12 px-4 md:px-6 rounded-3xl acheevy-btn-primary"
                 >
                     Start Your First Task
                 </Button>
@@ -130,20 +130,20 @@ const PublicHomePage = () => {
                                     ) => (
                                         <div
                                             key={`${title}-${featureIndex}`}
-                                            className="group relative overflow-hidden rounded-xl border-2 border-firefly bg-[#0F2B330D] px-3 py-5 md:px-4 shadow-[0_24px_45px_rgba(15,43,51,0.08)] dark:border-sky-blue-3 dark:bg-charcoal dark:text-sky-blue dark:shadow-[0_4px_24px_rgba(255,255,255,0.16)]"
+                                            className="group relative overflow-hidden rounded-xl border border-acheevy-border bg-acheevy-surface px-3 py-5 md:px-4 shadow-acheevy dark:bg-charcoal-surface dark:text-grey hover:border-acheevy-purple/25 transition-all duration-300"
                                         >
                                             <div className="relative flex justify-center h-full flex-col gap-3 md:gap-6">
                                                 <div className="flex justify-center">
                                                     <Icon
                                                         name={icon}
-                                                        className="size-12 md:size-16 fill-sky-blue-3"
+                                                        className="size-12 md:size-16 fill-acheevy-purple"
                                                     />
                                                 </div>
                                                 <div className="text-center">
                                                     <h3 className="text-base md:text-2xl font-semibold text-black dark:text-white">
                                                         {title}
                                                     </h3>
-                                                    <p className="mt-[6px] text-xs md:text-base text-firefly dark:text-grey">
+                                                    <p className="mt-[6px] text-xs md:text-base text-firefly dark:text-grey-2">
                                                         {description}
                                                     </p>
                                                 </div>
@@ -153,11 +153,11 @@ const PublicHomePage = () => {
                                                             (item) => (
                                                                 <div
                                                                     key={item}
-                                                                    className="inline-flex items-center gap-1 md:gap-2 rounded-full border border-firefly px-3 md:px-4 py-1 md:py-1.5 text-[10px] md:text-sm font-semibold text-firefly/90 dark:border-sky-blue-3 dark:text-sky-blue-3"
+                                                                    className="inline-flex items-center gap-1 md:gap-2 rounded-full border border-acheevy-border px-3 md:px-4 py-1 md:py-1.5 text-[10px] md:text-sm font-semibold text-acheevy-purple dark:border-acheevy-purple/20 dark:text-acheevy-purple"
                                                                 >
                                                                     <Icon
                                                                         name="arrow-right-2"
-                                                                        className="size-3 fill-firefly dark:fill-sky-blue-3"
+                                                                        className="size-3 fill-acheevy-purple dark:fill-acheevy-purple"
                                                                     />
                                                                     <span className="flex-1">
                                                                         {item}
@@ -170,7 +170,7 @@ const PublicHomePage = () => {
                                                 {ctaLabel ? (
                                                     <Button
                                                         onClick={handleLogin}
-                                                        className="mt-3 h-7 md:h-12 w-fit m-auto rounded-3xl bg-firefly text-sky-blue dark:bg-sky-blue dark:text-black"
+                                                        className="mt-3 h-7 md:h-12 w-fit m-auto rounded-3xl acheevy-btn-primary"
                                                     >
                                                         {ctaLabel}
                                                     </Button>
@@ -186,14 +186,13 @@ const PublicHomePage = () => {
             </div>
             <div className="flex justify-center gap-x-10 mt-8 md:mt-12">
                 <Link
-                    to="https://www.ii.inc/web/terms-and-conditions"
-                    target="_blank"
+                    to="/terms-of-use"
                     className="dark:text-white text-sm font-semibold"
                 >
                     Terms of Use
                 </Link>
                 <Link
-                    to="https://www.ii.inc/web/privacy-policy"
+                    to="/privacy-policy"
                     target="_blank"
                     className="dark:text-white text-sm font-semibold"
                 >

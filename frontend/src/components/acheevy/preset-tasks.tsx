@@ -3,7 +3,7 @@ import { Icon } from '@/components/ui/icon'
 
 /**
  * ACHEEVY-009 — Preset Task Cards
- * Pre-built task suggestions that showcase ii-agent's strengths via the NtNtN Engine.
+ * Pre-built task suggestions that showcase ACHEEVY's strengths via the NtNtN Engine.
  * Each card maps to a specific NtNtN category and scope tier.
  *
  * NtNtN Categories:

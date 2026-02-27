@@ -97,7 +97,7 @@ const AgentHeader = ({ sessionData, isChatPage }: AgentHeaderProps) => {
     }
 
     return (
-        <div className="relative py-3 px-3 md:px-6 flex items-center gap-x-4 md:border-b border-neutral-200 dark:border-white/30">
+        <div className="relative py-3 px-3 md:px-6 flex items-center gap-x-4 md:border-b border-neutral-200 dark:border-white/10 acheevy-header-border">
             {isChatPage ? (
                 <SidebarTrigger className="size-6 p-0" />
             ) : (
@@ -123,7 +123,7 @@ const AgentHeader = ({ sessionData, isChatPage }: AgentHeaderProps) => {
                         className="size-6 inline dark:hidden"
                         alt="Logo"
                     />
-                    <span className="text-black dark:text-white text-sm font-semibold">
+                    <span className="text-sm font-semibold acheevy-gradient-text">
                         ACHEEVY-009
                     </span>
                     {ENABLE_BETA && (
