@@ -14,6 +14,8 @@ import ModelTag from '@/components/model-tag'
 import QuestionInput from '@/components/question-input'
 import RightSidebar from '@/components/right-sidebar'
 import Sidebar from '@/components/sidebar'
+import { PresetTasksGrid } from '@/components/acheevy/preset-tasks'
+import { NtNtNAnalyzer } from '@/components/acheevy/ntntn-analyzer'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
@@ -153,7 +155,7 @@ function HomePageContent() {
                                         alt="Logo"
                                     />
                                     <span className="text-black dark:text-white text-sm font-semibold">
-                                        II-Agent
+                                        Agent ACHEEVY-009
                                     </span>
                                     {ENABLE_BETA && (
                                         <span className="text-[10px] absolute -right-8 -top-1">
@@ -191,7 +193,10 @@ function HomePageContent() {
                             {user?.first_name ? `, ${user?.first_name}` : ''}!
                         </p>
                         <p className="text-[20px] md:text-2xl dark:text-sky-blue">
-                            What can I do for you today?
+                            What shall we build today?
+                        </p>
+                        <p className="text-xs text-grey-2 mt-1 font-mono tracking-wider">
+                            Agent ACHEEVY-009 &middot; NtNtN Engine Online
                         </p>
                         <div className="flex gap-x-2 mt-6 mb-2">
                             <ModelTag />
@@ -227,6 +232,16 @@ function HomePageContent() {
                             isGoogleDriveAuthLoading={isGoogleDriveAuthLoading}
                             googleDriveFiles={downloadedGoogleDriveFiles}
                             onGoogleDriveFilesHandled={clearDownloadedFiles}
+                        />
+                        <NtNtNAnalyzer
+                            inputText={currentQuestion}
+                            className="mt-3"
+                        />
+                        <PresetTasksGrid
+                            className="mt-8"
+                            onSelect={(prompt) => {
+                                dispatch(setCurrentQuestion(prompt))
+                            }}
                         />
                     </div>
                 </div>

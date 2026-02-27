@@ -78,6 +78,29 @@ export const PROVIDER_MODELS: { [key: string]: IModel[] } = {
             api_type: 'gemini'
         }
     ],
+    openrouter: [
+        {
+            id: 'inception/mercury-coder-small-beta',
+            model: 'inception/mercury-coder-small-beta',
+            api_type: 'custom',
+            base_url: 'https://openrouter.ai/api/v1',
+            description: 'Mercury 2 Coder Small by Inception — fast, low-latency coding model'
+        },
+        {
+            id: 'inception/mercury-2-small',
+            model: 'inception/mercury-2-small',
+            api_type: 'custom',
+            base_url: 'https://openrouter.ai/api/v1',
+            description: 'Mercury 2 Small by Inception — efficient general-purpose model'
+        },
+        {
+            id: 'inception/mercury-2-large',
+            model: 'inception/mercury-2-large',
+            api_type: 'custom',
+            base_url: 'https://openrouter.ai/api/v1',
+            description: 'Mercury 2 Large by Inception — high-capability reasoning model'
+        }
+    ],
     custom: []
 }
 
@@ -85,6 +108,7 @@ export const PROVIDERS_NAME: { [key: string]: string } = {
     anthropic: 'Anthropic',
     openai: 'OpenAI',
     gemini: 'Gemini',
+    openrouter: 'OpenRouter',
     vertex: 'Vertex',
     azure: 'Azure',
     custom: 'Custom'

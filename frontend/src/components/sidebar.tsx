@@ -145,7 +145,7 @@ const Sidebar = ({ className, workspaceInfo }: SidebarButtonProps) => {
                         <span
                             className={`text-black dark:text-white text-lg font-semibold`}
                         >
-                            II-Agent
+                            ACHEEVY
                         </span>
                         {ENABLE_BETA && (
                             <span className="text-[10px] absolute -right-8 -top-1">
@@ -190,7 +190,7 @@ const Sidebar = ({ className, workspaceInfo }: SidebarButtonProps) => {
                 <span
                     className={`text-black dark:text-white text-2xl font-semibold`}
                 >
-                    II-Agent
+                    ACHEEVY
                 </span>
                 {ENABLE_BETA && (
                     <span className="text-[10px] absolute -right-8 -top-1">

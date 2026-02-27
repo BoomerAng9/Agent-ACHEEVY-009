@@ -27,6 +27,16 @@
     --color-red: #ff6b75;
     --color-red-2: #f54260;
     --shadow-btn: 0 4px 24px rgba(0, 0, 0, 0.16);
+    /* ACHEEVY-009 Brand Colors */
+    --color-acheevy-purple: #a855f7;
+    --color-acheevy-cyan: #06b6d4;
+    --color-acheevy-emerald: #10b981;
+    --color-acheevy-amber: #f59e0b;
+    --color-acheevy-pink: #ec4899;
+    --color-acheevy-indigo: #6366f1;
+    --color-acheevy-surface: rgba(255, 255, 255, 0.03);
+    --color-acheevy-border: rgba(255, 255, 255, 0.1);
+    --shadow-acheevy: 0 8px 32px rgba(168, 85, 247, 0.12);
 }
 
 @keyframes breathing-fill {

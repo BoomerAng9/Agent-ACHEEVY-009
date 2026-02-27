@@ -124,7 +124,7 @@ const AgentHeader = ({ sessionData, isChatPage }: AgentHeaderProps) => {
                         alt="Logo"
                     />
                     <span className="text-black dark:text-white text-sm font-semibold">
-                        II-Agent
+                        ACHEEVY-009
                     </span>
                     {ENABLE_BETA && (
                         <span className="text-[10px] absolute -right-8 -top-1">
