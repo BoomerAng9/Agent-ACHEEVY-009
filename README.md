@@ -45,3 +45,34 @@ II-Agent Chat also feature within II-Agent that lets you work across multiple mo
 For the latest installation and deployment instructions, please refer to our [official guide](https://intelligent-internet.github.io/ii-agent-prod/)
 
 [![Installation Guide](https://img.youtube.com/vi/wPpeJMbdGi4/maxresdefault.jpg)](https://www.youtube.com/watch?v=wPpeJMbdGi4)
+
+## Production Run (Operator Mode)
+
+For a real working deployment (not a demo), use the production stack script:
+
+1. Copy environment template and fill real values:
+
+```bash
+cp docker/.stack.env.example docker/.stack.env
+```
+
+Required minimum values in `docker/.stack.env`:
+
+* `OPENROUTER_API_KEY`
+* `DATABASE_URL`
+* `SANDBOX_DATABASE_URL`
+* `PUBLIC_TOOL_SERVER_URL` (public URL in cloud, or keep `http://tool-server:1236` for single-host private deployments)
+
+1. Start production stack:
+
+```bash
+./scripts/publish_stack.sh --build
+```
+
+Optional: add ngrok tunnel profile:
+
+```bash
+./scripts/publish_stack.sh --build --with-tunnel
+```
+
+The script performs preflight checks, starts core services, waits for health endpoints, and prints runtime URLs.
