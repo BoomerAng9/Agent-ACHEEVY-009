@@ -69,6 +69,12 @@ Required minimum values in `docker/.stack.env`:
 ./scripts/publish_stack.sh --build
 ```
 
+Windows PowerShell:
+
+```powershell
+./scripts/publish_stack.ps1 -Build
+```
+
 Optional: add ngrok tunnel profile:
 
 ```bash
@@ -76,3 +82,5 @@ Optional: add ngrok tunnel profile:
 ```
 
 The script performs preflight checks, starts core services, waits for health endpoints, and prints runtime URLs.
+
+Detailed operator guide: [docs/II_AGENT_DEPLOYMENT_RUNBOOK.md](docs/II_AGENT_DEPLOYMENT_RUNBOOK.md)
