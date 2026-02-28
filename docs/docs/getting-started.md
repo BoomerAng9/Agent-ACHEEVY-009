@@ -12,7 +12,7 @@ Use this runbook whenever you need to spin up the full II-Agent Docker stack (Po
 
 ## Before you start
 
-- Docker Desktop or Docker Engine with Compose v2 (Linux containers enabled).
+- Docker Engine with Compose v2 (recommended for VPS); Docker Desktop is also supported.
 - Node.js 18+ and Python 3.10+ (only required when running services outside Docker).
 - API access for at least one LLM provider (OpenAI-compatible, Anthropic, Gemini, etc.).
 - Google Cloud service-account JSON if you plan to store assets on GCS or call Vertex AI.

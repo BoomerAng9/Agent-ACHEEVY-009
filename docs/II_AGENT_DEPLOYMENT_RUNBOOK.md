@@ -4,7 +4,7 @@ This runbook is for **Agent-ACHEEVY-009** deployment only.
 
 ## 1) Prerequisites
 
-- Docker Desktop running
+- Docker Engine + Docker Compose available on VPS
 - Ports available: `1420`, `8000`, `8100`, `1236`, `5432`, `6379`
 - Valid `OPENROUTER_API_KEY`
 
@@ -26,6 +26,23 @@ Recommended for production:
 - `GOOGLE_APPLICATION_CREDENTIALS` (for storage/media integrations)
 
 ## 3) Start stack
+
+### VPS (recommended)
+
+SSH to your VPS and run:
+
+```bash
+cd /path/to/Agent-ACHEEVY-009
+cp docker/.stack.env.example docker/.stack.env
+# fill docker/.stack.env with real credentials
+./scripts/publish_stack.sh --build
+```
+
+Optional tunnel profile:
+
+```bash
+./scripts/publish_stack.sh --build --with-tunnel
+```
 
 ### Windows PowerShell
 
@@ -83,6 +100,6 @@ docker compose --project-name ii-agent-stack --env-file docker/.stack.env -f doc
 - **`OPENROUTER_API_KEY is missing or placeholder`**
   - Fix key in `docker/.stack.env`, then rerun publish script.
 - **Docker daemon unavailable**
-  - Start Docker Desktop and retry.
+  - Start Docker Engine service and retry.
 - **Health check timeout**
   - Inspect logs for failing service (`backend`, `sandbox-server`, or `tool-server`).

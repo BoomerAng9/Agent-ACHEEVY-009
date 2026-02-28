@@ -78,7 +78,7 @@ Ensure-Command docker
 
 docker info *> $null
 if ($LASTEXITCODE -ne 0) {
-    throw "Docker daemon is not available. Start Docker and retry."
+    throw "Docker daemon is not available. Start Docker Engine service and retry."
 }
 
 $envMap = Read-EnvFile $EnvFile

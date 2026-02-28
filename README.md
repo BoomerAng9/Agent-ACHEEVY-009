@@ -48,7 +48,13 @@ For the latest installation and deployment instructions, please refer to our [of
 
 ## Production Run (Operator Mode)
 
-For a real working deployment (not a demo), use the production stack script:
+For a real working deployment (not a demo), deploy from your VPS using Docker Compose:
+
+1. SSH into the server and move to your repository:
+
+```bash
+cd /path/to/Agent-ACHEEVY-009
+```
 
 1. Copy environment template and fill real values:
 
