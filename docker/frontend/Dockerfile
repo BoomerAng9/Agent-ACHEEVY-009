@@ -20,6 +20,8 @@ RUN set -e; \
       > "$env_file"; \
     cp "$env_file" .env
 
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 RUN if [ -f yarn.lock ]; then yarn --frozen-lockfile && yarn build; \
     elif [ -f package-lock.json ]; then npm ci && npm run build; \
     elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile && pnpm run build; \
