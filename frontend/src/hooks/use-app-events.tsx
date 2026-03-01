@@ -329,6 +329,27 @@ export function useAppEvents() {
                             `Policy ${policyPayload.strategy || 'unknown'}: ${selectedLayers}`
                         )
                         console.info('Policy diagnostics', policyPayload)
+
+                        const systemMessageId = `${data.id}-policy`
+                        const exists = messagesRef.current.some(
+                            (message) => message.id === systemMessageId
+                        )
+                        if (!exists) {
+                            safeDispatch(
+                                addMessage({
+                                    id: systemMessageId,
+                                    role: 'system',
+                                    content:
+                                        `Policy diagnostics\n` +
+                                        `- Strategy: ${policyPayload.strategy || 'unknown'}\n` +
+                                        `- Selected: ${selectedLayers}\n` +
+                                        `- Enabled: ${String(policyPayload.enabled)}\n` +
+                                        `- Shadow Mode: ${String(policyPayload.shadow_mode)}\n` +
+                                        `- Reason Codes: ${(policyPayload.reason_codes || []).join(', ') || 'none'}`,
+                                    timestamp: Date.now()
+                                })
+                            )
+                        }
                     }
 
                     dispatch(setStopped(false))
