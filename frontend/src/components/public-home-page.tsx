@@ -1,10 +1,7 @@
-import { lazy, Suspense } from 'react'
 import { Link, useNavigate } from 'react-router'
 
 import { Button } from './ui/button'
 import { Icon } from './ui/icon'
-
-const Hero3DScene = lazy(() => import('./acheevy/hero-3d'))
 
 const PublicHomePage = () => {
     const navigate = useNavigate()
@@ -29,17 +26,11 @@ const PublicHomePage = () => {
                     Meet Agent ACHEEVY-009
                 </p>
 
-                <div className="relative w-full max-w-md h-64 md:h-80 mt-2">
-                    <Suspense fallback={
-                        <img
-                            src="/images/agent-head.png"
-                            alt="ACHEEVY-009 Agent"
-                            className="w-50 md:w-80 mx-auto"
-                        />
-                    }>
-                        <Hero3DScene className="w-full h-full rounded-2xl" />
-                    </Suspense>
-                </div>
+                <img
+                    src="/images/acheevy/acheevy-helmet.png"
+                    alt="ACHEEVY-009 Agent"
+                    className="w-32 md:w-48 mt-6"
+                />
                 <p className="text-center mt-6 text-xl md:text-2xl text-firefly dark:text-white">
                     Your intelligent agent for creating, researching, and
                     shipping fast.
