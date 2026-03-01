@@ -34,7 +34,7 @@ export const ACHEEVY_PRESET_TASKS: PresetTask[] = [
         prompt: 'Build a modern SaaS dashboard with user authentication, real-time data charts, and a billing page. Use React, Tailwind, and a Node.js API backend.',
         icon: 'ai-browser',
         category: 'Full-Stack Build',
-        categoryColor: '#a855f7',
+        categoryColor: '#D4AF37',
         scopeTier: 'application',
         estimatedTime: '15-45 min',
         tags: ['M.I.M.', 'NtNtN', 'Buildsmith']
@@ -104,7 +104,7 @@ export const ACHEEVY_PRESET_TASKS: PresetTask[] = [
 const SCOPE_TIER_LABELS: Record<string, { label: string; color: string }> = {
     component: { label: 'Component', color: '#6ee7b7' },
     page: { label: 'Page', color: '#93c5fd' },
-    application: { label: 'Application', color: '#c4b5fd' },
+    application: { label: 'Application', color: '#D4AF37' },
     platform: { label: 'Platform', color: '#fbbf24' }
 }
 

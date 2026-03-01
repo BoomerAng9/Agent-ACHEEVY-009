@@ -50,16 +50,16 @@ export const CATEGORY_LABELS: Record<string, string> = {
 }
 
 export const CATEGORY_COLORS: Record<string, string> = {
-    [NTNTN_CATEGORIES.FRONTEND_FRAMEWORKS]: '#a855f7',
-    [NTNTN_CATEGORIES.ANIMATION_MOTION]: '#ec4899',
+    [NTNTN_CATEGORIES.FRONTEND_FRAMEWORKS]: '#D4AF37',
+    [NTNTN_CATEGORIES.ANIMATION_MOTION]: '#FF6B35',
     [NTNTN_CATEGORIES.STYLING_SYSTEMS]: '#4fc3f7',
     [NTNTN_CATEGORIES.THREE_D_VISUAL]: '#f43f5e',
     [NTNTN_CATEGORIES.SCROLL_INTERACTION]: '#d4881f',
     [NTNTN_CATEGORIES.UI_COMPONENTS]: '#39ff14',
-    [NTNTN_CATEGORIES.LAYOUT_RESPONSIVE]: '#3b82f6',
+    [NTNTN_CATEGORIES.LAYOUT_RESPONSIVE]: '#4FC3F7',
     [NTNTN_CATEGORIES.BACKEND_FULLSTACK]: '#d4af37',
     [NTNTN_CATEGORIES.CMS_CONTENT]: '#14b8a6',
-    [NTNTN_CATEGORIES.DEPLOYMENT_INFRA]: '#6366f1'
+    [NTNTN_CATEGORIES.DEPLOYMENT_INFRA]: '#D4881F'
 }
 
 export const CATEGORY_ICONS: Record<string, string> = {
@@ -153,7 +153,7 @@ export const SCOPE_TIER_INFO: Record<ScopeTier, {
         label: 'Application',
         cost: '$3–$8',
         time: '15–45 min',
-        color: '#c4b5fd',
+        color: '#D4AF37',
         description: 'A multi-page app with routing, state, and API'
     },
     platform: {

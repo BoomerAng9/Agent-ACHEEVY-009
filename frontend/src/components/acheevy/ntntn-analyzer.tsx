@@ -88,13 +88,13 @@ function PipelinePhases({ activePhase }: { activePhase: number }) {
                     <motion.div
                         className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] border"
                         style={{
-                            borderColor: i <= activePhase ? 'rgba(168,85,247,0.5)' : 'rgba(255,255,255,0.1)',
-                            backgroundColor: i <= activePhase ? 'rgba(168,85,247,0.1)' : 'transparent',
-                            color: i <= activePhase ? '#c4b5fd' : 'rgba(255,255,255,0.3)'
+                            borderColor: i <= activePhase ? 'rgba(212,175,55,0.5)' : 'rgba(255,255,255,0.1)',
+                            backgroundColor: i <= activePhase ? 'rgba(212,175,55,0.1)' : 'transparent',
+                            color: i <= activePhase ? '#D4AF37' : 'rgba(255,255,255,0.3)'
                         }}
                         animate={i === activePhase ? {
                             scale: [1, 1.15, 1],
-                            borderColor: ['rgba(168,85,247,0.5)', 'rgba(168,85,247,0.8)', 'rgba(168,85,247,0.5)']
+                            borderColor: ['rgba(212,175,55,0.5)', 'rgba(212,175,55,0.8)', 'rgba(212,175,55,0.5)']
                         } : {}}
                         transition={{ duration: 1.5, repeat: Infinity }}
                     >
@@ -104,7 +104,7 @@ function PipelinePhases({ activePhase }: { activePhase: number }) {
                         <div
                             className="w-3 h-px"
                             style={{
-                                backgroundColor: i < activePhase ? 'rgba(168,85,247,0.4)' : 'rgba(255,255,255,0.08)'
+                                backgroundColor: i < activePhase ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.08)'
                             }}
                         />
                     )}

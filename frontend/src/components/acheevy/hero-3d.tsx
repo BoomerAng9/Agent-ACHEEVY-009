@@ -55,7 +55,7 @@ function CoreOrb() {
                 <mesh>
                     <icosahedronGeometry args={[1.05, 1]} />
                     <meshBasicMaterial
-                        color="#c4b5fd"
+                        color="#D4AF37"
                         wireframe
                         transparent
                         opacity={0.3}
@@ -146,9 +146,9 @@ export function Hero3DScene({ className = '' }: { className?: string }) {
                 style={{ background: 'transparent' }}
             >
                 <ambientLight intensity={0.4} />
-                <directionalLight position={[5, 5, 5]} intensity={0.8} color="#c4b5fd" />
+                <directionalLight position={[5, 5, 5]} intensity={0.8} color="#D4AF37" />
                 <pointLight position={[-3, -2, 4]} intensity={0.5} color="#4fc3f7" />
-                <pointLight position={[3, 2, -3]} intensity={0.3} color="#ec4899" />
+                <pointLight position={[3, 2, -3]} intensity={0.3} color="#FF6B35" />
 
                 <CoreOrb />
 

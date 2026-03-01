@@ -8,11 +8,11 @@ import { useState, useEffect } from 'react'
  */
 
 const PIPELINE_PHASES = [
-    { label: 'Detecting Intent', icon: '◆', color: '#a855f7' },
-    { label: 'Picker_Ang Selecting Stack', icon: '⬡', color: '#06b6d4' },
-    { label: 'Buildsmith Constructing', icon: '▲', color: '#10b981' },
-    { label: 'Chicken Hawk Verifying', icon: '◈', color: '#f59e0b' },
-    { label: 'ACHEEVY Deploying', icon: '●', color: '#ec4899' }
+    { label: 'Detecting Intent', icon: '◆', color: '#D4AF37' },
+    { label: 'Picker_Ang Selecting Stack', icon: '⬡', color: '#4FC3F7' },
+    { label: 'Buildsmith Constructing', icon: '▲', color: '#39FF14' },
+    { label: 'Chicken Hawk Verifying', icon: '◈', color: '#D4881F' },
+    { label: 'ACHEEVY Deploying', icon: '●', color: '#FF6B35' }
 ]
 
 const THINKING_MESSAGES = [
@@ -71,7 +71,7 @@ function MorphShape() {
             <motion.div
                 className="absolute inset-0"
                 style={{
-                    background: 'conic-gradient(from 0deg, #a855f7, #06b6d4, #10b981, #f59e0b, #ec4899, #a855f7)',
+                    background: 'conic-gradient(from 0deg, #D4AF37, #4FC3F7, #39FF14, #D4881F, #FF6B35, #D4AF37)',
                     borderRadius: '50%'
                 }}
                 animate={{
@@ -210,9 +210,9 @@ export function AcheevyLoader({
         >
             {/* Morphing core with pulse rings */}
             <div className="relative w-32 h-32 flex items-center justify-center">
-                <PulseRing delay={0} size={100} color="rgba(168,85,247,0.3)" />
-                <PulseRing delay={0.8} size={120} color="rgba(6,182,212,0.2)" />
-                <PulseRing delay={1.6} size={140} color="rgba(16,185,129,0.15)" />
+                <PulseRing delay={0} size={100} color="rgba(212,175,55,0.3)" />
+                <PulseRing delay={0.8} size={120} color="rgba(79,195,247,0.2)" />
+                <PulseRing delay={1.6} size={140} color="rgba(57,255,20,0.15)" />
                 <MorphShape />
             </div>
 

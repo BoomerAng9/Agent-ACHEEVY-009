@@ -16,6 +16,7 @@ import RightSidebar from '@/components/right-sidebar'
 import Sidebar from '@/components/sidebar'
 import { PresetTasksGrid } from '@/components/acheevy/preset-tasks'
 import { NtNtNAnalyzer } from '@/components/acheevy/ntntn-analyzer'
+import { AcheevyDashboard, type TaskCard } from '@/components/acheevy/acheevy-dashboard'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
@@ -236,6 +237,12 @@ function HomePageContent() {
                         <NtNtNAnalyzer
                             inputText={currentQuestion}
                             className="mt-3"
+                        />
+                        <AcheevyDashboard
+                            className="mt-6"
+                            onTaskSelect={(task: TaskCard) => {
+                                dispatch(setCurrentQuestion(task.prompt))
+                            }}
                         />
                         <PresetTasksGrid
                             className="mt-8"

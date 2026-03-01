@@ -13,6 +13,7 @@ from ii_agent.server.billing import router as billing_router
 from ii_agent.server.chat.router import router as chat_router
 from .connectors import router as connectors_router
 from .bridge import router as bridge_router
+from .pipeline import router as pipeline_router
 
 __all__ = [
     "sessions_router",
@@ -26,4 +27,5 @@ __all__ = [
     "chat_router",
     "connectors_router",
     "bridge_router",
+    "pipeline_router",
 ]
