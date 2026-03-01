@@ -89,4 +89,6 @@ Optional: add ngrok tunnel profile:
 
 The script performs preflight checks, starts core services, waits for health endpoints, and prints runtime URLs.
 
+Optional AIMS bridge mode (ii-agent stays standalone): set `AIMS_BRIDGE_ENABLED=true`, `AIMS_GATEWAY_URL`, and `AIMS_BRIDGE_SHARED_SECRET` in `docker/.stack.env`, then verify `http://localhost:8000/bridge/health`.
+
 Detailed operator guide: [docs/II_AGENT_DEPLOYMENT_RUNBOOK.md](docs/II_AGENT_DEPLOYMENT_RUNBOOK.md)

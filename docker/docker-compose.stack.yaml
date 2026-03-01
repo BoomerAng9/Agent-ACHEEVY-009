@@ -138,6 +138,9 @@ services:
       SANDBOX_SERVER_URL: http://sandbox-server:${SANDBOX_SERVER_PORT:-8100}
       TOOL_SERVER_URL: ${PUBLIC_TOOL_SERVER_URL:-http://tool-server:1236}
       REDIS_SESSION_URL: redis://redis:6379/1
+      AIMS_BRIDGE_ENABLED: ${AIMS_BRIDGE_ENABLED:-false}
+      AIMS_GATEWAY_URL: ${AIMS_GATEWAY_URL:-}
+      AIMS_BRIDGE_SHARED_SECRET: ${AIMS_BRIDGE_SHARED_SECRET:-}
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:

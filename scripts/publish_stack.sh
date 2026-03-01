@@ -96,7 +96,7 @@ require_cmd docker
 require_cmd curl
 
 if ! docker info >/dev/null 2>&1; then
-  echo "Docker daemon is not available. Start Docker and retry." >&2
+  echo "Docker daemon is not available. Start Docker Engine service and retry." >&2
   exit 1
 fi
 
@@ -105,6 +105,9 @@ DATABASE_URL=$(get_env_value DATABASE_URL)
 SANDBOX_DATABASE_URL=$(get_env_value SANDBOX_DATABASE_URL)
 PUBLIC_TOOL_SERVER_URL=$(get_env_value PUBLIC_TOOL_SERVER_URL)
 GOOGLE_APPLICATION_CREDENTIALS=$(get_env_value GOOGLE_APPLICATION_CREDENTIALS)
+AIMS_BRIDGE_ENABLED=$(get_env_value AIMS_BRIDGE_ENABLED false)
+AIMS_GATEWAY_URL=$(get_env_value AIMS_GATEWAY_URL)
+AIMS_BRIDGE_SHARED_SECRET=$(get_env_value AIMS_BRIDGE_SHARED_SECRET)
 
 if is_placeholder "$OPENROUTER_API_KEY"; then
   echo "OPENROUTER_API_KEY is missing or placeholder in docker/.stack.env" >&2
@@ -122,6 +125,17 @@ fi
 
 if is_placeholder "$GOOGLE_APPLICATION_CREDENTIALS"; then
   echo "GOOGLE_APPLICATION_CREDENTIALS is placeholder; advanced storage/media features may fail." >&2
+fi
+
+if [[ "$AIMS_BRIDGE_ENABLED" == "true" ]]; then
+  if [[ -z "$AIMS_GATEWAY_URL" ]]; then
+    echo "AIMS_BRIDGE_ENABLED=true but AIMS_GATEWAY_URL is empty." >&2
+    exit 1
+  fi
+  if [[ -z "$AIMS_BRIDGE_SHARED_SECRET" ]]; then
+    echo "AIMS_BRIDGE_ENABLED=true but AIMS_BRIDGE_SHARED_SECRET is empty." >&2
+    exit 1
+  fi
 fi
 
 echo "Starting production stack: $PROJECT_NAME"

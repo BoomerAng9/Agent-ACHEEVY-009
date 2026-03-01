@@ -159,6 +159,10 @@ class IIAgentConfig(BaseSettings):
 
     # Tool server configuration
     tool_server_url: str = Field(default="http://localhost:1236")
+    # AIMS bridge configuration
+    aims_bridge_enabled: bool = Field(default=False)
+    aims_gateway_url: str | None = Field(default=None)
+    aims_bridge_shared_secret: str | None = Field(default=None)
     # Sandbox server configuration
     sandbox_server_url: str = Field(default="http://localhost:8100")
     sandbox_template_id: str | None = Field(default=None)

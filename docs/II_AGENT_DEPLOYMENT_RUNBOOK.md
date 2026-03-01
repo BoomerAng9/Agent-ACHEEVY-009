@@ -25,6 +25,12 @@ Recommended for production:
 - `PUBLIC_TOOL_SERVER_URL` (public URL if externally reachable)
 - `GOOGLE_APPLICATION_CREDENTIALS` (for storage/media integrations)
 
+Optional for AIMS bridge mode (ii-agent running standalone, linked to AIMS):
+
+- `AIMS_BRIDGE_ENABLED=true`
+- `AIMS_GATEWAY_URL` (for example `https://api.aims.plugmein.cloud`)
+- `AIMS_BRIDGE_SHARED_SECRET` (shared secret used by bridge handshake)
+
 ## 3) Start stack
 
 ### VPS (recommended)
@@ -74,6 +80,11 @@ Optional tunnel profile:
 - Backend health: `http://localhost:8000/health`
 - Sandbox health: `http://localhost:8100/health`
 - Tool server health: `http://localhost:1236/health`
+
+If AIMS bridge mode is enabled:
+
+- Bridge health: `http://localhost:8000/bridge/health`
+- Bridge handshake: `POST http://localhost:8000/bridge/handshake` with header `X-II-BRIDGE-KEY`
 
 ## 5) Operations
 
