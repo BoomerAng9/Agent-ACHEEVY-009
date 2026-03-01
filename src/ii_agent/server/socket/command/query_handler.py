@@ -75,6 +75,24 @@ class UserQueryHandler(CommandHandler):
             vscode_url=vscode_url,
         )
 
+    async def _send_policy_diagnostics_event(
+        self,
+        session_id: str,
+        run_id: uuid.UUID,
+        policy_payload: Dict[str, Any],
+    ) -> None:
+        await self.send_event(
+            RealtimeEvent(
+                session_id=uuid.UUID(session_id),
+                run_id=run_id,
+                type=EventType.PROCESSING,
+                content={
+                    "message": "Policy layers resolved",
+                    "policy": policy_payload,
+                },
+            )
+        )
+
     async def update_session_name_and_validation(
         self, session_info: SessionInfo, query_command: QueryCommandContent
     ) -> tuple[bool, SessionInfo | None]:
@@ -336,6 +354,7 @@ class UserQueryHandler(CommandHandler):
             **base_metadata,
             "user_query": user_query,
             "policy_layers_enabled": config.policy_layers_enabled,
+            "policy_layers_shadow_mode": config.policy_layers_shadow_mode,
             "policy_layers_selected": policy_selection.selected_layers,
             "policy_strategy": policy_selection.strategy,
             "policy_reason_codes": policy_selection.reason_codes,
@@ -387,6 +406,19 @@ class UserQueryHandler(CommandHandler):
 
         # Send initialization event
         await self._send_agent_initialized_event(session.id, vscode_url)
+
+        if config.policy_layers_emit_debug_events:
+            await self._send_policy_diagnostics_event(
+                session_id=session.id,
+                run_id=agent_task.id,  # type: ignore[arg-type]
+                policy_payload={
+                    "enabled": config.policy_layers_enabled,
+                    "shadow_mode": config.policy_layers_shadow_mode,
+                    "selected": policy_selection.selected_layers,
+                    "strategy": policy_selection.strategy,
+                    "reason_codes": policy_selection.reason_codes,
+                },
+            )
 
         return chat_session
 

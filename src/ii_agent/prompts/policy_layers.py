@@ -228,6 +228,7 @@ def build_policy_layer_prompt(
 ) -> tuple[str, Dict[str, Any]]:
     metadata = metadata or {}
     policy_layers_enabled = bool(metadata.get("policy_layers_enabled", True))
+    policy_layers_shadow_mode = bool(metadata.get("policy_layers_shadow_mode", False))
 
     if not policy_layers_enabled:
         return "", {
@@ -240,6 +241,15 @@ def build_policy_layer_prompt(
     user_query = str(metadata.get("user_query", ""))
 
     selection = select_policy_layers(user_query=user_query, metadata=metadata)
+
+    if policy_layers_shadow_mode:
+        return "", {
+            "policy_layers_selected": selection.selected_layers,
+            "policy_strategy": selection.strategy,
+            "policy_reason_codes": [*selection.reason_codes, "policy_layers_shadow_mode"],
+            "policy_layers_loaded": [],
+            "policy_shadow_selected": selection.selected_layers,
+        }
 
     ordered_layers = ["brain", "agent", *selection.selected_layers]
     sections: List[str] = []

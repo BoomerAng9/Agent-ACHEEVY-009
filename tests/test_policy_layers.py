@@ -57,3 +57,17 @@ def test_build_policy_layer_prompt_respects_disable_flag():
     assert prompt == ""
     assert details["policy_strategy"] == "disabled"
     assert details["policy_reason_codes"] == ["policy_layers_disabled"]
+
+
+def test_build_policy_layer_prompt_shadow_mode():
+    prompt, details = build_policy_layer_prompt(
+        {
+            "user_query": "deploy with webhook integration",
+            "policy_layers_shadow_mode": True,
+        }
+    )
+
+    assert prompt == ""
+    assert details["policy_layers_loaded"] == []
+    assert "policy_layers_shadow_mode" in details["policy_reason_codes"]
+    assert details["policy_shadow_selected"]

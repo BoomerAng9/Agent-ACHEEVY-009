@@ -168,6 +168,14 @@ class IIAgentConfig(BaseSettings):
         default=True,
         description="Enable ACHEEVY brain/agent/overlay policy-layer prompt package",
     )
+    policy_layers_shadow_mode: bool = Field(
+        default=False,
+        description="Select policy layers but do not enforce prompt overlays",
+    )
+    policy_layers_emit_debug_events: bool = Field(
+        default=True,
+        description="Emit policy-layer selection diagnostics in processing events",
+    )
     # Sandbox server configuration
     sandbox_server_url: str = Field(default="http://localhost:8100")
     sandbox_template_id: str | None = Field(default=None)
