@@ -31,7 +31,7 @@ function CoreOrb() {
                 <mesh ref={glowRef}>
                     <sphereGeometry args={[1.2, 32, 32]} />
                     <meshBasicMaterial
-                        color="#8b5cf6"
+                        color="#d4af37"
                         transparent
                         opacity={0.08}
                     />
@@ -41,8 +41,8 @@ function CoreOrb() {
                 <mesh ref={meshRef}>
                     <icosahedronGeometry args={[1, 1]} />
                     <MeshDistortMaterial
-                        color="#a855f7"
-                        emissive="#7c3aed"
+                        color="#d4af37"
+                        emissive="#d4881f"
                         emissiveIntensity={0.6}
                         roughness={0.15}
                         metalness={0.9}
@@ -108,7 +108,7 @@ function DataStreams() {
             const angle = (i / 6) * Math.PI * 2
             return {
                 start: new THREE.Vector3(Math.cos(angle) * 3, 0, Math.sin(angle) * 3),
-                color: ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#3b82f6'][i]
+                color: ['#d4af37', '#4fc3f7', '#39ff14', '#d4881f', '#ec4899', '#3b82f6'][i]
             }
         })
     }, [])
@@ -147,14 +147,14 @@ export function Hero3DScene({ className = '' }: { className?: string }) {
             >
                 <ambientLight intensity={0.4} />
                 <directionalLight position={[5, 5, 5]} intensity={0.8} color="#c4b5fd" />
-                <pointLight position={[-3, -2, 4]} intensity={0.5} color="#06b6d4" />
+                <pointLight position={[-3, -2, 4]} intensity={0.5} color="#4fc3f7" />
                 <pointLight position={[3, 2, -3]} intensity={0.3} color="#ec4899" />
 
                 <CoreOrb />
 
-                <OrbitRing radius={2} speed={0.3} color="#8b5cf6" count={24} />
-                <OrbitRing radius={2.8} speed={-0.2} color="#06b6d4" count={18} />
-                <OrbitRing radius={3.5} speed={0.15} color="#10b981" count={12} />
+                <OrbitRing radius={2} speed={0.3} color="#d4af37" count={24} />
+                <OrbitRing radius={2.8} speed={-0.2} color="#4fc3f7" count={18} />
+                <OrbitRing radius={3.5} speed={0.15} color="#39ff14" count={12} />
 
                 <DataStreams />
 
