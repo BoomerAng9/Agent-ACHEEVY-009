@@ -95,6 +95,40 @@ If AIMS bridge mode is enabled:
 
 ## 5) Policy Layer Rollout (Production)
 
+Use the route helper script to enforce exact phase flags:
+
+```bash
+./scripts/policy_rollout.sh --phase shadow --build
+./scripts/policy_rollout.sh --phase enforced --build
+./scripts/policy_rollout.sh --phase hardened --build
+./scripts/policy_rollout.sh --phase rollback --build
+```
+
+PowerShell equivalent:
+
+```powershell
+./scripts/policy_rollout.ps1 -Phase shadow -Build
+./scripts/policy_rollout.ps1 -Phase enforced -Build
+./scripts/policy_rollout.ps1 -Phase hardened -Build
+./scripts/policy_rollout.ps1 -Phase rollback -Build
+```
+
+Run UAT prechecks + prompt matrix at each phase:
+
+```bash
+./scripts/policy_uat.sh --phase shadow
+./scripts/policy_uat.sh --phase enforced
+./scripts/policy_uat.sh --phase hardened
+```
+
+PowerShell equivalent:
+
+```powershell
+./scripts/policy_uat.ps1 -Phase shadow
+./scripts/policy_uat.ps1 -Phase enforced
+./scripts/policy_uat.ps1 -Phase hardened
+```
+
 ### Phase A — Shadow mode (safe)
 
 Set in `docker/.stack.env`:
@@ -109,7 +143,7 @@ VITE_POLICY_DEBUG_EVENTS=true
 Deploy:
 
 ```bash
-./scripts/publish_stack.sh --build
+./scripts/policy_rollout.sh --phase shadow --build
 ```
 
 Verify:
@@ -132,7 +166,7 @@ VITE_POLICY_DEBUG_EVENTS=false
 Redeploy:
 
 ```bash
-./scripts/publish_stack.sh --build
+./scripts/policy_rollout.sh --phase enforced --build
 ```
 
 Verify:
@@ -152,21 +186,18 @@ POLICY_LAYERS_EMIT_DEBUG_EVENTS=false
 VITE_POLICY_DEBUG_EVENTS=false
 ```
 
+Apply + deploy:
+
+```bash
+./scripts/policy_rollout.sh --phase hardened --build
+```
+
 ## 6) Rollback
 
 Immediate rollback to legacy behavior:
 
 ```bash
-POLICY_LAYERS_ENABLED=false
-POLICY_LAYERS_SHADOW_MODE=false
-POLICY_LAYERS_EMIT_DEBUG_EVENTS=false
-VITE_POLICY_DEBUG_EVENTS=false
-```
-
-Redeploy:
-
-```bash
-./scripts/publish_stack.sh --build
+./scripts/policy_rollout.sh --phase rollback --build
 ```
 
 ## 7) Operations
