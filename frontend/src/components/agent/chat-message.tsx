@@ -12,6 +12,7 @@ import {
     selectEditingMessage,
     selectIsCompleted,
     selectIsLoading,
+    selectPolicyDiagnostics,
     selectIsStopped,
     selectMessages,
     selectToolSettings,
@@ -89,6 +90,9 @@ const ChatMessage = ({
     const editingMessage = useAppSelector(selectEditingMessage)
     const isStopped = useAppSelector(selectIsStopped)
     const workspaceInfo = useAppSelector(selectWorkspaceInfo)
+    const policyDiagnostics = useAppSelector(selectPolicyDiagnostics)
+    const isPolicyDebugEnabled =
+        import.meta.env.VITE_POLICY_DEBUG_EVENTS === 'true'
 
     useEffect(() => {
         if (isReplayMode && !isLoading && messages.length > 0) {
@@ -289,6 +293,26 @@ const ChatMessage = ({
     return (
         <div className="h-full flex flex-col">
             <div className="pb-4 px-3 md:px-4 w-full flex-1 overflow-y-auto overflow-x-hidden relative">
+                {isPolicyDebugEnabled && policyDiagnostics && (
+                    <div className="mb-4 rounded-xl border border-acheevy-purple/30 bg-acheevy-purple/10 p-3 text-left">
+                        <p className="text-xs font-semibold text-acheevy-purple uppercase tracking-wide">
+                            Policy Debug
+                        </p>
+                        <p className="mt-1 text-xs text-firefly dark:text-grey-2">
+                            Strategy: {policyDiagnostics.strategy || 'unknown'}
+                        </p>
+                        <p className="text-xs text-firefly dark:text-grey-2">
+                            Selected: {(policyDiagnostics.selected || []).join(', ') || 'none'}
+                        </p>
+                        <p className="text-xs text-firefly dark:text-grey-2">
+                            Enabled: {String(policyDiagnostics.enabled)} | Shadow: {String(policyDiagnostics.shadow_mode)}
+                        </p>
+                        <p className="text-xs text-firefly dark:text-grey-2">
+                            Reasons: {(policyDiagnostics.reason_codes || []).join(', ') || 'none'}
+                        </p>
+                    </div>
+                )}
+
                 {groupedMessages.map((group, groupIndex) => {
                     if (group.type === 'subagent' && group.agentContext) {
                         // Render subagent container

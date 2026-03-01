@@ -43,6 +43,7 @@ import {
     selectWorkspaceInfo,
     setBrowserUrl,
     setCurrentQuestion,
+    setPolicyDiagnostics,
     setVscodeUrl,
     setWorkspaceInfo
 } from '@/state/slice/workspace'
@@ -323,6 +324,13 @@ export function useAppEvents() {
                     const policyPayload = data.content
                         .policy as PolicyDiagnosticsPayload | undefined
                     if (policyPayload && isPolicyDebugEnabled) {
+                        dispatch(
+                            setPolicyDiagnostics({
+                                ...policyPayload,
+                                updated_at: Date.now()
+                            })
+                        )
+
                         const selectedLayers =
                             policyPayload.selected?.join(', ') || 'none'
                         toast.info(
