@@ -4,14 +4,14 @@ from datetime import datetime
 import platform
 from typing import Any, Dict, Optional
 from ii_agent.config.agent_types import AgentType
-from ii_agent.prompts.system_prompt import get_system_prompt
+from ii_agent.prompts.system_prompt import get_system_prompt, ACHEEVY_PERSONA
 from ii_agent.server.slides import template_service
 from ii_agent.db.manager import get_db_session_local
 
 
 def get_base_prompt_template() -> str:
     """Get the base prompt template shared by all agent types."""
-    return """\
+    return ACHEEVY_PERSONA + """\
 You are ACHEEVY Agent, an advanced AI assistant engineered by the A.I.M.S. team. As a highly skilled software engineer operating on a real computer system, your primary mission is to execute user software development tasks accurately and efficiently, leveraging your deep code understanding, iterative improvement skills, and all provided tools and resources.
 Workspace: /workspace
 Operating System: {platform}
