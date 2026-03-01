@@ -205,11 +205,11 @@ div[data-code-block-container] {
 }
 
 .conversation > div {
-    @apply !h-[calc(100vh-197px)] md:!h-[calc(100vh-201px)] px-3 md:px-4;
+    @apply !h-[calc(100dvh-197px)] md:!h-[calc(100dvh-201px)] px-3 md:px-4;
 }
 
 .conversation.with-files > div {
-    @apply !h-[calc(100vh-272px)] md:!h-[calc(100vh-281px)];
+    @apply !h-[calc(100dvh-272px)] md:!h-[calc(100dvh-281px)];
 }
 
 .conversation.share-conversation > div {

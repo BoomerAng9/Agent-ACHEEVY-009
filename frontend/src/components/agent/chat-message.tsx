@@ -28,7 +28,7 @@ function debounce<T extends (...args: never[]) => unknown>(
     func: T,
     delay: number
 ): T & { cancel: () => void } {
-    let timeoutId: NodeJS.Timeout
+    let timeoutId: ReturnType<typeof setTimeout>
     const debounced = ((...args: Parameters<T>) => {
         clearTimeout(timeoutId)
         timeoutId = setTimeout(() => func(...args), delay)
@@ -207,7 +207,6 @@ const ChatMessage = ({
     )
 
     const toggleThinkMessage = useCallback((messageId: string) => {
-        console.log('[toggleThinkMessage] Called with messageId:', messageId)
         setManuallyCollapsedThinkMessages((prev) => {
             const isCurrentlyToggled = prev.has(messageId)
 
@@ -301,13 +300,13 @@ const ChatMessage = ({
                         <p className="mt-1 text-xs text-firefly dark:text-grey-2">
                             Strategy: {policyDiagnostics.strategy || 'unknown'}
                         </p>
-                        <p className="text-xs text-firefly dark:text-grey-2">
+                        <p className="text-xs text-firefly dark:text-grey-2 break-words">
                             Selected: {(policyDiagnostics.selected || []).join(', ') || 'none'}
                         </p>
                         <p className="text-xs text-firefly dark:text-grey-2">
                             Enabled: {String(policyDiagnostics.enabled)} | Shadow: {String(policyDiagnostics.shadow_mode)}
                         </p>
-                        <p className="text-xs text-firefly dark:text-grey-2">
+                        <p className="text-xs text-firefly dark:text-grey-2 break-words">
                             Reasons: {(policyDiagnostics.reason_codes || []).join(', ') || 'none'}
                         </p>
                     </div>
@@ -431,12 +430,7 @@ const ChatMessage = ({
                         </div>
                         {toolSettings?.enable_reviewer && (
                             <div
-                                className={`group cursor-pointer flex items-start gap-2 px-3 py-2 bg-[#35363a] rounded-xl backdrop-blur-sm 
-      shadow-sm
-      transition-all duration-200 ease-out
-      hover:shadow-[0_2px_8px_rgba(0,0,0,0.24)]
-      active:scale-[0.98] overflow-hidden
-      animate-fadeIn`}
+                                className="group cursor-pointer flex items-start gap-2 px-3 py-2 rounded-xl bg-charcoal-light border border-white/10 transition-colors duration-200 overflow-hidden animate-fadeIn"
                             >
                                 <div className="flex text-sm items-center justify-between flex-1">
                                     <div className="flex items-center gap-x-1.5 flex-1">
@@ -482,7 +476,7 @@ const ChatMessage = ({
                             hideSuggestions
                             hideModeSelector
                             className="w-full max-w-none"
-                            textareaClassName="min-h-40 h-40 w-full"
+                            textareaClassName="min-h-28 h-28 md:min-h-40 md:h-40 w-full"
                             placeholder="Ask me anything..."
                             value={currentQuestion}
                             setValue={setCurrentQuestion}
@@ -536,7 +530,7 @@ const ChatMessage = ({
                             hideSuggestions
                             hideModeSelector
                             className="w-full max-w-none"
-                            textareaClassName="min-h-40 h-40 w-full"
+                            textareaClassName="min-h-28 h-28 md:min-h-40 md:h-40 w-full"
                             placeholder="Ask me anything..."
                             value={currentQuestion}
                             setValue={setCurrentQuestion}

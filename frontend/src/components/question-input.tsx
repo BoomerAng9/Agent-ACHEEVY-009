@@ -464,13 +464,13 @@ const QuestionInput = ({
 
             {/* Drag and Drop Overlay */}
             {isDragging && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-grey-3/90 dark:bg-black/90 border-2 border-dashed border-sky-blue rounded-xl pointer-events-none">
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-grey-3/90 dark:bg-charcoal/90 border-2 border-dashed border-acheevy-cyan rounded-xl pointer-events-none">
                     <div className="flex flex-col items-center gap-3 text-center">
                         <Icon
                             name="link"
-                            className="size-10 fill-sky-blue animate-pulse"
+                            className="size-10 fill-acheevy-cyan animate-pulse"
                         />
-                        <p className="text-lg font-medium text-black dark:text-sky-blue">
+                        <p className="text-lg font-medium text-black dark:text-acheevy-cyan">
                             Drop files here to upload
                         </p>
                     </div>
@@ -487,10 +487,10 @@ const QuestionInput = ({
             <div className="relative">
                 <Textarea
                     ref={textareaRef}
-                    className={`w-full p-3 md:p-4 !pb-[64px] rounded-xl resize-none overflow-y-auto !placeholder-black/[0.48] dark:!placeholder-white/40 !bg-grey-3 dark:!bg-black border-2 border-grey  ${
+                    className={`w-full p-3 md:p-4 !pb-[72px] rounded-xl resize-none overflow-y-auto !placeholder-black/[0.48] dark:!placeholder-white/40 !bg-grey-3 dark:!bg-charcoal border border-grey dark:border-white/10 shadow-none focus-visible:ring-2 focus-visible:ring-acheevy-cyan/40 ${
                         files.length > 0
-                            ? '!pt-[72px] !min-h-[240px]'
-                            : 'min-h-[167px]'
+                            ? '!pt-[72px] !min-h-[220px] md:!min-h-[240px]'
+                            : 'min-h-[140px] md:min-h-[167px]'
                     } max-h-[400px] ${
                         questionMode === QUESTION_MODE.CHAT && files.length > 0
                             ? '!min-h-[200px]'
@@ -524,8 +524,8 @@ const QuestionInput = ({
                         }}
                     />
                 )}
-                <div className="flex items-center justify-between !bg-grey-3 dark:!bg-black py-3 md:py-4 mb-[2px]">
-                    <div className="flex items-center gap-x-3 justify-between">
+                <div className="flex items-end justify-between !bg-grey-3 dark:!bg-charcoal py-3 md:py-4 mb-[2px] gap-3">
+                    <div className="flex items-center flex-wrap gap-2 md:gap-3 min-w-0">
                         <QuestionFileUpload
                             onFileChange={handleFileChange}
                             onGoogleDriveClick={onGoogleDriveClick}
@@ -582,7 +582,7 @@ const QuestionInput = ({
                             <Button
                                 variant="secondary"
                                 size="icon"
-                                className={`text-xs px-2 w-auto h-7 bg-white dark:bg-sky-blue text-black rounded-full cursor-pointer`}
+                                className="text-xs px-2 w-auto h-7 bg-white dark:bg-sky-blue text-black rounded-full cursor-pointer"
                                 onClick={onOpenSetting}
                             >
                                 {

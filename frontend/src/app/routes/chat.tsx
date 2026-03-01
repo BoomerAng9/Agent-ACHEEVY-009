@@ -173,13 +173,13 @@ export function ChatPage() {
     }, [sessionId, initialSessionId, setSearchParams])
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-dvh overflow-hidden">
             <SidebarProvider>
                 <Sidebar />
                 <div className="flex-1">
                     <AgentHeader sessionData={sessionData} isChatPage />
-                    <div className="flex justify-center">
-                        <div className="flex-1 flex flex-col max-w-4xl py-3 md:py-4">
+                    <div className="flex justify-center h-[calc(100dvh-64px)] overflow-hidden">
+                        <div className="flex-1 flex flex-col max-w-4xl py-3 md:py-4 px-2 md:px-0">
                             <Conversation
                                 className={`flex-1${filesCount > 0 ? ' with-files' : ''}`}
                             >
@@ -201,7 +201,7 @@ export function ChatPage() {
                                     {!isHistoryLoading &&
                                         !sessionError &&
                                         messages.length === 0 && (
-                                            <div className="text-sm text-neutral-500 text-center py-12">
+                                            <div className="text-sm text-neutral-500 text-center py-12 rounded-xl border border-grey dark:border-white/10 bg-white/60 dark:bg-charcoal-light/60">
                                                 Ask anything&mdash;your
                                                 assistant is ready to help.
                                             </div>
@@ -248,7 +248,7 @@ export function ChatPage() {
                                 <QuestionInput
                                     hideSuggestions
                                     className="w-full max-w-none"
-                                    textareaClassName="min-h-30 h-30 w-full"
+                                    textareaClassName="min-h-24 h-24 md:min-h-30 md:h-30 w-full"
                                     placeholder="Ask me anything..."
                                     value=""
                                     handleKeyDown={handleKeyDown}

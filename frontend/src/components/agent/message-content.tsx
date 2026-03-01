@@ -92,17 +92,17 @@ const MessageContent = memo(
                     return (
                         <div
                             key={`${message.id}-folder-${fileIndex}`}
-                            className="inline-block ml-auto bg-[#35363a] text-white rounded-2xl px-4 py-3 border border-gray-700 shadow-sm"
+                            className="inline-block ml-auto max-w-[min(92vw,360px)] bg-charcoal-light text-white rounded-2xl px-4 py-3 border border-white/10"
                         >
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-xl">
                                     <Folder className="size-6 text-white" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-base font-medium">
+                                    <span className="text-sm md:text-base font-medium break-words">
                                         {folderName}
                                     </span>
-                                    <span className="text-left text-sm text-gray-500">
+                                    <span className="text-left text-xs md:text-sm text-grey-2">
                                         {fileCount}{' '}
                                         {fileCount === 1 ? 'file' : 'files'}
                                     </span>
@@ -127,7 +127,7 @@ const MessageContent = memo(
                             key={`${message.id}-file-${fileIndex}`}
                             className="inline-block ml-auto rounded-3xl overflow-hidden max-w-[320px]"
                         >
-                            <div className="w-40 h-40 rounded-xl overflow-hidden">
+                            <div className="w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden">
                                 <img
                                     src={message.fileContents[file.file_name]}
                                     alt={file.file_name}
@@ -146,7 +146,7 @@ const MessageContent = memo(
                 return (
                     <div
                         key={`${message.id}-file-${fileIndex}`}
-                        className="inline-block ml-auto bg-[#35363a] text-white rounded-2xl px-4 py-3 border border-gray-700 shadow-sm"
+                        className="inline-block ml-auto max-w-[min(92vw,360px)] bg-charcoal-light text-white rounded-2xl px-4 py-3 border border-white/10"
                     >
                         <div className="flex items-center gap-3">
                             <div
@@ -155,10 +155,10 @@ const MessageContent = memo(
                                 <IconComponent className="size-6 text-white" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-base font-medium">
+                                <span className="text-sm md:text-base font-medium break-words">
                                     {file.file_name}
                                 </span>
-                                <span className="text-left text-sm text-gray-500">
+                                <span className="text-left text-xs md:text-sm text-grey-2">
                                     {label}
                                 </span>
                             </div>
@@ -179,7 +179,7 @@ const MessageContent = memo(
                     <div
                         className={`inline-block text-left rounded-lg ${
                             message.role === 'user'
-                                ? 'bg-[#f5f5f5] dark:bg-grey p-3 max-w-[80%] text-black whitespace-pre-wrap border border-grey dark:none'
+                                ? 'bg-grey-3 dark:bg-charcoal-light p-3 max-w-[min(90vw,680px)] text-black dark:text-white whitespace-pre-wrap border border-grey dark:border-white/10'
                                 : message.role === 'system'
                                   ? 'p-3 w-full text-gray-500 dark:text-gray-400'
                                   : 'text-white w-full'
@@ -212,11 +212,11 @@ const MessageContent = memo(
                                         <div className="text-left text-sm">
                                             {message.content}
                                         </div>
-                                        <div className="flex items-center justify-end gap-1 absolute -right-4 -bottom-9">
+                                        <div className="flex items-center justify-end gap-1 mt-2 md:absolute md:-right-4 md:-bottom-9 opacity-80 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-6 w-6 text-xs cursor-pointer text-white"
+                                                className="h-6 w-6 text-xs cursor-pointer text-black dark:text-white hover:!bg-black/5 dark:hover:!bg-white/10"
                                                 onClick={handleCopyContent}
                                             >
                                                 {isCopied ? (
@@ -295,7 +295,7 @@ const MessageContent = memo(
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-6 w-6 text-xs cursor-pointer hover:!bg-gray-700/50 dark:hover:!bg-gray-600/50"
+                                        className="h-6 w-6 text-xs cursor-pointer hover:!bg-white/10"
                                         onClick={handleCopyContent}
                                     >
                                         {isCopied ? (
