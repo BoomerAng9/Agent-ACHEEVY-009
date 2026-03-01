@@ -20,6 +20,13 @@ Required minimum values in `docker/.stack.env`:
 - `DATABASE_URL`
 - `SANDBOX_DATABASE_URL`
 
+Policy-layer rollout values:
+
+- `POLICY_LAYERS_ENABLED=true`
+- `POLICY_LAYERS_SHADOW_MODE=true` for first production pass
+- `POLICY_LAYERS_EMIT_DEBUG_EVENTS=true`
+- `VITE_POLICY_DEBUG_EVENTS=true` (optional, temporary for operator visibility)
+
 Recommended for production:
 
 - `PUBLIC_TOOL_SERVER_URL` (public URL if externally reachable)
@@ -86,7 +93,83 @@ If AIMS bridge mode is enabled:
 - Bridge health: `http://localhost:8000/bridge/health`
 - Bridge handshake: `POST http://localhost:8000/bridge/handshake` with header `X-II-BRIDGE-KEY`
 
-## 5) Operations
+## 5) Policy Layer Rollout (Production)
+
+### Phase A — Shadow mode (safe)
+
+Set in `docker/.stack.env`:
+
+```bash
+POLICY_LAYERS_ENABLED=true
+POLICY_LAYERS_SHADOW_MODE=true
+POLICY_LAYERS_EMIT_DEBUG_EVENTS=true
+VITE_POLICY_DEBUG_EVENTS=true
+```
+
+Deploy:
+
+```bash
+./scripts/publish_stack.sh --build
+```
+
+Verify:
+
+- In chat UI, confirm **Policy Debug** card appears.
+- Confirm strategy + selected layers are visible.
+- Confirm user responses are unchanged in quality/latency baseline.
+
+### Phase B — Enforced mode
+
+After stable shadow observations, set:
+
+```bash
+POLICY_LAYERS_ENABLED=true
+POLICY_LAYERS_SHADOW_MODE=false
+POLICY_LAYERS_EMIT_DEBUG_EVENTS=true
+VITE_POLICY_DEBUG_EVENTS=false
+```
+
+Redeploy:
+
+```bash
+./scripts/publish_stack.sh --build
+```
+
+Verify:
+
+- Chat still returns correct outputs across coding/research/deploy prompts.
+- Backend logs show policy diagnostics events without errors.
+- No regression in `/health` endpoints.
+
+### Phase C — Hardened steady state
+
+For normal production once validated:
+
+```bash
+POLICY_LAYERS_ENABLED=true
+POLICY_LAYERS_SHADOW_MODE=false
+POLICY_LAYERS_EMIT_DEBUG_EVENTS=false
+VITE_POLICY_DEBUG_EVENTS=false
+```
+
+## 6) Rollback
+
+Immediate rollback to legacy behavior:
+
+```bash
+POLICY_LAYERS_ENABLED=false
+POLICY_LAYERS_SHADOW_MODE=false
+POLICY_LAYERS_EMIT_DEBUG_EVENTS=false
+VITE_POLICY_DEBUG_EVENTS=false
+```
+
+Redeploy:
+
+```bash
+./scripts/publish_stack.sh --build
+```
+
+## 7) Operations
 
 Show status:
 
@@ -106,7 +189,7 @@ Stop stack:
 docker compose --project-name ii-agent-stack --env-file docker/.stack.env -f docker/docker-compose.stack.yaml down
 ```
 
-## 6) Common failures
+## 8) Common failures
 
 - **`OPENROUTER_API_KEY is missing or placeholder`**
   - Fix key in `docker/.stack.env`, then rerun publish script.
@@ -114,3 +197,10 @@ docker compose --project-name ii-agent-stack --env-file docker/.stack.env -f doc
   - Start Docker Engine service and retry.
 - **Health check timeout**
   - Inspect logs for failing service (`backend`, `sandbox-server`, or `tool-server`).
+
+- **Policy Debug card not visible in shadow mode**
+  - Ensure `POLICY_LAYERS_EMIT_DEBUG_EVENTS=true` on backend and `VITE_POLICY_DEBUG_EVENTS=true` for frontend build.
+  - Rebuild frontend image after changing frontend `VITE_*` env values.
+
+- **Unexpected behavior after enabling enforced mode**
+  - Set `POLICY_LAYERS_SHADOW_MODE=true` first, validate selected layers, then re-enable enforcement.
