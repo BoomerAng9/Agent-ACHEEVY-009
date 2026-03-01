@@ -163,6 +163,7 @@ class IIAgentConfig(BaseSettings):
     aims_bridge_enabled: bool = Field(default=False)
     aims_gateway_url: str | None = Field(default=None)
     aims_bridge_shared_secret: str | None = Field(default=None)
+    aims_bridge_bot_user_id: str = Field(default="aims-bridge-bot", description="Internal user ID used for AIMS bridge-dispatched agent tasks")
     # Sandbox server configuration
     sandbox_server_url: str = Field(default="http://localhost:8100")
     sandbox_template_id: str | None = Field(default=None)

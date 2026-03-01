@@ -220,7 +220,7 @@
   }
 
   .acheevy-gradient-text {
-    background: linear-gradient(135deg, #a855f7, #06b6d4, #10b981, #ec4899);
+    background: linear-gradient(135deg, #d4af37, #d4881f, #4fc3f7, #39ff14);
     background-size: 300% 300%;
     animation: acheevy-gradient 6s ease infinite;
     -webkit-background-clip: text;
