@@ -60,6 +60,14 @@ import {
 } from '@/typings/agent'
 import { normalizeAttachment } from '@/utils/attachments'
 
+type PolicyDiagnosticsPayload = {
+    enabled?: boolean
+    shadow_mode?: boolean
+    selected?: string[]
+    strategy?: string
+    reason_codes?: string[]
+}
+
 export function useAppEvents() {
     const navigate = useNavigate()
 
@@ -69,6 +77,8 @@ export function useAppEvents() {
     const messagesRef = useRef(messages)
     const workspaceInfoRef = useRef(workspaceInfo)
     const location = useLocation()
+    const isPolicyDebugEnabled =
+        import.meta.env.VITE_POLICY_DEBUG_EVENTS === 'true'
 
     // Track agent hierarchy
     const activeAgentsRef = useRef<Map<string, AgentContext>>(new Map())
@@ -309,6 +319,18 @@ export function useAppEvents() {
                     if (isShareMode) {
                         dispatch(setLoading(true))
                     }
+
+                    const policyPayload = data.content
+                        .policy as PolicyDiagnosticsPayload | undefined
+                    if (policyPayload && isPolicyDebugEnabled) {
+                        const selectedLayers =
+                            policyPayload.selected?.join(', ') || 'none'
+                        toast.info(
+                            `Policy ${policyPayload.strategy || 'unknown'}: ${selectedLayers}`
+                        )
+                        console.info('Policy diagnostics', policyPayload)
+                    }
+
                     dispatch(setStopped(false))
                     break
                 }
