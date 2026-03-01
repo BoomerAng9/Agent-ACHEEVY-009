@@ -5,6 +5,7 @@ import platform
 from typing import Any, Dict, Optional
 from ii_agent.config.agent_types import AgentType
 from ii_agent.prompts.system_prompt import get_system_prompt, ACHEEVY_PERSONA
+from ii_agent.prompts.policy_layers import build_policy_layer_prompt
 from ii_agent.server.slides import template_service
 from ii_agent.db.manager import get_db_session_local
 
@@ -396,39 +397,47 @@ async def get_system_prompt_for_agent_type(
     metadata: Optional[Dict[str, Any]] = None,
 ) -> str:
     """Generate a system prompt for a specific agent type."""
+    policy_prompt, policy_metadata = build_policy_layer_prompt(metadata=metadata)
+    if metadata is not None:
+        metadata.update(policy_metadata)
+
     if agent_type == AgentType.CODEX:
-        return get_system_prompt(
+        prompt = get_system_prompt(
             workspace_path=workspace_path,
             design_document=False,  # CODEX agent doesn't use design document rules
             researcher=False,  # CODEX agent doesn't use researcher rules
             codex=True,  # Use CODEX system prompt
             browser=browser,
         )
+        return f"{prompt}{policy_prompt}" if policy_prompt else prompt
     elif agent_type == AgentType.CLAUDE_CODE:
-        return get_system_prompt(
+        prompt = get_system_prompt(
             workspace_path=workspace_path,
             design_document=False,  # CLAUDE_CODE agent doesn't use design document rules
             researcher=False,  # CLAUDE_CODE agent doesn't use researcher rules
             claude=True,  # Use CLAUDE_CODE system prompt
             browser=browser,
         )
+        return f"{prompt}{policy_prompt}" if policy_prompt else prompt
     elif agent_type in [AgentType.GENERAL, AgentType.WEBSITE_BUILD]:
-        return get_system_prompt(
+        prompt = get_system_prompt(
             workspace_path=workspace_path,
             design_document=design_document,
             researcher=researcher,
             media=media,
             browser=browser,
         )
+        return f"{prompt}{policy_prompt}" if policy_prompt else prompt
 
     base_template = get_base_prompt_template()
     specialized_instructions = await get_specialized_instructions(agent_type, metadata)
     agent_description = get_agent_description(agent_type)
 
-    return base_template.format(
+    prompt = base_template.format(
         agent_description=agent_description,
         workspace_path=workspace_path,
         platform=platform.system(),
         specialized_instructions=specialized_instructions,
         today=datetime.now().strftime("%Y-%m-%d"),
     )
+    return f"{prompt}{policy_prompt}" if policy_prompt else prompt

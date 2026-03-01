@@ -47,6 +47,7 @@ from ii_agent.server.socket.command.command_handler import (
     CommandHandler,
     UserCommandType,
 )
+from ii_agent.prompts.policy_layers import select_policy_layers
 from ii_agent.utils.workspace_manager import WorkspaceManager
 
 logger = logging.getLogger(__name__)
@@ -324,13 +325,28 @@ class UserQueryHandler(CommandHandler):
         # Create workspace for this session
         workspace_path = Path(config.workspace_path).resolve()
 
+        base_metadata = dict(query_command.metadata or {})
+        user_query = query_command.text or ""
+        policy_selection = select_policy_layers(
+            user_query=user_query,
+            metadata=base_metadata,
+        )
+
+        merged_metadata = {
+            **base_metadata,
+            "user_query": user_query,
+            "policy_layers_selected": policy_selection.selected_layers,
+            "policy_strategy": policy_selection.strategy,
+            "policy_reason_codes": policy_selection.reason_codes,
+        }
+
         init_content = InitAgentContent(
             model_id=query_command.model_id,
             tool_args=query_command.tool_args,
             source=query_command.source,  # type : ignore
             thinking_tokens=query_command.thinking_tokens,
             agent_type=session.agent_type,
-            metadata=query_command.metadata,
+            metadata=merged_metadata,
         )
 
         workspace_manager = WorkspaceManager(
