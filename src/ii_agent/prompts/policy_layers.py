@@ -227,6 +227,16 @@ def build_policy_layer_prompt(
     metadata: Optional[Dict[str, Any]] = None,
 ) -> tuple[str, Dict[str, Any]]:
     metadata = metadata or {}
+    policy_layers_enabled = bool(metadata.get("policy_layers_enabled", True))
+
+    if not policy_layers_enabled:
+        return "", {
+            "policy_layers_selected": [],
+            "policy_strategy": "disabled",
+            "policy_reason_codes": ["policy_layers_disabled"],
+            "policy_layers_loaded": [],
+        }
+
     user_query = str(metadata.get("user_query", ""))
 
     selection = select_policy_layers(user_query=user_query, metadata=metadata)

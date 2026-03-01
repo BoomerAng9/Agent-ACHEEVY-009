@@ -335,6 +335,7 @@ class UserQueryHandler(CommandHandler):
         merged_metadata = {
             **base_metadata,
             "user_query": user_query,
+            "policy_layers_enabled": config.policy_layers_enabled,
             "policy_layers_selected": policy_selection.selected_layers,
             "policy_strategy": policy_selection.strategy,
             "policy_reason_codes": policy_selection.reason_codes,
