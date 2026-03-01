@@ -146,14 +146,9 @@ function HomePageContent() {
                                 <SidebarTrigger className="size-6 p-0" />
                                 <div className="relative flex items-center gap-x-[6px]">
                                     <img
-                                        src="/images/logo-only.png"
-                                        className="size-6 hidden dark:inline"
-                                        alt="Logo"
-                                    />
-                                    <img
-                                        src="/images/logo-charcoal.svg"
-                                        className="size-6 inline dark:hidden"
-                                        alt="Logo"
+                                        src="/images/acheevy/acheevy-helmet.png"
+                                        className="size-6"
+                                        alt="ACHEEVY"
                                     />
                                     <span className="text-sm font-semibold acheevy-gradient-text">
                                         Agent ACHEEVY-009

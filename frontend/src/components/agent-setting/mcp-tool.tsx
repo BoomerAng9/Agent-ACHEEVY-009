@@ -157,18 +157,11 @@ const MCPTool = ({ open, onOpenChange, tool }: MCPToolProps) => {
                         <div>
                             <div className="flex items-center gap-x-2 mt-6">
                                 <img
-                                    src="/images/logo-only.png"
-                                    alt="Logo"
+                                    src="/images/acheevy/acheevy-helmet.png"
+                                    alt="ACHEEVY"
                                     width={40}
                                     height={40}
-                                    className="rounded-sm hidden dark:inline"
-                                />
-                                <img
-                                    src="/images/logo-charcoal.svg"
-                                    alt="Logo"
-                                    width={40}
-                                    height={40}
-                                    className="rounded-sm dark:hidden"
+                                    className="rounded-sm"
                                 />
                                 <Icon
                                     name="arrange-square"

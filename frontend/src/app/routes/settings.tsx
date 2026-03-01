@@ -85,14 +85,9 @@ const Settings = () => {
             <div className="hidden md:flex px-6 pt-8 pb-6">
                 <div className="flex items-center gap-x-3">
                     <img
-                        src="/images/logo-only.png"
-                        className="size-10 hidden dark:inline"
-                        alt="Logo"
-                    />
-                    <img
-                        src="/images/logo-charcoal.svg"
-                        className="size-10 inline dark:hidden"
-                        alt="Logo"
+                        src="/images/acheevy/acheevy-helmet.png"
+                        className="size-10"
+                        alt="ACHEEVY"
                     />
                     <span className="text-black dark:text-white text-2xl font-semibold">
                         ACHEEVY

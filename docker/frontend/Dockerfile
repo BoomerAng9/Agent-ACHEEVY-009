@@ -1,6 +1,15 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
-COPY frontend/ .
+
+# Install pnpm first
+RUN corepack enable pnpm
+
+# Copy only package files for dependency caching
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
+RUN pnpm i --frozen-lockfile
+
+# Now copy source
+COPY . .
 
 ARG BUILD_MODE=production
 ARG VITE_API_URL="http://localhost:8000"
@@ -20,13 +29,9 @@ RUN set -e; \
       > "$env_file"; \
     cp "$env_file" .env
 
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 
-RUN if [ -f yarn.lock ]; then yarn --frozen-lockfile && yarn build; \
-    elif [ -f package-lock.json ]; then npm ci && npm run build; \
-    elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile && pnpm run build; \
-    else echo "Lockfile not found." && exit 1; \
-    fi
+RUN pnpm run build
 
 FROM node:18-alpine AS runner
 WORKDIR /app

@@ -114,14 +114,9 @@ const AgentHeader = ({ sessionData, isChatPage }: AgentHeaderProps) => {
             {!isChatPage && (
                 <div className="relative hidden md:flex items-center gap-x-[6px]">
                     <img
-                        src="/images/logo-only.png"
-                        className="size-6 hidden dark:inline"
-                        alt="Logo"
-                    />
-                    <img
-                        src="/images/logo-charcoal.svg"
-                        className="size-6 inline dark:hidden"
-                        alt="Logo"
+                        src="/images/acheevy/acheevy-helmet.png"
+                        className="size-6"
+                        alt="ACHEEVY"
                     />
                     <span className="text-sm font-semibold acheevy-gradient-text">
                         ACHEEVY-009

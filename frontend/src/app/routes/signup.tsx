@@ -10,6 +10,31 @@ import { Icon } from '@/components/ui/icon'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
+const hasGoogleClientId = !!import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+function GoogleSignupButton({ onSuccess }: { onSuccess: (code: string) => void }) {
+    const googleLogin = useGoogleLogin({
+        flow: 'auth-code',
+        onSuccess: async (codeResponse) => {
+            onSuccess(codeResponse.code)
+        },
+        onError: (errorResponse) => {
+            console.log('Login Failed:', errorResponse)
+        }
+    })
+
+    return (
+        <Button
+            size="xl"
+            onClick={() => googleLogin()}
+            className="w-full bg-white text-black font-semibold shadow-btn"
+        >
+            <Icon name="google" className="size-[22px]" />
+            Continue with Google Account
+        </Button>
+    )
+}
+
 const FormSchema = z.object({
     name: z.string({ error: 'Name is required' }).min(1, {
         message: 'Name is required'
@@ -33,20 +58,14 @@ export function SignupPage() {
         }
     })
 
-    const googleLogin = useGoogleLogin({
-        flow: 'auth-code',
-        onSuccess: async (codeResponse) => {
-            try {
-                await loginWithAuthCode(codeResponse.code)
-                navigate('/')
-            } catch (error) {
-                console.error('Failed to login with auth code:', error)
-            }
-        },
-        onError: (errorResponse) => {
-            console.log('Login Failed:', errorResponse)
+    const handleGoogleSuccess = async (code: string) => {
+        try {
+            await loginWithAuthCode(code)
+            navigate('/')
+        } catch (error) {
+            console.error('Failed to login with auth code:', error)
         }
-    })
+    }
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         console.log(data)
@@ -166,14 +185,9 @@ export function SignupPage() {
                     </span>
                     <p className="flex-1 dark:bg-white/[0.31] h-[1px]"></p>
                 </div>
-                <Button
-                    size="xl"
-                    onClick={() => googleLogin()}
-                    className="w-full bg-white text-black font-semibold shadow-btn"
-                >
-                    <Icon name="google" className="size-[22px]" />
-                    Continue with Google Account
-                </Button>
+                {hasGoogleClientId && (
+                    <GoogleSignupButton onSuccess={handleGoogleSuccess} />
+                )}
             </div>
         </div>
     )

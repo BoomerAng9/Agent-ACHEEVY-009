@@ -17,6 +17,31 @@ import { setUser } from '@/state/slice/user'
 import { fetchWishlist } from '@/state/slice/favorites'
 import { toast } from 'sonner'
 
+const hasGoogleClientId = !!import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+function GoogleLoginButton({ onSuccess }: { onSuccess: (code: string) => void }) {
+    const googleLogin = useGoogleLogin({
+        flow: 'auth-code',
+        onSuccess: async (codeResponse) => {
+            onSuccess(codeResponse.code)
+        },
+        onError: (errorResponse) => {
+            console.log('Login Failed:', errorResponse)
+        }
+    })
+
+    return (
+        <Button
+            size="xl"
+            onClick={() => googleLogin()}
+            className="w-full bg-white dark:bg-white/5 dark:border dark:border-acheevy-border text-black dark:text-white font-semibold shadow-btn dark:shadow-acheevy dark:hover:border-acheevy-purple/30 transition-all"
+        >
+            <Icon name="google" className="size-[22px]" />
+            Continue with Google Account
+        </Button>
+    )
+}
+
 const FormSchema = z.object({
     email: z.email({ error: 'Invalid email address' }),
     password: z.string({ error: 'Password is required' }).min(6, {
@@ -44,31 +69,25 @@ export function LoginPage() {
         }
     })
 
-    const googleLogin = useGoogleLogin({
-        flow: 'auth-code',
-        onSuccess: async (codeResponse) => {
-            try {
-                await loginWithAuthCode(codeResponse.code)
-                navigate('/')
-            } catch (error: unknown) {
-                const apiError = error as {
-                    response: { data: { detail: string } }
-                }
-                const errorMessage =
-                    typeof apiError?.response?.data?.detail === 'string'
-                        ? apiError.response.data.detail
-                        : 'Login failed. Please try again.'
-                if (errorMessage?.includes('beta')) {
-                    toast.info(errorMessage)
-                } else {
-                    toast.error(errorMessage)
-                }
+    const handleGoogleSuccess = useCallback(async (code: string) => {
+        try {
+            await loginWithAuthCode(code)
+            navigate('/')
+        } catch (error: unknown) {
+            const apiError = error as {
+                response: { data: { detail: string } }
             }
-        },
-        onError: (errorResponse) => {
-            console.log('Login Failed:', errorResponse)
+            const errorMessage =
+                typeof apiError?.response?.data?.detail === 'string'
+                    ? apiError.response.data.detail
+                    : 'Login failed. Please try again.'
+            if (errorMessage?.includes('beta')) {
+                toast.info(errorMessage)
+            } else {
+                toast.error(errorMessage)
+            }
         }
-    })
+    }, [loginWithAuthCode, navigate])
 
     const apiBaseUrl = useMemo(
         () => import.meta.env.VITE_API_URL || 'http://localhost:8000',
@@ -302,23 +321,18 @@ export function LoginPage() {
                         <p className="flex-1 dark:bg-white/[0.31] h-[1px]"></p>
                     </div>
                 </div>
-                <Button
-                    size="xl"
-                    onClick={() => googleLogin()}
-                    className="w-full bg-white dark:bg-white/5 dark:border dark:border-acheevy-border text-black dark:text-white font-semibold shadow-btn dark:shadow-acheevy dark:hover:border-acheevy-purple/30 transition-all"
-                >
-                    <Icon name="google" className="size-[22px]" />
-                    Continue with Google Account
-                </Button>
+                {hasGoogleClientId && (
+                    <GoogleLoginButton onSuccess={handleGoogleSuccess} />
+                )}
                 <Button
                     size="xl"
                     onClick={loginWithII}
                     className="w-full mt-4 md:mt-10 acheevy-btn-primary font-semibold"
                 >
                     <img
-                        src="/images/logo-charcoal.png"
-                        alt="logo"
-                        className="size-[22px] brightness-0 invert"
+                        src="/images/acheevy/acheevy-helmet.png"
+                        alt="ACHEEVY"
+                        className="size-[22px]"
                     />
                     Continue with ACHEEVY Account
                 </Button>

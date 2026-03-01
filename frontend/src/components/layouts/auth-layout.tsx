@@ -18,14 +18,9 @@ export function AuthLayout() {
         <div className="flex flex-col h-screen justify-between px-3 md:px-6 pt-8 pb-12 overflow-auto acheevy-bg-gradient">
             <Link to="/" className="flex items-center gap-x-2 md:gap-x-3">
                 <img
-                    src="/images/logo-only.png"
-                    className="size-8 md:size-10 hidden dark:inline"
-                    alt="Logo"
-                />
-                <img
-                    src="/images/logo-charcoal.svg"
-                    className="soze-8 md:size-10 inline dark:hidden"
-                    alt="Logo"
+                    src="/images/acheevy/acheevy-helmet.png"
+                    className="size-8 md:size-10"
+                    alt="ACHEEVY"
                 />
                 <div className="relative">
                     <span className="text-lg md:text-2xl font-semibold acheevy-gradient-text">

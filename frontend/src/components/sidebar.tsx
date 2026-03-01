@@ -133,14 +133,9 @@ const Sidebar = ({ className, workspaceInfo }: SidebarButtonProps) => {
 
                     <div className="relative flex items-center gap-2">
                         <img
-                            src="/images/logo-only.png"
-                            alt="Logo"
-                            className="size-8 md:size-10 rounded-sm hidden dark:inline"
-                        />
-                        <img
-                            src="/images/logo-charcoal.svg"
-                            alt="Logo"
-                            className="size-8 md:size-10 rounded-sm dark:hidden"
+                            src="/images/acheevy/acheevy-helmet.png"
+                            alt="ACHEEVY"
+                            className="size-8 md:size-10 rounded-sm"
                         />
                         <span
                             className={`text-lg font-semibold acheevy-gradient-text`}
@@ -174,18 +169,11 @@ const Sidebar = ({ className, workspaceInfo }: SidebarButtonProps) => {
             </div>
             <div className="hidden relative md:flex items-center gap-3">
                 <img
-                    src="/images/logo-only.png"
-                    alt="Logo"
+                    src="/images/acheevy/acheevy-helmet.png"
+                    alt="ACHEEVY"
                     width={40}
                     height={40}
-                    className="rounded-sm hidden dark:inline"
-                />
-                <img
-                    src="/images/logo-charcoal.svg"
-                    alt="Logo"
-                    width={40}
-                    height={40}
-                    className="rounded-sm dark:hidden"
+                    className="rounded-sm"
                 />
                 <span
                     className={`text-2xl font-semibold acheevy-gradient-text`}

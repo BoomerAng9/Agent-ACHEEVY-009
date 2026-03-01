@@ -16,14 +16,9 @@ const PublicHomePage = () => {
         <div className="flex flex-col h-screen justify-between px-3 md:px-6 pt-4 md:pt-8 pb-12 overflow-auto">
             <Link to="/" className="flex items-center gap-x-3">
                 <img
-                    src="/images/logo-only.png"
-                    className="size-10 hidden dark:inline"
-                    alt="Logo"
-                />
-                <img
-                    src="/images/logo-charcoal.svg"
-                    className="size-10 inline dark:hidden"
-                    alt="Logo"
+                    src="/images/acheevy/acheevy-helmet.png"
+                    className="size-10"
+                    alt="ACHEEVY"
                 />
                 <span className="text-2xl font-semibold acheevy-gradient-text">
                     ACHEEVY-009
