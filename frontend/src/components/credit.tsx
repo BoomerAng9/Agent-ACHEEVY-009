@@ -39,7 +39,7 @@ const Credit = () => {
 
     return (
         <div className="hidden md:flex flex-col items-start gap-y-4 p-6 pb-8 border-t border-grey-2/30 dark:border-acheevy-border">
-            <p className="text-xs font-semibold text-white bg-acheevy-purple px-2 h-[22px] rounded-full flex items-center">
+            <p className="text-xs font-semibold text-white bg-[var(--bg-brand-subtle)] px-2 h-[22px] rounded-full flex items-center">
                 {subscriptionPlan
                     ? `${SUBSCRIPTION_PLANS[subscriptionPlan]?.name} Plan`
                     : 'Free Plan'}
@@ -48,19 +48,19 @@ const Credit = () => {
                 <div className="flex gap-x-2 cursor-default">
                     <Icon
                         name="coin"
-                        className="fill-firefly dark:fill-acheevy-cyan"
+                        className="fill-[var(--text-secondary)] dark:fill-[var(--text-brand)]"
                     />
                     <div>
                         <div>
                             <Link
                                 to="/settings/usage"
-                                className="font-bold text-firefly dark:text-acheevy-cyan hover:underline"
+                                className="font-bold text-[var(--text-secondary)] dark:text-[var(--text-brand)] hover:underline"
                             >
                                 {formatCredit(Math.round(totalCredit))}
                             </Link>
                             {/* <span className="ml-[6px] text-firefly/30 dark:text-white/30">{`/ ${formatCredit(totalCredit)}`}</span> */}
                         </div>
-                        <p className="text-firefly dark:text-white text-xs">
+                        <p className="text-[var(--text-primary)] dark:text-white text-xs">
                             Credits
                         </p>
                     </div>
@@ -77,7 +77,7 @@ const Credit = () => {
                         >
                             <Icon
                                 name="edit"
-                                className="size-5 fill-acheevy-purple"
+                                className="size-5 fill-[var(--text-brand)]"
                             />
                             Upgrade Plan
                         </Button>

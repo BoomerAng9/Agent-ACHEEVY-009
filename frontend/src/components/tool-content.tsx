@@ -124,7 +124,7 @@ export const ToolContentComponent = ({
         if (toolCall.name === 'web_visit') {
             if (!result) return null
             return (
-                <Response className="text-black/56 dark:text-grey-2">
+                <Response className="text-[var(--text-secondary)]">
                     {result?.substring(0, 400)}
                 </Response>
             )

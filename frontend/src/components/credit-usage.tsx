@@ -63,7 +63,7 @@ const CreditUsage = ({ className, perPage = 20 }: CreditUsageProps) => {
                     hideViewUsage
                 >
                     <div className="text-xs font-semibold text-black bg-yellow px-4 py-1 rounded-4xl flex items-center gap-x-[6px] cursor-default">
-                        <Icon name="coin" className="fill-firefly" />
+                        <Icon name="coin" className="fill-[var(--bg-base)]" />
                         <p>{formatCredit(Math.round(totalCredit))}</p>
                     </div>
                 </CreditTooltip>

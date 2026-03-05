@@ -173,7 +173,7 @@ function HomePageContent() {
                                 <Link to="/settings/usage">
                                     <Icon
                                         name="coin"
-                                        className="size-6 fill-firefly dark:fill-white"
+                                        className="size-6 fill-[var(--bg-base)] dark:fill-white"
                                     />
                                 </Link>
                                 <UserProfileDropdown avatarClassName="size-8" />
@@ -191,7 +191,7 @@ function HomePageContent() {
                         <p className="text-[20px] md:text-2xl dark:text-grey-2">
                             What shall we build today?
                         </p>
-                        <p className="text-xs text-grey-2 mt-1 font-mono tracking-wider dark:text-acheevy-cyan/60">
+                        <p className="text-xs text-grey-2 mt-1 font-mono tracking-wider dark:text-[var(--text-brand)]/60">
                             Agent ACHEEVY-009 &middot; NtNtN Engine Online
                         </p>
                         <div className="flex gap-x-2 mt-6 mb-2">
@@ -228,6 +228,7 @@ function HomePageContent() {
                             isGoogleDriveAuthLoading={isGoogleDriveAuthLoading}
                             googleDriveFiles={downloadedGoogleDriveFiles}
                             onGoogleDriveFilesHandled={clearDownloadedFiles}
+                            onOpenSetting={() => setIsOpenSetting(true)}
                         />
                         <NtNtNAnalyzer
                             inputText={currentQuestion}

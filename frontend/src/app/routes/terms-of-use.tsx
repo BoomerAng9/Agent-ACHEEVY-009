@@ -2,7 +2,7 @@ export function TermsOfUsePage() {
     return (
         <div className="py-8">
             <div className="container mx-auto px-4 max-w-4xl">
-                <div className="bg-white dark:bg-sky-blue/10 rounded-lg shadow-lg p-8">
+                <div className="bg-white dark:bg-[var(--text-brand)]/10 rounded-lg shadow-lg p-8">
                     <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-8">
                         Terms of Use
                     </h1>

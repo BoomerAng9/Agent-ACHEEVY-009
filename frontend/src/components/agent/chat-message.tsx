@@ -293,20 +293,20 @@ const ChatMessage = ({
         <div className="h-full flex flex-col">
             <div className="pb-4 px-3 md:px-4 w-full flex-1 overflow-y-auto overflow-x-hidden relative">
                 {isPolicyDebugEnabled && policyDiagnostics && (
-                    <div className="mb-4 rounded-xl border border-acheevy-purple/30 bg-acheevy-purple/10 p-3 text-left">
-                        <p className="text-xs font-semibold text-acheevy-purple uppercase tracking-wide">
+                    <div className="mb-4 rounded-xl border border-[var(--border-brand)]/30 bg-[var(--border-brand)]/10 p-3 text-left">
+                        <p className="text-xs font-semibold text-[var(--text-brand)] uppercase tracking-wide">
                             Policy Debug
                         </p>
-                        <p className="mt-1 text-xs text-firefly dark:text-grey-2">
+                        <p className="mt-1 text-xs text-[var(--text-primary)] dark:text-grey-2">
                             Strategy: {policyDiagnostics.strategy || 'unknown'}
                         </p>
-                        <p className="text-xs text-firefly dark:text-grey-2 break-words">
+                        <p className="text-xs text-[var(--text-primary)] dark:text-grey-2 break-words">
                             Selected: {(policyDiagnostics.selected || []).join(', ') || 'none'}
                         </p>
-                        <p className="text-xs text-firefly dark:text-grey-2">
+                        <p className="text-xs text-[var(--text-primary)] dark:text-grey-2">
                             Enabled: {String(policyDiagnostics.enabled)} | Shadow: {String(policyDiagnostics.shadow_mode)}
                         </p>
-                        <p className="text-xs text-firefly dark:text-grey-2 break-words">
+                        <p className="text-xs text-[var(--text-primary)] dark:text-grey-2 break-words">
                             Reasons: {(policyDiagnostics.reason_codes || []).join(', ') || 'none'}
                         </p>
                     </div>
@@ -430,7 +430,7 @@ const ChatMessage = ({
                         </div>
                         {toolSettings?.enable_reviewer && (
                             <div
-                                className="group cursor-pointer flex items-start gap-2 px-3 py-2 rounded-xl bg-charcoal-light border border-white/10 transition-colors duration-200 overflow-hidden animate-fadeIn"
+                                className="group cursor-pointer flex items-start gap-2 px-3 py-2 rounded-xl bg-[var(--surface-raised)] border border-white/10 transition-colors duration-200 overflow-hidden animate-fadeIn"
                             >
                                 <div className="flex text-sm items-center justify-between flex-1">
                                     <div className="flex items-center gap-x-1.5 flex-1">
@@ -455,8 +455,8 @@ const ChatMessage = ({
 
                 {isStopped && !isCompleted && (
                     <div className="flex items-center">
-                        <div className="flex items-center gap-x-[6px] py-2 px-4 bg-acheevy-purple/20 text-acheevy-purple dark:text-acheevy-purple rounded-full border border-acheevy-purple/30">
-                            <div className="size-3 bg-acheevy-purple m-1 rounded-full" />
+                        <div className="flex items-center gap-x-[6px] py-2 px-4 bg-[var(--text-brand)]/20 text-[var(--text-brand)] dark:text-[var(--text-brand)] rounded-full border border-[var(--text-brand)]/30">
+                            <div className="size-3 bg-[var(--text-brand)] m-1 rounded-full" />
                             <span className="text-sm font-semibold">
                                 ACHEEVY has stopped
                             </span>

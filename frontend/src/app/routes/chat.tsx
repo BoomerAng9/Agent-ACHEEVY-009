@@ -201,7 +201,7 @@ export function ChatPage() {
                                     {!isHistoryLoading &&
                                         !sessionError &&
                                         messages.length === 0 && (
-                                            <div className="text-sm text-neutral-500 text-center py-12 rounded-xl border border-grey dark:border-white/10 bg-white/60 dark:bg-charcoal-light/60">
+                                            <div className="text-sm text-neutral-500 text-center py-12 rounded-xl border border-grey dark:border-white/10 bg-white/60 dark:bg-[var(--surface-raised)]/60">
                                                 Ask anything&mdash;your
                                                 assistant is ready to help.
                                             </div>

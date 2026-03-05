@@ -29,18 +29,25 @@ LAYER_FILES: Dict[str, str] = {
 AIMS_BEST_PRACTICE_SOURCES: Dict[str, tuple[str, ...]] = {
     "agent": (
         "include/aims/aims-skills/skills/claude-agent-loop.skill.md",
+        "include/aims/docs/ACHEEVY_ROLE_BASED_OPERATING_SPEC.md",
+        "include/aims/docs/AIMS_ROLE_BINDINGS.md",
     ),
     "skills": (
         "include/aims/aims-skills/skills/skill-router.md",
         "include/aims/aims-skills/skills/orchestrate-turn.skill.md",
+        "include/aims/docs/skills/GROWTH_SPECIALIST_EXECUTOR.SKILL.md",
+        "include/aims/docs/design/DESIGN_SYSTEM_RULES.md",
+        "include/aims/docs/design/UCD_MANUAL.md",
     ),
     "hooks": (
         "include/aims/aims-skills/hooks/session-start.hook.md",
         "include/aims/aims-skills/hooks/search-provider-priority.hook.md",
+        "include/aims/docs/ACHEEVY_ROLE_BASED_OPERATING_SPEC.md",
     ),
     "task": (
         "include/aims/aims-skills/skills/app-factory/start-process.skill.md",
         "include/aims/aims-skills/skills/deployment-hub/perform-session.skill.md",
+        "include/aims/docs/ACHEEVY_ROLE_BASED_OPERATING_SPEC.md",
     ),
 }
 
@@ -57,6 +64,13 @@ RULE_KEYWORDS: Dict[str, tuple[str, ...]] = {
         "ui",
         "ux",
         "research",
+        "brand",
+        "token",
+        "component",
+        "accessib",
+        "color",
+        "layout",
+        "typograph",
     ),
     "hooks": (
         "hook",

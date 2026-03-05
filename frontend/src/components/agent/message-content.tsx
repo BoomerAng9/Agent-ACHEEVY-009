@@ -92,7 +92,7 @@ const MessageContent = memo(
                     return (
                         <div
                             key={`${message.id}-folder-${fileIndex}`}
-                            className="inline-block ml-auto max-w-[min(92vw,360px)] bg-charcoal-light text-white rounded-2xl px-4 py-3 border border-white/10"
+                            className="inline-block ml-auto max-w-[min(92vw,360px)] bg-[var(--surface-raised)] text-white rounded-2xl px-4 py-3 border border-white/10"
                         >
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-xl">
@@ -146,7 +146,7 @@ const MessageContent = memo(
                 return (
                     <div
                         key={`${message.id}-file-${fileIndex}`}
-                        className="inline-block ml-auto max-w-[min(92vw,360px)] bg-charcoal-light text-white rounded-2xl px-4 py-3 border border-white/10"
+                        className="inline-block ml-auto max-w-[min(92vw,360px)] bg-[var(--surface-raised)] text-white rounded-2xl px-4 py-3 border border-white/10"
                     >
                         <div className="flex items-center gap-3">
                             <div
@@ -179,7 +179,7 @@ const MessageContent = memo(
                     <div
                         className={`inline-block text-left rounded-lg ${
                             message.role === 'user'
-                                ? 'bg-grey-3 dark:bg-charcoal-light p-3 max-w-[min(90vw,680px)] text-black dark:text-white whitespace-pre-wrap border border-grey dark:border-white/10'
+                                ? 'bg-grey-3 dark:bg-[var(--surface-raised)] p-3 max-w-[min(90vw,680px)] text-black dark:text-white whitespace-pre-wrap border border-grey dark:border-white/10'
                                 : message.role === 'system'
                                   ? 'p-3 w-full text-gray-500 dark:text-gray-400'
                                   : 'text-white w-full'
@@ -245,7 +245,7 @@ const MessageContent = memo(
                             </div>
                         ) : message?.isThinkMessage ? (
                             <div
-                                className={`inline-flex flex-col bg-firefly/[0.18] dark:bg-sky-blue/[0.18] border border-grey rounded-xl overflow-hidden ${
+                                className={`inline-flex flex-col bg-[var(--bg-base)]/[0.18] dark:bg-[var(--text-brand)]/[0.18] border border-grey rounded-xl overflow-hidden ${
                                     isThinkMessageExpanded(message.id)
                                         ? 'w-full'
                                         : ''
@@ -260,7 +260,7 @@ const MessageContent = memo(
                                     className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                                 >
                                     <div className="flex items-center gap-2">
-                                        <div className="w-2 h-2 bg-acheevy-purple rounded-full"></div>
+                                        <div className="w-2 h-2 bg-[var(--text-brand)] rounded-full"></div>
                                         <span className="font-medium text-sm text-gray-700 dark:text-gray-300">
                                             Thought
                                         </span>

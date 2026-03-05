@@ -4,6 +4,8 @@ import os
 from typing import Dict, Optional, Type
 from .base import BaseSandbox
 from .e2b import E2BSandbox
+from .docker_sandbox import DockerSandbox
+from .vps2_sandbox import VPS2Sandbox
 
 
 class SandboxFactory:
@@ -11,6 +13,8 @@ class SandboxFactory:
 
     _providers: Dict[str, Type[BaseSandbox]] = {
         "e2b": E2BSandbox,
+        "docker": DockerSandbox,
+        "vps2": VPS2Sandbox,
     }
 
     @classmethod
@@ -27,7 +31,7 @@ class SandboxFactory:
             ValueError: If provider type is not supported
         """
         if provider_type is None:
-            provider_type = os.getenv("SANDBOX_PROVIDER", "e2b")
+            provider_type = os.getenv("PROVIDER_TYPE", os.getenv("SANDBOX_PROVIDER", "docker"))
 
         if provider_type not in cls._providers:
             available_providers = ", ".join(cls._providers.keys())

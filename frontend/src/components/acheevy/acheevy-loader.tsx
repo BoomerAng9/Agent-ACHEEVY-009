@@ -8,11 +8,11 @@ import { useState, useEffect } from 'react'
  */
 
 const PIPELINE_PHASES = [
-    { label: 'Detecting Intent', icon: '◆', color: '#D4AF37' },
-    { label: 'Picker_Ang Selecting Stack', icon: '⬡', color: '#4FC3F7' },
-    { label: 'Buildsmith Constructing', icon: '▲', color: '#39FF14' },
-    { label: 'Chicken Hawk Verifying', icon: '◈', color: '#D4881F' },
-    { label: 'ACHEEVY Deploying', icon: '●', color: '#FF6B35' }
+    { label: 'Detecting Intent', icon: '◆', color: 'var(--acheevy-gold-400)' },
+    { label: 'Picker_Ang Selecting Stack', icon: '⬡', color: 'var(--acheevy-amber-400)' },
+    { label: 'Buildsmith Constructing', icon: '▲', color: 'var(--acheevy-emerald-400)' },
+    { label: 'Chicken Hawk Verifying', icon: '◈', color: 'var(--acheevy-amber-400)' },
+    { label: 'ACHEEVY Deploying', icon: '●', color: 'var(--acheevy-flame-400)' }
 ]
 
 const THINKING_MESSAGES = [
@@ -71,7 +71,7 @@ function MorphShape() {
             <motion.div
                 className="absolute inset-0"
                 style={{
-                    background: 'conic-gradient(from 0deg, #D4AF37, #4FC3F7, #39FF14, #D4881F, #FF6B35, #D4AF37)',
+                    background: 'conic-gradient(from 0deg, var(--acheevy-gold-400), var(--acheevy-amber-400), var(--acheevy-emerald-400), var(--acheevy-flame-400), var(--acheevy-gold-700), var(--acheevy-gold-400))',
                     borderRadius: '50%'
                 }}
                 animate={{
@@ -85,7 +85,7 @@ function MorphShape() {
                 }}
             />
             <div
-                className="absolute inset-[3px] bg-charcoal dark:bg-charcoal rounded-full"
+                className="absolute inset-[3px] bg-[var(--bg-base)] rounded-full"
                 style={{ borderRadius: 'inherit' }}
             />
         </motion.div>
@@ -148,7 +148,7 @@ export function AcheevyLoader({
                     {[0, 1, 2].map((i) => (
                         <motion.div
                             key={i}
-                            className="w-2 h-2 rounded-full bg-violet"
+                            className="w-2 h-2 rounded-full bg-[var(--acheevy-gold-400)]"
                             animate={{
                                 y: [0, -6, 0],
                                 opacity: [0.5, 1, 0.5]
@@ -161,7 +161,7 @@ export function AcheevyLoader({
                         />
                     ))}
                 </motion.div>
-                <span className="text-sm text-grey-2 font-mono">
+                <span className="text-sm text-[var(--text-tertiary)] font-mono">
                     {displayText}
                     <motion.span
                         animate={{ opacity: [1, 0] }}
@@ -177,17 +177,17 @@ export function AcheevyLoader({
     if (variant === 'compact') {
         return (
             <motion.div
-                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--bg-glass)] backdrop-blur-md border border-[var(--border-default)]"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
             >
                 <MorphShape />
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium truncate">
+                    <p className="text-sm text-[var(--text-primary)] font-medium truncate">
                         Agent ACHEEVY-009
                     </p>
-                    <p className="text-xs text-grey-2 font-mono truncate">
+                    <p className="text-xs text-[var(--text-tertiary)] font-mono truncate">
                         {displayText}
                         <motion.span
                             animate={{ opacity: [1, 0] }}
@@ -211,7 +211,7 @@ export function AcheevyLoader({
             {/* Morphing core with pulse rings */}
             <div className="relative w-32 h-32 flex items-center justify-center">
                 <PulseRing delay={0} size={100} color="rgba(212,175,55,0.3)" />
-                <PulseRing delay={0.8} size={120} color="rgba(79,195,247,0.2)" />
+                <PulseRing delay={0.8} size={120} color="rgba(212,136,31,0.2)" />
                 <PulseRing delay={1.6} size={140} color="rgba(57,255,20,0.15)" />
                 <MorphShape />
             </div>
@@ -219,13 +219,13 @@ export function AcheevyLoader({
             {/* Agent identity */}
             <div className="text-center">
                 <motion.p
-                    className="text-lg font-semibold text-white"
+                    className="text-lg font-semibold text-[var(--text-primary)]"
                     animate={{ opacity: [0.7, 1, 0.7] }}
                     transition={{ duration: 2, repeat: Infinity }}
                 >
                     ACHEEVY-009
                 </motion.p>
-                <p className="text-xs text-grey-2 mt-1 tracking-widest uppercase">
+                <p className="text-xs text-[var(--text-tertiary)] mt-1 tracking-widest uppercase">
                     NtNtN Engine Active
                 </p>
             </div>
@@ -267,14 +267,14 @@ export function AcheevyLoader({
             <AnimatePresence mode="wait">
                 <motion.p
                     key={currentMsg}
-                    className="text-sm text-grey-2 font-mono text-center max-w-sm"
+                    className="text-sm text-[var(--text-tertiary)] font-mono text-center max-w-sm"
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
                 >
                     {displayText}
                     <motion.span
-                        className="text-violet"
+                        className="text-[var(--text-brand)]"
                         animate={{ opacity: [1, 0] }}
                         transition={{ duration: 0.6, repeat: Infinity }}
                     >

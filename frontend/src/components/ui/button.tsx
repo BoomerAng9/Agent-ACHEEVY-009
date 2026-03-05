@@ -5,7 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-    "inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+    "inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-[var(--acheevy-gold-400)]/25 focus-visible:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
     {
         variants: {
             variant: {
@@ -18,7 +18,16 @@ const buttonVariants = cva(
                 secondary:
                     'bg-secondary text-secondary-foreground hover:bg-secondary/80',
                 ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-                link: 'text-primary underline-offset-4 hover:underline'
+                link: 'text-primary underline-offset-4 hover:underline',
+                /* ── Agentic Design System Variants ── */
+                brand:
+                    'bg-gradient-to-r from-[var(--acheevy-gold-400)] to-[var(--acheevy-amber-400)] text-[var(--neutral-900)] hover:from-[var(--acheevy-gold-500)] hover:to-[var(--acheevy-amber-500)] shadow-[var(--shadow-glow-gold)] hover:shadow-[var(--shadow-glow-gold-lg)] hover:-translate-y-px',
+                'brand-outline':
+                    'border border-[var(--border-brand)] text-[var(--acheevy-gold-400)] bg-[var(--bg-brand-subtle)] hover:bg-[var(--bg-brand-muted)] hover:border-[var(--border-brand-strong)]',
+                'brand-ghost':
+                    'text-[var(--acheevy-gold-400)] hover:bg-[var(--bg-brand-subtle)] hover:text-[var(--acheevy-gold-300)]',
+                glass:
+                    'bg-[var(--bg-glass)] backdrop-blur-lg border border-[var(--border-default)] text-[var(--text-primary)] hover:bg-[var(--bg-glass-hover)] hover:border-[var(--border-strong)]'
             },
             size: {
                 default: 'h-9 px-4 py-2 has-[>svg]:px-3 text-sm',

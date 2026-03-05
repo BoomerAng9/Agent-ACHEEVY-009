@@ -92,6 +92,9 @@ const QuestionInput = ({
     const questionMode = useAppSelector(selectQuestionMode)
     const availableModels = useAppSelector(selectAvailableModels)
     const selectedModel = useAppSelector(selectSelectedModel)
+    const selectedModelName =
+        availableModels.find((model) => model.id === selectedModel)?.model ||
+        'Model'
     const isUploading = useAppSelector((state) => state.files.isUploading)
     const isLoading = useAppSelector((state) => state.ui.isLoading)
     const isGeneratingPrompt = useAppSelector(
@@ -464,13 +467,13 @@ const QuestionInput = ({
 
             {/* Drag and Drop Overlay */}
             {isDragging && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-grey-3/90 dark:bg-charcoal/90 border-2 border-dashed border-acheevy-cyan rounded-xl pointer-events-none">
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-[var(--bg-raised)]/90 border-2 border-dashed border-[var(--border-brand)] rounded-xl pointer-events-none backdrop-blur-sm">
                     <div className="flex flex-col items-center gap-3 text-center">
                         <Icon
                             name="link"
-                            className="size-10 fill-acheevy-cyan animate-pulse"
+                            className="size-10 fill-[var(--text-brand)] animate-pulse"
                         />
-                        <p className="text-lg font-medium text-black dark:text-acheevy-cyan">
+                        <p className="text-lg font-medium text-[var(--text-primary)] dark:text-[var(--text-brand)]">
                             Drop files here to upload
                         </p>
                     </div>
@@ -487,7 +490,7 @@ const QuestionInput = ({
             <div className="relative">
                 <Textarea
                     ref={textareaRef}
-                    className={`w-full p-3 md:p-4 !pb-[72px] rounded-xl resize-none overflow-y-auto !placeholder-black/[0.48] dark:!placeholder-white/40 !bg-grey-3 dark:!bg-charcoal border border-grey dark:border-white/10 shadow-none focus-visible:ring-2 focus-visible:ring-acheevy-cyan/40 ${
+                    className={`w-full p-3 md:p-4 !pb-[72px] rounded-xl resize-none overflow-y-auto !placeholder-black/[0.48] dark:!placeholder-white/40 !bg-[var(--input-bg)] dark:!bg-[var(--input-bg)] border border-[var(--input-border)] shadow-none focus-visible:ring-2 focus-visible:ring-[var(--input-ring)] ${
                         files.length > 0
                             ? '!pt-[72px] !min-h-[220px] md:!min-h-[240px]'
                             : 'min-h-[140px] md:min-h-[167px]'
@@ -524,7 +527,7 @@ const QuestionInput = ({
                         }}
                     />
                 )}
-                <div className="flex items-end justify-between !bg-grey-3 dark:!bg-charcoal py-3 md:py-4 mb-[2px] gap-3">
+                <div className="flex items-end justify-between !bg-[var(--input-bg)] py-3 md:py-4 mb-[2px] gap-3">
                     <div className="flex items-center flex-wrap gap-2 md:gap-3 min-w-0">
                         <QuestionFileUpload
                             onFileChange={handleFileChange}
@@ -582,14 +585,10 @@ const QuestionInput = ({
                             <Button
                                 variant="secondary"
                                 size="icon"
-                                className="text-xs px-2 w-auto h-7 bg-white dark:bg-sky-blue text-black rounded-full cursor-pointer"
+                                className="text-xs px-2 w-auto h-7 bg-white dark:bg-[var(--bg-brand-subtle)] text-black dark:text-[var(--text-brand)] rounded-full cursor-pointer"
                                 onClick={onOpenSetting}
                             >
-                                {
-                                    availableModels.find(
-                                        (m) => m.id === selectedModel
-                                    )?.model
-                                }
+                                {selectedModelName}
                                 <Icon
                                     name="arrow-down"
                                     className="fill-black"
@@ -635,11 +634,11 @@ const QuestionInput = ({
                                     onClick={() =>
                                         handleSelectFeature(feature.type)
                                     }
-                                    className="h-7 md:h-8 !px-4 cursor-pointer rounded-full text-xs border-firefly dark:border-sky-blue text-black dark:text-sky-blue"
+                                    className="h-7 md:h-8 !px-4 cursor-pointer rounded-full text-xs border-[var(--border-default)] dark:border-[var(--border-brand)] text-[var(--text-primary)] dark:text-[var(--text-brand)] hover:bg-[var(--bg-brand-subtle)] transition-colors"
                                 >
                                     <Icon
                                         name={feature.icon}
-                                        className="hidden md:block size-4 fill-black dark:fill-sky-blue"
+                                        className="hidden md:block size-4 fill-[var(--text-primary)] dark:fill-[var(--text-brand)]"
                                     />
                                     {feature.name}
                                 </Button>

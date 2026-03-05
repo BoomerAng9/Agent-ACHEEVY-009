@@ -55,9 +55,11 @@ class IIAgentConfig(BaseSettings):
     mcp_timeout: int = Field(default=1800)
     # Storage configuration
     # File upload storage
-    storage_provider: str = Field(default="gcs")
+    storage_provider: str = Field(default="local")
     file_upload_project_id: str | None = None
     file_upload_bucket_name: str | None = None
+    local_storage_path: str = Field(default="/.ii_agent/storage")
+    local_public_base_url: str = Field(default="")
     file_upload_size_limit: int = Field(default=100 * 1024 * 1024)  # 100MB default
     # Avatar storage
     avatar_project_id: str | None = None
@@ -258,17 +260,13 @@ class IIAgentConfig(BaseSettings):
 
     def _init_storage(self) -> BaseStorage:
         """Instantiate and cache the storage client."""
-        if not self.file_upload_project_id or not self.file_upload_bucket_name:
-            raise ValueError(
-                "File upload storage is not configured. "
-                "Set FILE_UPLOAD_PROJECT_ID and FILE_UPLOAD_BUCKET_NAME environment variables."
-            )
-
         return create_storage_client(
-            self.storage_provider,
-            self.file_upload_project_id,
-            self.file_upload_bucket_name,
-            self.custom_domain,
+            storage_provider=self.storage_provider,
+            project_id=self.file_upload_project_id,
+            bucket_name=self.file_upload_bucket_name,
+            custom_domain=self.custom_domain,
+            base_path=self.local_storage_path,
+            public_base_url=self.local_public_base_url,
         )
 
     @property

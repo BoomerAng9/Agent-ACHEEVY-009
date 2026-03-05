@@ -108,7 +108,7 @@ const Settings = () => {
                                 className="size-8 inline dark:hidden"
                             />
                         </button>
-                        <span className="text-black dark:text-sky-blue text-2xl md:text-[32px] font-semibold">
+                        <span className="text-black dark:text-[var(--text-brand)] text-2xl md:text-[32px] font-semibold">
                             Settings
                         </span>
                     </div>
@@ -120,11 +120,11 @@ const Settings = () => {
                             <Button
                                 key={tab.key}
                                 className={clsx(
-                                    'h-7 text-xs font-semibold px-4 rounded-full border border-sky-blue',
+                                    'h-7 text-xs font-semibold px-4 rounded-full border border-[var(--border-brand)]',
                                     {
-                                        'bg-firefly border-firefly dark:border-sky-blue-2 dark:bg-sky-blue text-sky-blue-2 dark:text-black':
+                                        'bg-[var(--bg-base)] border-[var(--bg-base)] dark:border-[var(--text-brand)] dark:bg-[var(--text-brand)] text-[var(--text-brand)] dark:text-[var(--bg-base)]':
                                             activeTab === tab.key,
-                                        'dark:border-sky-blue border-firefly dark:text-sky-blue':
+                                        'dark:border-[var(--border-brand)] border-[var(--bg-base)] dark:text-[var(--text-brand)]':
                                             activeTab !== tab.key
                                     }
                                 )}

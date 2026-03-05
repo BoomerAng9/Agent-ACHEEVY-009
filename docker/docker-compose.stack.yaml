@@ -110,6 +110,8 @@ services:
     entrypoint: ["/bin/bash", "/app/start_sandbox_server.sh"]
     ports:
       - "${SANDBOX_SERVER_PORT:-8100}:8100"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8100/health || exit 1"]
       interval: 15s

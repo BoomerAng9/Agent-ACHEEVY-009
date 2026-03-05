@@ -1,4 +1,8 @@
-import { ACCESS_TOKEN } from '@/constants/auth'
+import {
+    ACCESS_TOKEN,
+    disableGuestMode,
+    isGuestModeEnabled
+} from '@/constants/auth'
 import { authService } from '@/services/auth.service'
 import { settingsService } from '@/services/settings.service'
 import {
@@ -31,7 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { user, isLoading } = useAppSelector((state) => state.user)
 
     // Derive isAuthenticated from the presence of a valid access token
-    const isAuthenticated = !!localStorage.getItem(ACCESS_TOKEN)
+    const isAuthenticated =
+        !!localStorage.getItem(ACCESS_TOKEN) || isGuestModeEnabled()
 
     const fetchAvailableModels = useCallback(async () => {
         try {
@@ -106,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             // Store the access token immediately to trigger WebSocket connection
             localStorage.setItem(ACCESS_TOKEN, res.access_token)
+            disableGuestMode()
             // Dispatch a custom event to notify WebSocket to connect immediately
             window.dispatchEvent(new CustomEvent('auth-token-set'))
 
@@ -123,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = () => {
         localStorage.removeItem(ACCESS_TOKEN)
+        disableGuestMode()
         dispatch(clearUser())
         dispatch(clearFavorites())
         // Reset all RTK Query cache to prevent data leakage between users

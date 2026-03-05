@@ -25,3 +25,5 @@ All lower layers (agent, skills, hooks, task, and any dynamic overlays) must com
 - This brain layer must be loaded first.
 - If downstream layers conflict, this file wins.
 - Dynamic overlays are additive unless they violate this brain layer.
+- Role model and executor operating contracts are defined in `include/aims/docs/ACHEEVY_ROLE_BASED_OPERATING_SPEC.md`.
+- Concrete identity mapping is defined in `include/aims/docs/AIMS_ROLE_BINDINGS.md`.

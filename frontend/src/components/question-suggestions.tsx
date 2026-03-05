@@ -55,7 +55,7 @@ const Suggestions = ({
             {suggestionsToRender.map((item) => (
                 <Button
                     key={item}
-                    className="text-xs bg-grey px-2 py-[3px] h-[22px] rounded-full text-black"
+                    className="text-xs bg-[var(--bg-raised)] dark:bg-[var(--bg-glass)] px-2 py-[3px] h-[22px] rounded-full text-[var(--text-primary)] dark:text-[var(--text-secondary)] border border-[var(--border-default)] hover:border-[var(--border-brand)] hover:text-[var(--text-brand)] transition-colors"
                     onClick={() => onSelect(item)}
                 >
                     {item}

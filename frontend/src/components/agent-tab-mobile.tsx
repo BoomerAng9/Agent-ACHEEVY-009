@@ -63,9 +63,9 @@ const AgentTabMobile = ({
                     className={clsx(
                         `flex-1 text-sm cursor-pointer flex justify-between md:hidden px-4 py-[6px] rounded-3xl`,
                         {
-                            'border border-black text-black dark:border-sky-blue dark:text-sky-blue':
+                            'border border-[var(--text-primary)] text-[var(--text-primary)] dark:border-[var(--border-brand)] dark:text-[var(--text-brand)]':
                                 isShowChat,
-                            'bg-firefly text-sky-blue-2 dark:bg-sky-blue dark:text-black':
+                            'bg-[var(--bg-base)] text-[var(--text-brand)] dark:bg-[var(--text-brand)] dark:text-[var(--bg-base)]':
                                 !isShowChat
                         }
                     )}
@@ -76,8 +76,8 @@ const AgentTabMobile = ({
                     <Icon
                         name="arrow-down"
                         className={clsx('size-5', {
-                            'fill-black dark:fill-white': isShowChat,
-                            'fill-sky-blue-2 dark:fill-black': !isShowChat
+                            'fill-[var(--text-primary)] dark:fill-white': isShowChat,
+                            'fill-[var(--text-brand)] dark:fill-[var(--bg-base)]': !isShowChat
                         })}
                     />
                 </DropdownMenuTrigger>
@@ -114,9 +114,9 @@ const AgentTabMobile = ({
                     className={clsx(
                         `flex-1 text-sm cursor-pointer flex justify-between md:hidden px-4 py-[6px] rounded-3xl`,
                         {
-                            'border border-black text-black dark:border-sky-blue dark:text-sky-blue':
+                            'border border-[var(--text-primary)] text-[var(--text-primary)] dark:border-[var(--border-brand)] dark:text-[var(--text-brand)]':
                                 !isShowChat,
-                            'bg-firefly text-sky-blue-2 dark:bg-sky-blue dark:text-black':
+                            'bg-[var(--bg-base)] text-[var(--text-brand)] dark:bg-[var(--text-brand)] dark:text-[var(--bg-base)]':
                                 isShowChat
                         }
                     )}
@@ -127,8 +127,8 @@ const AgentTabMobile = ({
                     <Icon
                         name="arrow-down"
                         className={clsx('size-5', {
-                            'fill-black dark:fill-white': !isShowChat,
-                            'fill-sky-blue-2 dark:fill-black': isShowChat
+                            'fill-[var(--text-primary)] dark:fill-white': !isShowChat,
+                            'fill-[var(--text-brand)] dark:fill-[var(--bg-base)]': isShowChat
                         })}
                     />
                 </DropdownMenuTrigger>

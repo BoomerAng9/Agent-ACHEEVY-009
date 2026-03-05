@@ -97,7 +97,7 @@ const AgentHeader = ({ sessionData, isChatPage }: AgentHeaderProps) => {
     }
 
     return (
-        <div className="relative py-3 px-3 md:px-6 flex items-center gap-x-4 md:border-b border-neutral-200 dark:border-white/10 acheevy-header-border">
+        <div className="relative py-3 px-3 md:px-6 flex items-center gap-x-4 md:border-b border-[var(--border-default)] acheevy-header-border">
             {isChatPage ? (
                 <SidebarTrigger className="size-6 p-0" />
             ) : (
@@ -105,8 +105,8 @@ const AgentHeader = ({ sessionData, isChatPage }: AgentHeaderProps) => {
                     <SidebarTrigger className="block md:hidden size-6 p-0" />
                     <ButtonIcon
                         name="home"
-                        className="bg-black hidden md:flex"
-                        iconClassName="fill-sky-blue-2 dark:fill-black"
+                        className="bg-[var(--bg-base)] dark:bg-[var(--text-brand)] hidden md:flex"
+                        iconClassName="fill-[var(--text-brand)] dark:fill-[var(--bg-base)]"
                         onClick={handleBack}
                     />
                 </>
@@ -247,7 +247,7 @@ const AgentHeader = ({ sessionData, isChatPage }: AgentHeaderProps) => {
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={confirmDelete}
-                            className="bg-red-2 hover:bg-red-2 text-white"
+                            className="bg-[var(--status-error)] hover:bg-[var(--status-error)]/90 text-white"
                         >
                             Delete
                         </AlertDialogAction>

@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* Agentic Design System — Token Foundation */
+@import './design-tokens.css';
+
 /* @import './satoshi.css'; */
 @import './github-markdown.css';
 @import './animations.css';
@@ -7,41 +10,44 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+    /* ── Legacy Aliases (Tailwind color utilities) ── */
+    /* Maps Tailwind `bg-<name>` / `text-<name>` classes to design tokens */
     --color-mist: #d5dce0;
-    --color-sky-blue: #bee6f0;
-    --color-sky-blue-2: #a6ffff;
-    --color-sky-blue-3: #bae9f4;
-    --color-sky-blue-4: #87e7ff;
-    --color-violet: #d4af37;
-    --color-pewter: #919eae;
-    --color-slate: #56696d;
-    --color-charcoal: #1F1F23;
-    --color-charcoal-light: #2A2A30;
-    --color-charcoal-surface: #2E2E36;
-    --color-sidebar-border: rgba(229, 231, 235, 0.3);
-    --color-black: #212121;
-    --color-yellow: #ffde8a;
-    --color-green: #006600;
-    --color-grey: #e5e7eb;
-    --color-grey-2: #c7c7c7;
-    --color-grey-3: #fbfbfb;
-    --color-firefly: #0f2b33;
-    --color-red: #ff6b75;
+    --color-sky-blue: var(--acheevy-gold-400);
+    --color-sky-blue-2: var(--acheevy-gold-200);
+    --color-sky-blue-3: var(--acheevy-amber-400);
+    --color-sky-blue-4: var(--acheevy-amber-700);
+    --color-violet: var(--acheevy-gold-400);
+    --color-pewter: var(--neutral-400);
+    --color-slate: var(--neutral-600);
+    --color-charcoal: var(--surface-raised);
+    --color-charcoal-light: var(--surface-overlay);
+    --color-charcoal-surface: var(--surface-elevated);
+    --color-sidebar-border: var(--border-default);
+    --color-black: var(--neutral-900);
+    --color-yellow: var(--acheevy-gold-200);
+    --color-green: var(--status-success);
+    --color-grey: var(--neutral-200);
+    --color-grey-2: var(--neutral-300);
+    --color-grey-3: var(--neutral-50);
+    --color-firefly: var(--surface-base);
+    --color-red: var(--status-error);
     --color-red-2: #f54260;
-    --shadow-btn: 0 4px 24px rgba(0, 0, 0, 0.16);
-    /* A.I.M.S Brand Colors */
-    --color-acheevy-purple: #d4af37;
-    --color-acheevy-purple-deep: #d4881f;
-    --color-acheevy-cyan: #4fc3f7;
-    --color-acheevy-cyan-bright: #87e7ff;
-    --color-acheevy-emerald: #39ff14;
-    --color-acheevy-amber: #d4881f;
+    --shadow-btn: var(--shadow-md);
+
+    /* A.I.M.S Brand Colors — now backed by token system */
+    --color-acheevy-purple: var(--acheevy-gold-400);
+    --color-acheevy-purple-deep: var(--acheevy-amber-400);
+    --color-acheevy-cyan: var(--acheevy-gold-400);
+    --color-acheevy-cyan-bright: var(--acheevy-gold-200);
+    --color-acheevy-emerald: var(--acheevy-emerald-400);
+    --color-acheevy-amber: var(--acheevy-amber-400);
     --color-acheevy-pink: #ec4899;
-    --color-acheevy-indigo: #d4af37;
-    --color-acheevy-surface: rgba(255, 255, 255, 0.03);
-    --color-acheevy-border: rgba(212, 175, 55, 0.25);
-    --shadow-acheevy: 0 8px 32px rgba(212, 175, 55, 0.15);
-    --shadow-acheevy-lg: 0 16px 64px rgba(212, 175, 55, 0.20), 0 0 0 1px rgba(212, 175, 55, 0.10);
+    --color-acheevy-indigo: var(--acheevy-gold-400);
+    --color-acheevy-surface: var(--surface-glass);
+    --color-acheevy-border: var(--border-brand);
+    --shadow-acheevy: var(--shadow-glow-gold);
+    --shadow-acheevy-lg: var(--shadow-glow-gold-lg);
 }
 
 @keyframes breathing-fill {
@@ -90,9 +96,9 @@
             Segoe UI Symbol;
     }
     html.dark body {
-        @apply bg-charcoal;
-        background-image: radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-                          radial-gradient(ellipse at 80% 100%, rgba(79, 195, 247, 0.06) 0%, transparent 50%);
+        background-color: var(--bg-base);
+        background-image: radial-gradient(ellipse at 20% 0%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+                          radial-gradient(ellipse at 80% 100%, rgba(212, 136, 31, 0.04) 0%, transparent 50%);
     }
     html.light body {
         @apply bg-white text-black;
@@ -231,7 +237,7 @@ div[data-code-block-container='true'],
 
 div[data-code-block-container='true'],
 .code-block pre {
-    @apply !bg-firefly/10 dark:!bg-sky-blue/10 !border-none !overflow-auto;
+    @apply !bg-[var(--bg-base)]/10 dark:!bg-[var(--text-brand)]/10 !border-none !overflow-auto;
 }
 
 div[data-code-block-container='true'] pre {
@@ -263,7 +269,7 @@ ol[data-streamdown='ordered-list'] {
 }
 
 div[data-streamdown='mermaid-block'] {
-    @apply !bg-firefly/10 dark:!bg-sky-blue/10 !border-none;
+    @apply !bg-[var(--bg-base)]/10 dark:!bg-[var(--text-brand)]/10 !border-none;
 }
 
 div[data-streamdown='mermaid-block'] .messageText,
@@ -282,70 +288,70 @@ div[data-streamdown='mermaid-block'] .messageLine0,
     @apply !stroke-black dark:!stroke-white;
 }
 
-/* ========== A.I.M.S. Brand Utilities ========== */
+/* ========== A.I.M.S. Brand Utilities (backed by design tokens) ========== */
 
 /* Brand gradient backgrounds */
 .acheevy-bg-gradient {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(79, 195, 247, 0.06), rgba(57, 255, 20, 0.04));
+    background: linear-gradient(135deg, var(--bg-brand-subtle), rgba(212, 136, 31, 0.04), rgba(57, 255, 20, 0.03));
 }
 
 html.dark .acheevy-bg-gradient {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(79, 195, 247, 0.08), rgba(57, 255, 20, 0.05));
+    background: linear-gradient(135deg, var(--bg-brand-muted), rgba(212, 136, 31, 0.06), rgba(57, 255, 20, 0.04));
 }
 
 /* Brand sidebar styling */
 html.dark .acheevy-sidebar {
-    background: linear-gradient(180deg, #1F1F23 0%, #252529 50%, #1F1F23 100%) !important;
-    border-right: 1px solid rgba(212, 175, 55, 0.12) !important;
+    background: linear-gradient(180deg, var(--surface-raised) 0%, var(--surface-overlay) 50%, var(--surface-raised) 100%) !important;
+    border-right: 1px solid var(--border-brand) !important;
 }
 
 /* Brand card with subtle gradient border */
 .acheevy-card {
     position: relative;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(212, 175, 55, 0.12);
-    border-radius: 16px;
-    transition: all 0.3s ease;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-brand);
+    border-radius: var(--radius-xl);
+    transition: all var(--duration-moderate) var(--ease-default);
 }
 
 .acheevy-card:hover {
-    border-color: rgba(212, 175, 55, 0.25);
-    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.1);
+    border-color: var(--border-brand-strong);
+    box-shadow: var(--shadow-glow-gold);
 }
 
 /* Brand primary button */
 .acheevy-btn-primary {
-    background: linear-gradient(135deg, #d4af37, #d4881f) !important;
-    color: black !important;
+    background: linear-gradient(135deg, var(--acheevy-gold-400), var(--acheevy-amber-400)) !important;
+    color: var(--text-on-brand) !important;
     border: none !important;
-    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: var(--shadow-glow-gold);
+    transition: all var(--duration-moderate) var(--ease-default);
 }
 
 .acheevy-btn-primary:hover {
-    background: linear-gradient(135deg, #c9a42e, #c97c1a) !important;
-    box-shadow: 0 6px 24px rgba(212, 175, 55, 0.4);
+    background: linear-gradient(135deg, var(--acheevy-gold-500), var(--acheevy-amber-500)) !important;
+    box-shadow: var(--shadow-glow-gold-lg);
     transform: translateY(-1px);
 }
 
 /* Brand secondary button */
 .acheevy-btn-secondary {
-    background: rgba(212, 175, 55, 0.1) !important;
-    color: #d4af37 !important;
-    border: 1px solid rgba(212, 175, 55, 0.2) !important;
-    transition: all 0.3s ease;
+    background: var(--bg-brand-subtle) !important;
+    color: var(--text-brand) !important;
+    border: 1px solid var(--border-brand) !important;
+    transition: all var(--duration-moderate) var(--ease-default);
 }
 
 .acheevy-btn-secondary:hover {
-    background: rgba(212, 175, 55, 0.15) !important;
-    border-color: rgba(212, 175, 55, 0.3) !important;
+    background: var(--bg-brand-muted) !important;
+    border-color: var(--border-brand-strong) !important;
 }
 
 /* Brand input focus */
 html.dark input:focus,
 html.dark textarea:focus {
-    border-color: rgba(212, 175, 55, 0.4) !important;
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1) !important;
+    border-color: var(--input-border-focus) !important;
+    box-shadow: 0 0 0 3px var(--input-ring) !important;
 }
 
 /* Brand scrollbar */
@@ -355,22 +361,22 @@ html.dark ::-webkit-scrollbar {
 }
 
 html.dark ::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--scrollbar-track);
 }
 
 html.dark ::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.2);
-    border-radius: 3px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-sm);
 }
 
 html.dark ::-webkit-scrollbar-thumb:hover {
-    background: rgba(212, 175, 55, 0.35);
+    background: var(--scrollbar-thumb-hover);
 }
 
 /* Brand header border gradient */
 .acheevy-header-border {
     border-bottom: 1px solid transparent;
-    border-image: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), rgba(79, 195, 247, 0.15), transparent) 1;
+    border-image: linear-gradient(90deg, transparent, var(--border-brand), rgba(212, 136, 31, 0.15), transparent) 1;
 }
 
 /* Subtle noise texture overlay for depth */
@@ -389,6 +395,6 @@ html.dark .acheevy-texture::before {
 
 /* Gold-Amber gradient utility (A.I.M.S. brand) */
 .bg-gradient-gold-amber {
-    background: linear-gradient(135deg, #d4af37, #d4881f);
-    color: black;
+    background: linear-gradient(135deg, var(--acheevy-gold-400), var(--acheevy-amber-400));
+    color: var(--text-on-brand);
 }

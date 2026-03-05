@@ -17,6 +17,23 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        /* ── Agentic Design System Status Badges ── */
+        brand:
+          "border-transparent bg-[var(--badge-brand-bg)] text-[var(--badge-brand-text)]",
+        success:
+          "border-transparent bg-[var(--badge-success-bg)] text-[var(--badge-success-text)]",
+        warning:
+          "border-transparent bg-[var(--badge-warning-bg)] text-[var(--badge-warning-text)]",
+        error:
+          "border-transparent bg-[var(--badge-error-bg)] text-[var(--badge-error-text)]",
+        glass:
+          "border-[var(--border-default)] bg-[var(--bg-glass)] text-[var(--text-secondary)] backdrop-blur-md",
+        'agent-thinking':
+          "border-[var(--acheevy-gold-400)]/20 bg-[var(--acheevy-gold-400)]/10 text-[var(--acheevy-gold-400)] animate-pulse",
+        'agent-executing':
+          "border-[var(--acheevy-emerald-400)]/20 bg-[var(--acheevy-emerald-400)]/10 text-[var(--acheevy-emerald-400)]",
+        'agent-error':
+          "border-[var(--status-error)]/20 bg-[var(--status-error)]/10 text-[var(--status-error)]",
       },
     },
     defaultVariants: {

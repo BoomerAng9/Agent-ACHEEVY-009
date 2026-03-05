@@ -229,18 +229,18 @@ export function DashboardPage() {
                                     className="size-6 md:size-8 inline dark:hidden"
                                 />
                             </button>
-                            <span className="text-black dark:text-sky-blue text-2xl md:text-[32px] font-semibold">
+                            <span className="text-black dark:text-[var(--text-brand)] text-2xl md:text-[32px] font-semibold">
                                 Dashboard
                             </span>
                         </div>
                         <div className="flex items-center gap-x-2">
                             <Button
                                 className={clsx(
-                                    'h-7 text-xs font-semibold px-4 rounded-full border border-firefly dark:border-sky-blue',
+                                    'h-7 text-xs font-semibold px-4 rounded-full border border-[var(--bg-base)] dark:border-[var(--text-brand)]',
                                     {
-                                        'bg-firefly dark:bg-sky-blue text-sky-blue-2 dark:text-black':
+                                        'bg-[var(--bg-base)] dark:bg-[var(--text-brand)] text-[var(--text-brand)] dark:text-[var(--bg-base)]':
                                             activeTab === TAB.ALL,
-                                        'text-firefly dark:text-sky-blue':
+                                        'text-[var(--bg-base)] dark:text-[var(--text-brand)]':
                                             activeTab !== TAB.ALL
                                     }
                                 )}
@@ -250,11 +250,11 @@ export function DashboardPage() {
                             </Button>
                             <Button
                                 className={clsx(
-                                    'h-7 text-xs font-semibold px-4 rounded-full border border-firefly dark:border-sky-blue',
+                                    'h-7 text-xs font-semibold px-4 rounded-full border border-[var(--bg-base)] dark:border-[var(--text-brand)]',
                                     {
-                                        'bg-firefly dark:bg-sky-blue text-sky-blue-2 dark:text-black':
+                                        'bg-[var(--bg-base)] dark:bg-[var(--text-brand)] text-[var(--text-brand)] dark:text-[var(--bg-base)]':
                                             activeTab === TAB.RECENT,
-                                        'text-firefly dark:text-sky-blue':
+                                        'text-[var(--bg-base)] dark:text-[var(--text-brand)]':
                                             activeTab !== TAB.RECENT
                                     }
                                 )}
@@ -264,11 +264,11 @@ export function DashboardPage() {
                             </Button>
                             <Button
                                 className={clsx(
-                                    'h-7 text-xs font-semibold px-4 rounded-full border border-firefly dark:border-sky-blue',
+                                    'h-7 text-xs font-semibold px-4 rounded-full border border-[var(--bg-base)] dark:border-[var(--text-brand)]',
                                     {
-                                        'bg-firefly dark:bg-sky-blue text-sky-blue-2 dark:text-black':
+                                        'bg-[var(--bg-base)] dark:bg-[var(--text-brand)] text-[var(--text-brand)] dark:text-[var(--bg-base)]':
                                             activeTab === TAB.FAVORITE,
-                                        'text-firefly dark:text-sky-blue':
+                                        'text-[var(--bg-base)] dark:text-[var(--text-brand)]':
                                             activeTab !== TAB.FAVORITE
                                     }
                                 )}

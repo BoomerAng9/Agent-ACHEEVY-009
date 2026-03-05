@@ -89,24 +89,24 @@ const TASK_CARDS: TaskCard[] = [
 
 const CATEGORY_COLORS: Record<string, { gradient: string; border: string; badge: string }> = {
     build: {
-        gradient: 'from-[#D4AF37] to-[#D4881F]',
-        border: 'border-[#D4AF37]/30',
-        badge: 'bg-[#D4AF37]/15 text-[#D4AF37]',
+        gradient: 'from-[var(--acheevy-gold-400)] to-[var(--acheevy-amber-400)]',
+        border: 'border-[var(--border-brand)]',
+        badge: 'bg-[var(--badge-brand-bg)] text-[var(--badge-brand-text)]',
     },
     research: {
-        gradient: 'from-[#4FC3F7] to-[#0288D1]',
-        border: 'border-[#4FC3F7]/30',
-        badge: 'bg-[#4FC3F7]/15 text-[#4FC3F7]',
+        gradient: 'from-[var(--acheevy-gold-400)] to-[var(--acheevy-amber-400)]',
+        border: 'border-[var(--border-brand)]',
+        badge: 'bg-[var(--badge-brand-bg)] text-[var(--badge-brand-text)]',
     },
     analyze: {
-        gradient: 'from-[#39FF14] to-[#00C853]',
-        border: 'border-[#39FF14]/30',
-        badge: 'bg-[#39FF14]/15 text-[#39FF14]',
+        gradient: 'from-[var(--acheevy-emerald-400)] to-[var(--acheevy-emerald-600)]',
+        border: 'border-[var(--status-success)]/30',
+        badge: 'bg-[var(--badge-success-bg)] text-[var(--badge-success-text)]',
     },
     deploy: {
-        gradient: 'from-[#FF6B35] to-[#D4881F]',
-        border: 'border-[#FF6B35]/30',
-        badge: 'bg-[#FF6B35]/15 text-[#FF6B35]',
+        gradient: 'from-[var(--acheevy-flame-400)] to-[var(--acheevy-amber-400)]',
+        border: 'border-[var(--acheevy-flame-400)]/30',
+        badge: 'bg-[var(--acheevy-flame-400)]/15 text-[var(--acheevy-flame-400)]',
     },
 }
 
@@ -117,10 +117,10 @@ function PipelineVisualizer({ stages }: { stages: PipelineStage[] }) {
                 <div key={stage.id} className="flex items-center">
                     <motion.div
                         className={`flex flex-col items-center gap-1 px-2.5 py-1.5 rounded-lg border transition-colors
-                            ${stage.status === 'active' ? 'border-[#D4AF37] bg-[#D4AF37]/10' : ''}
-                            ${stage.status === 'complete' ? 'border-[#39FF14] bg-[#39FF14]/10' : ''}
-                            ${stage.status === 'error' ? 'border-red-500 bg-red-500/10' : ''}
-                            ${stage.status === 'idle' ? 'border-white/10 bg-white/[0.03]' : ''}
+                            ${stage.status === 'active' ? 'border-[var(--acheevy-gold-400)] bg-[var(--acheevy-gold-400)]/10' : ''}
+                            ${stage.status === 'complete' ? 'border-[var(--status-success)] bg-[var(--status-success)]/10' : ''}
+                            ${stage.status === 'error' ? 'border-[var(--status-error)] bg-[var(--status-error)]/10' : ''}
+                            ${stage.status === 'idle' ? 'border-[var(--border-default)] bg-[var(--bg-glass)]' : ''}
                         `}
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: 'spring', stiffness: 300 }}
@@ -154,17 +154,17 @@ export function AcheevyDashboard({ onTaskSelect, className = '' }: AcheevyDashbo
     return (
         <div className={`flex flex-col gap-4 w-full ${className}`}>
             {/* Pipeline Visualizer */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-3">
+            <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-glass)] backdrop-blur-md p-3">
                 <div className="flex items-center gap-2 mb-1">
                     <motion.div
-                        className="w-2 h-2 rounded-full bg-[#39FF14]"
+                        className="w-2 h-2 rounded-full bg-[var(--acheevy-emerald-400)]"
                         animate={{ scale: [1, 1.3, 1] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                     />
-                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">
+                    <span className="text-[10px] font-mono text-[var(--text-tertiary)] uppercase tracking-wider">
                         ACHEEVY Pipeline
                     </span>
-                    <span className="text-[9px] text-white/20 ml-auto hidden sm:inline">
+                    <span className="text-[9px] text-[var(--text-disabled)] ml-auto hidden sm:inline">
                         NtNtN → Research → Plan → Execute → Verify → Deploy
                     </span>
                 </div>
@@ -180,7 +180,7 @@ export function AcheevyDashboard({ onTaskSelect, className = '' }: AcheevyDashbo
                             <motion.button
                                 key={task.id}
                                 className={`relative text-left p-4 rounded-xl border ${colors.border}
-                                    bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.04]
+                                    bg-[var(--bg-glass)] backdrop-blur-md hover:bg-[var(--bg-glass-hover)]
                                     transition-colors group cursor-pointer`}
                                 onClick={() => onTaskSelect(task)}
                                 onMouseEnter={() => setHoveredTask(task.id)}
@@ -193,8 +193,8 @@ export function AcheevyDashboard({ onTaskSelect, className = '' }: AcheevyDashbo
                                 <div className={`absolute top-2 right-2 text-[8px] font-bold uppercase
                                     px-1.5 py-0.5 rounded
                                     ${task.route === 'aims'
-                                        ? 'bg-[#FF6B35]/20 text-[#FF6B35]'
-                                        : 'bg-[#D4AF37]/20 text-[#D4AF37]'
+                                        ? 'bg-[var(--acheevy-flame-400)]/20 text-[var(--acheevy-flame-400)]'
+                                        : 'bg-[var(--badge-brand-bg)] text-[var(--badge-brand-text)]'
                                     }`}>
                                     {task.route === 'aims' ? '→ AIMS' : 'ACHEEVY'}
                                 </div>
@@ -208,16 +208,16 @@ export function AcheevyDashboard({ onTaskSelect, className = '' }: AcheevyDashbo
                                     {task.category === 'deploy' && '🌐'}
                                 </div>
 
-                                <h4 className="text-sm font-semibold text-white/90 mb-1 pr-14">
+                                <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1 pr-14">
                                     {task.title}
                                 </h4>
-                                <p className="text-[11px] text-white/40 leading-relaxed">
+                                <p className="text-[11px] text-[var(--text-tertiary)] leading-relaxed">
                                     {task.description}
                                 </p>
 
                                 <motion.div
-                                    className="flex items-center gap-1 mt-3 text-[10px] text-white/25
-                                        group-hover:text-white/50 transition-colors"
+                                    className="flex items-center gap-1 mt-3 text-[10px] text-[var(--text-disabled)]
+                                        group-hover:text-[var(--text-secondary)] transition-colors"
                                     animate={{ x: hoveredTask === task.id ? 3 : 0 }}
                                 >
                                     <span>Start task →</span>
@@ -229,13 +229,13 @@ export function AcheevyDashboard({ onTaskSelect, className = '' }: AcheevyDashbo
             </div>
 
             {/* Routing Legend */}
-            <div className="flex items-center gap-4 text-[9px] text-white/25 justify-center">
+            <div className="flex items-center gap-4 text-[9px] text-[var(--text-disabled)] justify-center">
                 <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+                    <div className="w-2 h-2 rounded-full bg-[var(--acheevy-gold-400)]" />
                     <span>ACHEEVY = executes here (plugmein.cloud)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-[#FF6B35]" />
+                    <div className="w-2 h-2 rounded-full bg-[var(--acheevy-flame-400)]" />
                     <span>→ AIMS = routes to aimanagedsolutions.cloud</span>
                 </div>
             </div>

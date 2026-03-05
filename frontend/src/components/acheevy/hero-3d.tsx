@@ -108,7 +108,7 @@ function DataStreams() {
             const angle = (i / 6) * Math.PI * 2
             return {
                 start: new THREE.Vector3(Math.cos(angle) * 3, 0, Math.sin(angle) * 3),
-                color: ['#d4af37', '#4fc3f7', '#39ff14', '#d4881f', '#ec4899', '#3b82f6'][i]
+                color: ['#d4af37', '#d4881f', '#39ff14', '#ff6b35', '#ec4899', '#b7791f'][i]
             }
         })
     }, [])
@@ -147,13 +147,13 @@ export function Hero3DScene({ className = '' }: { className?: string }) {
             >
                 <ambientLight intensity={0.4} />
                 <directionalLight position={[5, 5, 5]} intensity={0.8} color="#D4AF37" />
-                <pointLight position={[-3, -2, 4]} intensity={0.5} color="#4fc3f7" />
+                <pointLight position={[-3, -2, 4]} intensity={0.5} color="#d4881f" />
                 <pointLight position={[3, 2, -3]} intensity={0.3} color="#FF6B35" />
 
                 <CoreOrb />
 
                 <OrbitRing radius={2} speed={0.3} color="#d4af37" count={24} />
-                <OrbitRing radius={2.8} speed={-0.2} color="#4fc3f7" count={18} />
+                <OrbitRing radius={2.8} speed={-0.2} color="#d4881f" count={18} />
                 <OrbitRing radius={3.5} speed={0.15} color="#39ff14" count={12} />
 
                 <DataStreams />

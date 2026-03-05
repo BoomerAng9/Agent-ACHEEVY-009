@@ -10,7 +10,11 @@ import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/ui/icon'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { ACCESS_TOKEN } from '@/constants/auth'
+import {
+    ACCESS_TOKEN,
+    disableGuestMode,
+    enableGuestMode
+} from '@/constants/auth'
 import { authService } from '@/services/auth.service'
 import { useAppDispatch } from '@/state/store'
 import { setUser } from '@/state/slice/user'
@@ -118,6 +122,7 @@ export function LoginPage() {
 
             try {
                 localStorage.setItem(ACCESS_TOKEN, payload.access_token)
+                disableGuestMode()
                 window.dispatchEvent(new CustomEvent('auth-token-set'))
 
                 const userRes = await authService.getCurrentUser()
@@ -186,6 +191,7 @@ export function LoginPage() {
 
     const loginWithII = useCallback(() => {
         authHandledRef.current = false
+        disableGuestMode()
 
         const url = new URL('/auth/oauth/ii/login', apiBaseUrl)
         url.searchParams.set('return_to', window.location.href)
@@ -213,6 +219,11 @@ export function LoginPage() {
 
         popup.focus()
     }, [apiBaseUrl])
+
+    const continueAsGuest = useCallback(() => {
+        enableGuestMode()
+        navigate('/chat')
+    }, [navigate])
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         console.log(data)
@@ -296,7 +307,7 @@ export function LoginPage() {
                                 <Button
                                     type="submit"
                                     size="xl"
-                                    className="bg-firefly text-sky-blue-2 dark:bg-sky-blue dark:text-black font-semibold w-full max-w-[247px]"
+                                    className="bg-[var(--bg-base)] text-[var(--text-brand)] dark:bg-[var(--text-brand)] dark:text-[var(--bg-base)] font-semibold w-full max-w-[247px]"
                                     disabled={!form.formState.isValid}
                                 >
                                     Sign in
@@ -335,6 +346,14 @@ export function LoginPage() {
                         className="size-[22px]"
                     />
                     Continue with ACHEEVY Account
+                </Button>
+                <Button
+                    size="xl"
+                    variant="outline"
+                    onClick={continueAsGuest}
+                    className="w-full mt-4"
+                >
+                    Continue as Guest
                 </Button>
             </div>
         </div>

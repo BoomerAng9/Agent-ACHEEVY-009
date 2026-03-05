@@ -73,10 +73,10 @@ export function SignupPage() {
 
     return (
         <div className="flex flex-col items-center justify-center w-full h-full">
-            <h1 className="text-[32px] font-semibold dark:text-sky-blue">
+            <h1 className="text-[32px] font-semibold dark:text-[var(--text-brand)]">
                 Welcome to ACHEEVY
             </h1>
-            <p className="text-[28px] dark:text-sky-blue mb-12">
+            <p className="text-[28px] dark:text-[var(--text-brand)] mb-12">
                 Helping you with your task today
             </p>
 
@@ -161,7 +161,7 @@ export function SignupPage() {
                             <Button
                                 type="submit"
                                 size="xl"
-                                className=" bg-firefly text-sky-blue-2 dark:bg-sky-blue dark:text-black font-semibold w-full max-w-[247px]"
+                                className=" bg-[var(--bg-base)] text-[var(--text-brand)] dark:bg-[var(--text-brand)] dark:text-[var(--bg-base)] font-semibold w-full max-w-[247px]"
                                 disabled={!form.formState.isValid}
                             >
                                 Sign up

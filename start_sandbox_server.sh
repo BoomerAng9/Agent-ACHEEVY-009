@@ -8,12 +8,12 @@ set -e
 # Default configuration
 DEFAULT_HOST="0.0.0.0"
 DEFAULT_PORT="8100"
-DEFAULT_PROVIDER="e2b"
+DEFAULT_PROVIDER="docker"
 
 # Allow overriding via environment variables
 export SERVER_HOST="${SERVER_HOST:-$DEFAULT_HOST}"
 export SERVER_PORT="${SERVER_PORT:-$DEFAULT_PORT}"
-export PROVIDER="${PROVIDER:-$DEFAULT_PROVIDER}"
+export PROVIDER_TYPE="${PROVIDER_TYPE:-$DEFAULT_PROVIDER}"
 export REDIS_URL="${REDIS_URL:-$DEFAULT_REDIS_URL}"
 
 export MCP_PORT="${MCP_PORT:-5173}"
@@ -26,11 +26,11 @@ export TIMEOUT_BUFFER_SECONDS="${TIMEOUT_BUFFER_SECONDS:-300}"
 echo "Starting II Sandbox Server..."
 echo "Host: $SERVER_HOST"
 echo "Port: $SERVER_PORT"
-echo "Provider: $PROVIDER"
+echo "Provider: $PROVIDER_TYPE"
 echo "Redis URL: $REDIS_URL"
 
 # Check if E2B API key is set when using E2B provider
-if [ "$PROVIDER" = "e2b" ] && [ -z "$E2B_API_KEY" ]; then
+if [ "$PROVIDER_TYPE" = "e2b" ] && [ -z "$E2B_API_KEY" ]; then
   echo "Error: E2B_API_KEY environment variable is required when using E2B provider"
   exit 1
 fi

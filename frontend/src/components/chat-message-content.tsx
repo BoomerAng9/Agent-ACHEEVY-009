@@ -84,8 +84,8 @@ const ChatMessageContent = ({
                 role === 'user'
                     ? 'flex flex-col items-end justify-end gap-2'
                     : role === 'system'
-                      ? 'p-3 border italic w-full text-gray-500 dark:text-gray-400'
-                      : 'text-white w-full'
+                      ? 'p-3 border border-[var(--chat-system-border)] bg-[var(--chat-system-bg)] rounded-xl italic w-full text-[var(--text-secondary)]'
+                      : 'text-[var(--text-primary)] w-full'
             }`}
         >
             {role === 'user' ? (
@@ -95,14 +95,14 @@ const ChatMessageContent = ({
                         fileContents={group.fileContents}
                         sessionId={sessionId || undefined}
                     />
-                    <div className="mb-6 relative w-fit bg-[#f5f5f5] dark:bg-grey rounded-lg p-3 max-w-[80%] text-black whitespace-pre-wrap border border-grey dark:none">
+                    <div className="mb-6 relative w-fit bg-[var(--chat-user-bg)] rounded-xl p-3 max-w-[80%] text-[var(--text-primary)] whitespace-pre-wrap border border-[var(--chat-user-border)]">
                         <div>
                             {group.parts
                                 .filter((part) => part.type === 'text')
                                 .map((part) => part.text)
                                 .join('')}
                         </div>
-                        <div className="absolute flex items-center justify-end gap-2 -bottom-6 right-0 text-grey-2">
+                        <div className="absolute flex items-center justify-end gap-2 -bottom-6 right-0 text-[var(--text-tertiary)]">
                             <span className="text-xs w-max">
                                 {group.parts[0]?.model
                                     ? availableModels.find(

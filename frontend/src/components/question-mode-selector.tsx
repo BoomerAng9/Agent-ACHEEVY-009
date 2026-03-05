@@ -23,7 +23,7 @@ const ModeSelector = ({ selectedMode, hide, onSelect }: ModeSelectorProps) => {
                 <Button
                     variant="secondary"
                     size="icon"
-                    className={`text-xs px-2 w-auto h-7 bg-white dark:bg-sky-blue text-black rounded-full cursor-pointer`}
+                    className="text-xs px-2 w-auto h-7 bg-white dark:bg-[var(--bg-brand-subtle)] text-black dark:text-[var(--text-brand)] rounded-full cursor-pointer"
                 >
                     {selectedMode === QUESTION_MODE.AGENT
                         ? 'Agent Mode'

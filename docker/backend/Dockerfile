@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
     fonts-noto-cjk \
     fonts-noto-color-emoji \
     fonts-freefont-ttf \
+    dos2unix \
  && rm -rf /var/lib/apt/lists/*
 
 RUN fc-cache -fv
@@ -43,6 +44,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 RUN chmod +x /app/start.sh
 RUN chmod +x /app/scripts/run_sandbox_timeout_extension.sh
+RUN chmod +x /app/start_sandbox_server.sh || true
+# Strip Windows CRLF from shell scripts
+RUN find /app -name '*.sh' -exec dos2unix {} +
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"

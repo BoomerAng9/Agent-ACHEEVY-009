@@ -31,8 +31,8 @@ class SandboxConfig(BaseSettings):
 
     # Sandbox provider settings
     provider_type: str = Field(
-        default="e2b",
-        description="Type of sandbox provider to use (e.g., 'e2b', 'docker')",
+        default="docker",
+        description="Type of sandbox provider to use (e.g., 'docker', 'e2b')",
     )
 
     # Timeout settings
@@ -92,6 +92,40 @@ class SandboxConfig(BaseSettings):
         default="default", description="Default E2B template to use for sandboxes"
     )
 
+    # Docker specific settings (if using Docker provider)
+    docker_sandbox_image: Optional[str] = Field(
+        default="ii-agent-sandbox:latest",
+        description="Docker image to use for sandbox containers",
+    )
+    docker_host_address: Optional[str] = Field(
+        default="localhost",
+        description="Host address for accessing sandbox-exposed ports",
+    )
+    docker_socket_path: Optional[str] = Field(
+        default="/var/run/docker.sock",
+        description="Path to the Docker socket",
+    )
+    docker_network: Optional[str] = Field(
+        default=None,
+        description="Docker network to attach sandbox containers to",
+    )
+
+    # VPS2 remote sandbox settings
+    vps2_sandbox_url: Optional[str] = Field(
+        default="http://10.0.0.2:4400",
+        description="VPS2 OpenSandbox API URL (WireGuard tunnel)",
+    )
+    vps2_sandbox_fallback_url: Optional[str] = Field(
+        default=None,
+        description="Fallback URL for VPS2 sandbox (public IP)",
+    )
+    vps2_sandbox_timeout: int = Field(
+        default=120,
+        ge=5,
+        le=600,
+        description="Timeout in seconds for VPS2 code execution requests",
+    )
+
     # Resource limits defaults
     default_cpu_limit: int = Field(
         default=1000, ge=100, le=8000, description="Default CPU limit in millicores"
@@ -120,6 +154,16 @@ class SandboxConfig(BaseSettings):
                 "E2B API key is required. Set E2B_API_KEY environment variable"
             )
 
+        if self.provider_type == "docker" and not self.docker_sandbox_image:
+            raise ValueError(
+                "Docker sandbox image is required. Set DOCKER_SANDBOX_IMAGE environment variable"
+            )
+
+        if self.provider_type == "vps2" and not self.vps2_sandbox_url:
+            raise ValueError(
+                "VPS2 sandbox URL is required. Set VPS2_SANDBOX_URL environment variable"
+            )
+
         return self
 
     @property
@@ -139,7 +183,19 @@ class SandboxConfig(BaseSettings):
                 "api_key": self.e2b_api_key,
                 "template": self.e2b_template_id,
             }
-        # Add other provider configs as needed
+        if self.provider_type == "docker":
+            return {
+                "image": self.docker_sandbox_image,
+                "host_address": self.docker_host_address,
+                "socket_path": self.docker_socket_path,
+                "network": self.docker_network,
+            }
+        if self.provider_type == "vps2":
+            return {
+                "url": self.vps2_sandbox_url,
+                "fallback_url": self.vps2_sandbox_fallback_url,
+                "timeout": self.vps2_sandbox_timeout,
+            }
         return {}
 
     def get_queue_config(self) -> Optional[Dict[str, Any]]:

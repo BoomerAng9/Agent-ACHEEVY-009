@@ -306,7 +306,7 @@ export function ImageEditDialog({
                         </Button>
                         <Button
                             size="lg"
-                            className="rounded-xl bg-sky-blue text-black"
+                            className="rounded-xl bg-[var(--text-brand)] text-[var(--bg-base)]"
                             onClick={handleApply}
                             disabled={isUploading}
                         >

@@ -228,7 +228,7 @@ const AccountTab = () => {
                         <div className="flex items-center gap-x-4">
                             <Button
                                 size="xl"
-                                className="bg-firefly text-sky-blue-2 dark:bg-sky-blue dark:text-black font-semibold w-[247px]"
+                                className="bg-[var(--bg-base)] text-[var(--text-brand)] dark:bg-[var(--text-brand)] dark:text-[var(--bg-base)] font-semibold w-[247px]"
                                 onClick={handleManageSubscription}
                             >
                                 Manage
@@ -250,7 +250,7 @@ const AccountTab = () => {
                         <div className="flex items-center gap-x-4">
                             <Button
                                 size="xl"
-                                className="bg-firefly text-sky-blue-2 dark:bg-sky-blue dark:text-black font-semibold w-[247px]"
+                                className="bg-[var(--bg-base)] text-[var(--text-brand)] dark:bg-[var(--text-brand)] dark:text-[var(--bg-base)] font-semibold w-[247px]"
                                 onClick={handleManageSubscription}
                             >
                                 Manage
@@ -265,7 +265,7 @@ const AccountTab = () => {
                 <div className="flex items-center gap-x-4">
                     <Button
                         size="xl"
-                        className="bg-firefly text-sky-blue-2 dark:bg-sky-blue dark:text-black font-semibold w-[247px]"
+                        className="bg-[var(--bg-base)] text-[var(--text-brand)] dark:bg-[var(--text-brand)] dark:text-[var(--bg-base)] font-semibold w-[247px]"
                         onClick={handleLogout}
                     >
                         Log out

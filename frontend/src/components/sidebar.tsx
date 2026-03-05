@@ -55,6 +55,7 @@ import Credit from './credit'
 import { useGetCreditBalanceQuery } from '@/state'
 import { Skeleton } from './ui/skeleton'
 import { ENABLE_BETA } from '@/constants/features'
+import { isGuestModeEnabled } from '@/constants/auth'
 
 interface SidebarButtonProps {
     className?: string
@@ -78,7 +79,7 @@ const Sidebar = ({ className, workspaceInfo }: SidebarButtonProps) => {
     const { sessionId: sessionIdFromParams } = useParams()
 
     // Use RTK Query hook to fetch credit balance
-    useGetCreditBalanceQuery()
+    useGetCreditBalanceQuery(undefined, { skip: isGuestModeEnabled() })
 
     // Get session ID from either URL params or query parameter
     const sessionId = sessionIdFromParams || searchParams.get('id') || ''
@@ -226,14 +227,15 @@ const Sidebar = ({ className, workspaceInfo }: SidebarButtonProps) => {
 
     return (
         <SidebarContainer
-            className={`bg-[#f8fafb]/30 dark:!bg-charcoal acheevy-sidebar !border-grey-2/30 dark:!border-acheevy-border ${className}`}
+            className={`bg-[var(--bg-raised)]/30 dark:!bg-[var(--sidebar-bg)] acheevy-sidebar !border-[var(--sidebar-border)] ${className}`}
         >
             <SidebarHeader>{header}</SidebarHeader>
             <SidebarContent ref={scrollContainerRef}>
                 <SidebarMenu>
                     <div className="px-3 md:px-6 pb-6">
                         <Button
-                            className="acheevy-btn-primary w-full !text-white"
+                            variant="brand"
+                            className="w-full"
                             size="xl"
                             onClick={handleNewChat}
                         >
@@ -273,7 +275,7 @@ const Sidebar = ({ className, workspaceInfo }: SidebarButtonProps) => {
                                 onOpenChange={setIsCollapsibleOpen}
                             >
                                 <CollapsibleTrigger className="w-full">
-                                    <div className="w-full justify-start !h-9 !text-[14px] !px-4 rounded-xl cursor-pointer border border-acheevy-purple/20 dark:border-acheevy-purple/25 flex items-center hover:border-acheevy-purple/40 transition-colors">
+                                    <div className="w-full justify-start !h-9 !text-[14px] !px-4 rounded-xl cursor-pointer border border-[var(--border-brand)] flex items-center hover:border-[var(--border-brand-strong)] transition-colors">
                                         <div className="flex items-center gap-x-2 flex-1">
                                             <Icon
                                                 name="message-minus"

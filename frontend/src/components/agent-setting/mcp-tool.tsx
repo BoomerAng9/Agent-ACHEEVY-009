@@ -138,12 +138,12 @@ const MCPTool = ({ open, onOpenChange, tool }: MCPToolProps) => {
                         {tool.description}
                     </p>
                     <Button
-                        className="h-[22px] bg-firefly dark:bg-sky-blue-2 text-sky-blue-2 dark:text-black gap-x-[6px] mt-4 text-xs rounded-full !font-normal"
+                        className="h-[22px] bg-[var(--bg-base)] dark:bg-[var(--text-brand)] text-[var(--text-brand)] dark:text-[var(--bg-base)] gap-x-[6px] mt-4 text-xs rounded-full !font-normal"
                         onClick={() => window.open(tool.url, '_blank')}
                     >
                         <Icon
                             name="global"
-                            className="size-4 fill-sky-blue-2 dark:fill-black"
+                            className="size-4 fill-[var(--text-brand)] dark:fill-[var(--bg-base)]"
                         />
                         Remote
                     </Button>
@@ -214,7 +214,7 @@ const MCPTool = ({ open, onOpenChange, tool }: MCPToolProps) => {
                                 ))}
                                 <Button
                                     onClick={handleSaveEnv}
-                                    className="w-full max-w-[209px] rounded-xl bg-firefly dark:bg-sky-blue-2 text-sky-blue-2 dark:text-black mt-10 text-base font-semibold h-12"
+                                    className="w-full max-w-[209px] rounded-xl bg-[var(--bg-base)] dark:bg-[var(--text-brand)] text-[var(--text-brand)] dark:text-[var(--bg-base)] mt-10 text-base font-semibold h-12"
                                 >
                                     Connect
                                 </Button>
@@ -223,7 +223,7 @@ const MCPTool = ({ open, onOpenChange, tool }: MCPToolProps) => {
                     )}
                     {step === STEP.SHOW_CONFIG && (
                         <div>
-                            <div className="mt-4 border border-grey p-4 bg-grey-3 dark:bg-sky-blue-2/10 rounded-xl">
+                            <div className="mt-4 border border-grey p-4 bg-grey-3 dark:bg-[var(--text-brand)]/10 rounded-xl">
                                 <div className="pb-4 flex items-center justify-between dark:text-white border-b border-black/30 dark:border-white/50">
                                     <div className="flex items-center gap-x-2">
                                         <Icon
@@ -245,12 +245,12 @@ const MCPTool = ({ open, onOpenChange, tool }: MCPToolProps) => {
                                         </span>
                                     </div>
                                     <Button
-                                        className="h-6 bg-firefly dark:bg-sky-blue-2 text-sky-blue-2 dark:text-black gap-x-[6px] text-xs rounded-sm !font-normal"
+                                        className="h-6 bg-[var(--bg-base)] dark:bg-[var(--text-brand)] text-[var(--text-brand)] dark:text-[var(--bg-base)] gap-x-[6px] text-xs rounded-sm !font-normal"
                                         onClick={handleCopy}
                                     >
                                         <Icon
                                             name="copy"
-                                            className="size-4 fill-sky-blue-2 dark:fill-black"
+                                            className="size-4 fill-[var(--text-brand)] dark:fill-[var(--bg-base)]"
                                         />
                                         Copy
                                     </Button>

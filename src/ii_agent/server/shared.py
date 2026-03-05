@@ -15,9 +15,11 @@ load_dotenv()
 
 
 storage = create_storage_client(
-    config.storage_provider,
-    config.file_upload_project_id,
-    config.file_upload_bucket_name,
+    storage_provider=config.storage_provider,
+    project_id=config.file_upload_project_id,
+    bucket_name=config.file_upload_bucket_name,
+    base_path=config.local_storage_path,
+    public_base_url=config.local_public_base_url,
 )
 
 # Create service layer

@@ -5,7 +5,7 @@ import type {
     FetchBaseQueryError
 } from '@reduxjs/toolkit/query'
 import type { ISession } from '@/typings/agent'
-import { ACCESS_TOKEN } from '@/constants/auth'
+import { ACCESS_TOKEN, isGuestModeEnabled } from '@/constants/auth'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -30,7 +30,10 @@ const baseQueryWithReauth: BaseQueryFn<
     if (result.error && result.error.status === 401) {
         localStorage.removeItem(ACCESS_TOKEN)
         // Don't redirect to login if we're on a share route
-        if (!window.location.pathname.startsWith('/share/')) {
+        if (
+            !window.location.pathname.startsWith('/share/') &&
+            !isGuestModeEnabled()
+        ) {
             window.location.href = '/login'
         }
     }

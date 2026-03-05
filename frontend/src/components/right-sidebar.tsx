@@ -6,6 +6,7 @@ import { WebSocketConnectionState } from '@/typings/agent'
 import { useAppSelector } from '@/state/store'
 import { selectUser } from '@/state/slice/user'
 import UserProfileDropdown from './user-profile-dropdown'
+import { ObservabilityDrawer } from '@/components/glass-box/index'
 
 const RightSidebar = () => {
     const { theme, setTheme } = useTheme()
@@ -32,6 +33,9 @@ const RightSidebar = () => {
                     className="border border-black"
                     onClick={toggleTheme}
                 />
+
+                {/* Glass Box — Agent Observability Panel */}
+                <ObservabilityDrawer />
             </div>
             {wsConnectionState === WebSocketConnectionState.CONNECTED && (
                 <Icon name="connected" />

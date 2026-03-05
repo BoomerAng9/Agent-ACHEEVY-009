@@ -71,9 +71,9 @@ export const SlideTemplateSelector = ({
 
     return (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-            <div className="bg-grey-3/90 dark:bg-black/90 backdrop-blur-md rounded-xl border border-sky-blue w-[95vw] max-w-7xl h-[90vh] animate-fadeIn flex flex-col shadow-2xl pointer-events-auto">
+            <div className="bg-grey-3/90 dark:bg-black/90 backdrop-blur-md rounded-xl border border-[var(--border-brand)] w-[95vw] max-w-7xl h-[90vh] animate-fadeIn flex flex-col shadow-2xl pointer-events-auto">
                 {/* Header */}
-                <div className="p-3 md:p-6 border-b border-sky-blue flex-shrink-0">
+                <div className="p-3 md:p-6 border-b border-[var(--border-brand)] flex-shrink-0">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-black dark:text-white">
                             Choose Template
@@ -95,9 +95,9 @@ export const SlideTemplateSelector = ({
                 {/* Main Content - Split Layout */}
                 <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
                     {/* Left Side - Template List */}
-                    <div className="w-full md:w-1/3 border-b md:border-r border-sky-blue flex flex-col">
+                    <div className="w-full md:w-1/3 border-b md:border-r border-[var(--border-brand)] flex flex-col">
                         {/* Search */}
-                        <div className="p-4 border-b border-sky-blue">
+                        <div className="p-4 border-b border-[var(--border-brand)]">
                             <div className="relative">
                                 <Icon
                                     name="search-2"
@@ -147,8 +147,8 @@ export const SlideTemplateSelector = ({
                                             className={`group cursor-pointer border rounded-lg overflow-hidden transition-all duration-200 hover:shadow-lg ${
                                                 selectedTemplate?.id ===
                                                 template.id
-                                                    ? 'border-sky-blue ring-2 ring-sky-blue/50'
-                                                    : 'border-grey hover:border-sky-blue'
+                                                     ? 'border-[var(--border-brand)] ring-2 ring-[var(--border-brand)]/50'
+                                                    : 'border-grey hover:border-[var(--border-brand)]'
                                             }`}
                                         >
                                             {/* Template Preview */}
@@ -312,7 +312,7 @@ export const SlideTemplateSelector = ({
                 </div>
 
                 {/* Footer */}
-                <div className="px-3 md:px-6 py-4 border-t border-sky-blue flex items-center justify-between flex-shrink-0">
+                <div className="px-3 md:px-6 py-4 border-t border-[var(--border-brand)] flex items-center justify-between flex-shrink-0">
                     <div className="flex items-center md:gap-2">
                         <Button
                             variant="ghost"
@@ -331,7 +331,7 @@ export const SlideTemplateSelector = ({
                     </div>
                     <Button
                         onClick={handleGenerateSlides}
-                        className="bg-firefly dark:bg-sky-blue hover:bg-firefly/90 dark:hover:bg-sky-blue/90 text-black"
+                        className="bg-[var(--bg-base)] dark:bg-[var(--text-brand)] hover:bg-[var(--bg-base)]/90 dark:hover:bg-[var(--text-brand)]/90 text-black"
                     >
                         <Icon name="slide-2" className="h-4 w-4 stroke-black" />
                         Generate Slides

@@ -264,11 +264,11 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
         <section
             className={cn(
                 'flex w-full md:w-max flex-col gap-6 md:p-6 rounded-2xl h-[calc(100vh-200px)] md:h-auto overflow-auto',
-                { 'bg-firefly/10 dark:bg-sky-blue-2/10': !isMobile },
+                { 'bg-[var(--bg-base)]/10 dark:bg-[var(--text-brand)]/10': !isMobile },
                 className
             )}
         >
-            <div className="block md:hidden bg-firefly/10 dark:bg-sky-blue-2/10 rounded-xl p-3">
+            <div className="block md:hidden bg-[var(--bg-base)]/10 dark:bg-[var(--text-brand)]/10 rounded-xl p-3">
                 {plans.map((plan) => {
                     const isCurrentPlan = plan.id === subscriptionPlan
                     const matchesCurrentBillingCycle =
@@ -289,7 +289,7 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                             className={cn(
                                 'relative cursor-pointer flex justify-between rounded-xl p-3 w-full',
                                 plan.id === selectedPlan
-                                    ? 'bg-firefly/20 dark:bg-sky-blue-2/30'
+                                    ? 'bg-[var(--bg-base)]/20 dark:bg-[var(--text-brand)]/30'
                                     : ''
                             )}
                             onClick={() =>
@@ -334,10 +334,10 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                                 </div>
                             </div>
                             <div className="flex items-end">
-                                <span className="text-base font-bold dark:text-[#8dd4d4]">
+                                <span className="text-base font-bold dark:text-[var(--text-brand)]">
                                     {`$${formatPrice(price)}`}
                                 </span>
-                                <span className="text-sm dark:text-[#e4e4e4] ml-px mb-0.5">
+                                <span className="text-sm dark:text-[var(--text-secondary)] ml-px mb-0.5">
                                     {priceSuffix}
                                 </span>
                             </div>
@@ -351,7 +351,7 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                                         onClick={() => handleUpgrade(plan.id)}
                                         className={cn(
                                             'w-full rounded-xl text-base font-semibold py-6 transition-colors',
-                                            'bg-sky-blue cursor-pointer text-black',
+                                            'bg-[var(--text-brand)] cursor-pointer text-[var(--bg-base)]',
                                             loadingPlan === plan.id &&
                                                 'opacity-70'
                                         )}
@@ -363,7 +363,7 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                                                 <>
                                                     <Icon
                                                         name="arrow-up-circle"
-                                                        className="fill-black size-5"
+                                                        className="fill-[var(--bg-base)] size-5"
                                                     />
                                                     Upgrade Now
                                                 </>
@@ -388,7 +388,7 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                             >
                                 <Icon
                                     name="tick"
-                                    className="fill-firefly dark:fill-yellow size-5"
+                                    className="fill-[var(--bg-base)] dark:fill-[var(--text-brand)] size-5"
                                 />
                                 <span className="text-xs">
                                     {feature.content}
@@ -420,7 +420,7 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                                 className={cn(
                                     'relative cursor-pointer flex h-full flex-col rounded-2xl p-4 w-full md:w-[260px]',
                                     plan.id === selectedPlan
-                                        ? 'bg-firefly/20 dark:bg-sky-blue-2/30'
+                                        ? 'bg-[var(--bg-base)]/20 dark:bg-[var(--text-brand)]/30'
                                         : ''
                                 )}
                                 onClick={() =>
@@ -466,10 +466,10 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
 
                                 <div className="mb-4">
                                     <div className="flex items-end">
-                                        <span className="text-2xl font-bold dark:text-[#8dd4d4]">
+                                        <span className="text-2xl font-bold dark:text-[var(--text-brand)]">
                                             {`$${formatPrice(price)}`}
                                         </span>
-                                        <span className="text-sm dark:text-[#e4e4e4] ml-1 mb-1">
+                                        <span className="text-sm dark:text-[var(--text-secondary)] ml-1 mb-1">
                                             {priceSuffix}
                                         </span>
                                     </div>
@@ -487,7 +487,7 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                                             >
                                                 <Icon
                                                     name="tick"
-                                                    className="fill-firefly dark:fill-yellow size-5"
+                                                    className="fill-[var(--bg-base)] dark:fill-[var(--text-brand)] size-5"
                                                 />
                                                 <span className="text-xs">
                                                     {feature.content}
@@ -506,7 +506,7 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                                     onClick={() => handleUpgrade(plan.id)}
                                     className={cn(
                                         'mt-4 w-full rounded-xl text-base font-semibold py-6 transition-colors',
-                                        'bg-sky-blue cursor-pointer text-black',
+                                        'bg-[var(--text-brand)] cursor-pointer text-[var(--bg-base)]',
                                         loadingPlan === plan.id && 'opacity-70'
                                     )}
                                 >
@@ -517,7 +517,7 @@ export function UpgradePlan({ className }: UpgradePlanProps) {
                                             <>
                                                 <Icon
                                                     name="arrow-up-circle"
-                                                    className="fill-black size-5"
+                                                    className="fill-[var(--bg-base)] size-5"
                                                 />
                                                 Upgrade Now
                                             </>

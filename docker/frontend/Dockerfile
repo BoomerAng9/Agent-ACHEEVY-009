@@ -5,11 +5,11 @@ WORKDIR /app
 RUN corepack enable pnpm
 
 # Copy only package files for dependency caching
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
+COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml* ./
 RUN pnpm i --frozen-lockfile
 
-# Now copy source
-COPY . .
+# Now copy source (frontend dir only)
+COPY frontend/ .
 
 ARG BUILD_MODE=production
 ARG VITE_API_URL="http://localhost:8000"

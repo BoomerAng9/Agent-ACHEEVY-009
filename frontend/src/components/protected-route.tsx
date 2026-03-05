@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router'
 import { useAuth } from '@/contexts/auth-context'
 import { ReactNode } from 'react'
+import { isGuestModeEnabled } from '@/constants/auth'
 
 interface ProtectedRouteProps {
     children: ReactNode
@@ -8,6 +9,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
     const { isAuthenticated, isLoading } = useAuth()
+    const isGuest = isGuestModeEnabled()
 
     if (isLoading) {
         return (
@@ -17,7 +19,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         )
     }
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isGuest) {
         return <Navigate to="/login" replace />
     }
 

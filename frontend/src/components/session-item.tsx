@@ -91,7 +91,7 @@ const SessionItem = ({ session, isActive, onClick }: SessionItemProps) => {
     return (
         <div
             className={cn(
-                'relative flex items-center gap-x-2 rounded-lg px-2 py-1 before:hidden hover:before:block before:absolute before:-left-10 before:top-0 before:-bottom-0 before:w-200 md:before:w-100 before:bg-firefly/10 dark:before:bg-sky-blue-2/10',
+                'relative flex items-center gap-x-2 rounded-lg px-2 py-1 before:hidden hover:before:block before:absolute before:-left-10 before:top-0 before:-bottom-0 before:w-200 md:before:w-100 before:bg-[var(--bg-base)]/10 dark:before:bg-[var(--text-brand)]/10',
                 {
                     'before:block': isActive || isHovered || isDropdownOpen
                 }

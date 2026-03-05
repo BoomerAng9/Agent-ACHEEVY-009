@@ -207,12 +207,12 @@ const SearchHistory = ({ className, isMobile }: SearchHistoryProps) => {
                         />
                     </div>
                     <Button
-                        className="bg-firefly dark:bg-sky-blue w-full h-12 font-semibold !text-sky-blue dark:!text-black rounded-xl"
+                        className="bg-[var(--bg-base)] dark:bg-[var(--text-brand)] w-full h-12 font-semibold !text-[var(--text-brand)] dark:!text-[var(--bg-base)] rounded-xl"
                         onClick={handleNewChat}
                     >
                         <Icon
                             name="edit"
-                            className="fill-sky-blue dark:fill-black size-6"
+                            className="fill-[var(--text-brand)] dark:fill-[var(--bg-base)] size-6"
                         />
                         New Chat
                     </Button>
@@ -250,7 +250,7 @@ const SearchHistory = ({ className, isMobile }: SearchHistoryProps) => {
                                                 dispatch(setCompleted(false))
                                             }}
                                             className={cn(
-                                                'flex text-sm md:text-base items-center gap-x-2 line-clamp-1 hover:dark:text-sky-blue'
+                                                'flex text-sm md:text-base items-center gap-x-2 line-clamp-1 hover:dark:text-[var(--text-brand)]'
                                             )}
                                         >
                                             {session.name}

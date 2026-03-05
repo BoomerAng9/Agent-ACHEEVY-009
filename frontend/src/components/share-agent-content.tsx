@@ -137,7 +137,7 @@ export function ShareAgentContent() {
                     </p>
                     <button
                         onClick={() => navigate(-1)}
-                        className="px-6 py-3 bg-firefly dark:bg-sky-blue text-sky-blue dark:text-black rounded-lg font-medium hover:opacity-80 transition-opacity"
+                        className="px-6 py-3 bg-[var(--bg-base)] dark:bg-[var(--text-brand)] text-[var(--text-brand)] dark:text-[var(--bg-base)] rounded-lg font-medium hover:opacity-80 transition-opacity"
                     >
                         Go Back
                     </button>
@@ -183,7 +183,7 @@ export function ShareAgentContent() {
                                         }
                                         loop={true}
                                     />
-                                    <p className="text-[32px] pl-6 font-semibold  text-black dark:text-sky-blue">
+                                    <p className="text-[32px] pl-6 font-semibold  text-black dark:text-[var(--text-brand)]">
                                         {`I'm thinking...`}
                                     </p>
                                 </div>

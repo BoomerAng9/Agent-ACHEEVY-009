@@ -52,7 +52,7 @@ export function AcheevyChatWrapper({ children, hasMessages, onQuickPrompt }: Ach
             >
                 {/* Avatar */}
                 <motion.div
-                    className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#D4881F]
+                    className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--acheevy-gold-400)] to-[var(--acheevy-amber-400)]
                         flex items-center justify-center"
                     animate={{
                         boxShadow: [
@@ -65,7 +65,7 @@ export function AcheevyChatWrapper({ children, hasMessages, onQuickPrompt }: Ach
                 >
                     <span className="text-3xl">⚡</span>
                     <motion.div
-                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#39FF14]
+                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[var(--acheevy-emerald-400)]
                             flex items-center justify-center text-[10px]"
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
@@ -79,11 +79,11 @@ export function AcheevyChatWrapper({ children, hasMessages, onQuickPrompt }: Ach
                     <h1 className="text-2xl font-bold acheevy-gradient-text">
                         ACHEEVY
                     </h1>
-                    <p className="text-xs text-white/40 mt-1 font-mono">
+                    <p className="text-xs text-[var(--text-disabled)] mt-1 font-mono">
                         Agent-ACHEEVY-009 &middot; Full Capability Mode
                     </p>
                     <motion.p
-                        className="text-white/60 mt-3 text-base"
+                        className="text-[var(--text-tertiary)] mt-3 text-base"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
@@ -103,18 +103,18 @@ export function AcheevyChatWrapper({ children, hasMessages, onQuickPrompt }: Ach
                 {QUICK_PROMPTS.map((qp) => (
                     <motion.button
                         key={qp.label}
-                        className="text-left px-3 py-2.5 rounded-xl border border-white/10
-                            bg-white/[0.02] backdrop-blur-sm
-                            hover:border-[#D4AF37]/40 hover:bg-[#D4AF37]/5
+                        className="text-left px-3 py-2.5 rounded-xl border border-[var(--border-default)]
+                            bg-[var(--bg-glass)] backdrop-blur-sm
+                            hover:border-[var(--border-brand)] hover:bg-[var(--bg-brand-subtle)]
                             transition-all group cursor-pointer"
                         onClick={() => handleQuickPrompt(qp.prompt)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                     >
-                        <span className="text-xs text-white/60 group-hover:text-white/80">
+                        <span className="text-xs text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)]">
                             {qp.label}
                         </span>
-                        <span className="inline ml-1 text-[10px] text-white/20 group-hover:text-[#D4AF37]">
+                        <span className="inline ml-1 text-[10px] text-[var(--text-disabled)] group-hover:text-[var(--text-brand)]">
                             →
                         </span>
                     </motion.button>
@@ -123,12 +123,12 @@ export function AcheevyChatWrapper({ children, hasMessages, onQuickPrompt }: Ach
 
             {/* Pipeline Badge */}
             <motion.div
-                className="flex items-center gap-2 text-[9px] text-white/20"
+                className="flex items-center gap-2 text-[9px] text-[var(--text-disabled)]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
             >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#39FF14] animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--acheevy-emerald-400)] animate-pulse" />
                 <span className="font-mono">
                     NtNtN → ii-researcher → II-Commons → ii-agent → ORACLE → AIMS Bridge
                 </span>

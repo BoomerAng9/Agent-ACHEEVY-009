@@ -47,6 +47,7 @@ dependencies = [
   "fastapi-sso>=0.16.0",
   "aiosqlite>=0.21.0",
   "pydantic==2.11.7",
+  "aiodocker>=0.23.0",
   "e2b-code-interpreter==1.2.0b5",
   "python-socketio>=5.13.0",
   "gcloud-aio-storage==9.5.0",
