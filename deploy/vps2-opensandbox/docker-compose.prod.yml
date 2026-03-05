@@ -12,6 +12,7 @@ volumes:
   plug-data:
   sandbox-tmp:
   nginx-certs:
+  redis-data:
 
 services:
   # ───────────────────────────────────────────────────
@@ -116,6 +117,29 @@ services:
       retries: 3
 
   # ───────────────────────────────────────────────────
+  # Redis — Queue backend for sandbox lifecycle
+  # ───────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: aims-redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    volumes:
+      - redis-data:/data
+    networks:
+      - vps2-internal
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.25'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ───────────────────────────────────────────────────
   # OpenSandbox — Secure Code Execution Engine
   # ───────────────────────────────────────────────────
   open-sandbox:
@@ -132,6 +156,10 @@ services:
       - VPS1_URL=http://10.0.0.1:3001
       - SANDBOX_DATABASE_URL=sqlite+aiosqlite:////tmp/sandbox/ii_sandbox.db
       - SANDBOX_MODE=docker
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - sandbox-tmp:/tmp/sandbox
@@ -143,7 +171,8 @@ services:
           memory: 512M
           cpus: '1.0'
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4400/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:4400/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
