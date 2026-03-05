@@ -120,8 +120,8 @@ services:
   # ───────────────────────────────────────────────────
   open-sandbox:
     build:
-      context: ./sandbox
-      dockerfile: Dockerfile
+      context: ../..          # repo root — needs uv.lock, src/, pyproject.toml
+      dockerfile: deploy/vps2-opensandbox/sandbox/Dockerfile
     container_name: aims-open-sandbox
     restart: unless-stopped
     ports:

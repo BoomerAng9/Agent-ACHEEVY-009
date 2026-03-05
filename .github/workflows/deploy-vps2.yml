@@ -1,0 +1,73 @@
+name: Deploy to VPS2 (OpenSandbox)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/vps2-opensandbox/**'
+      - 'src/ii_sandbox_server/**'
+      - 'deploy/telegram-bridge/**'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps2
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: SSH deploy → VPS2
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS2_HOST }}
+          username: ${{ secrets.VPS2_USER }}
+          key: ${{ secrets.VPS2_SSH_KEY }}
+          port: ${{ secrets.VPS2_PORT || 22 }}
+          timeout: 300s
+          script: |
+            set -euo pipefail
+            REPO=/opt/aims
+
+            # Clone on first run, pull on subsequent runs
+            if [ ! -d "$REPO/.git" ]; then
+              git clone https://github.com/BoomerAng9/Agent-ACHEEVY-009.git "$REPO"
+            fi
+
+            cd "$REPO"
+            git fetch --all
+            git reset --hard origin/main
+
+            chmod +x deploy/vps2-opensandbox/deploy-vps2.sh
+            deploy/vps2-opensandbox/deploy-vps2.sh
+
+      - name: Notify Telegram — success
+        if: success()
+        uses: appleboy/telegram-action@v1.0.0
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            ✅ *VPS2 Deploy Succeeded*
+            Commit: `${{ github.sha }}` by ${{ github.actor }}
+            Branch: `${{ github.ref_name }}`
+            https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+
+      - name: Notify Telegram — failure
+        if: failure()
+        uses: appleboy/telegram-action@v1.0.0
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            ❌ *VPS2 Deploy FAILED*
+            Commit: `${{ github.sha }}` by ${{ github.actor }}
+            Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
