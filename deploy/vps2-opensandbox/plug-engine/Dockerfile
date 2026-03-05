@@ -9,8 +9,8 @@ RUN apk add --no-cache curl docker-cli
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev && npm cache clean --force
+COPY package.json ./
+RUN npm install --omit=dev && npm cache clean --force
 
 COPY src/ ./src/
 

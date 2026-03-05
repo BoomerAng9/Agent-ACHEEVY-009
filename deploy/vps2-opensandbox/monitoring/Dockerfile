@@ -9,7 +9,7 @@ RUN apk add --no-cache curl procps
 
 WORKDIR /app
 COPY package.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm install --omit=dev && npm cache clean --force
 COPY src/ ./src/
 
 ENV NODE_ENV=production PORT=4300
