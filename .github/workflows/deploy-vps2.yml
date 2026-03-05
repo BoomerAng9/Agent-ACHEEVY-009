@@ -17,8 +17,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  preflight:
+    name: Preflight secrets check
+    runs-on: ubuntu-latest
+    outputs:
+      can_deploy: ${{ steps.check.outputs.can_deploy }}
+    steps:
+      - name: Check required VPS secrets
+        id: check
+        run: |
+          if [ -n "${{ secrets.VPS2_HOST }}" ] && [ -n "${{ secrets.VPS2_USER }}" ] && [ -n "${{ secrets.VPS2_SSH_KEY }}" ]; then
+            echo "can_deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "can_deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
   deploy:
     name: SSH deploy → VPS2
+    needs: preflight
+    if: ${{ needs.preflight.outputs.can_deploy == 'true' }}
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -82,3 +99,14 @@ jobs:
             ❌ *VPS2 Deploy FAILED*
             Commit: `${{ github.sha }}` by ${{ github.actor }}
             Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  deploy-skipped:
+    name: Deploy skipped (missing secrets)
+    needs: preflight
+    if: ${{ needs.preflight.outputs.can_deploy != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain skip reason
+        run: |
+          echo "Skipping VPS2 deploy: missing one or more required secrets."
+          echo "Required: VPS2_HOST, VPS2_USER, VPS2_SSH_KEY"
