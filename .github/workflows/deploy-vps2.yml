@@ -9,6 +9,9 @@ on:
       - 'deploy/telegram-bridge/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: deploy-vps2
   cancel-in-progress: true
@@ -29,11 +32,12 @@ jobs:
           host: ${{ secrets.VPS2_HOST }}
           username: ${{ secrets.VPS2_USER }}
           key: ${{ secrets.VPS2_SSH_KEY }}
-          port: ${{ secrets.VPS2_PORT || 22 }}
+          port: 22
           timeout: 300s
+          command_timeout: 60m
           script: |
             set -euo pipefail
-            REPO=/opt/aims
+            REPO=/opt/aims-agent
 
             # Clone on first run, pull on subsequent runs
             if [ ! -d "$REPO/.git" ]; then
@@ -44,11 +48,16 @@ jobs:
             git fetch --all
             git reset --hard origin/main
 
+            # Bootstrap env file on first CI deploy
+            if [ ! -f deploy/vps2-opensandbox/.env ]; then
+              cp deploy/vps2-opensandbox/.env.example deploy/vps2-opensandbox/.env
+            fi
+
             chmod +x deploy/vps2-opensandbox/deploy-vps2.sh
             deploy/vps2-opensandbox/deploy-vps2.sh
 
       - name: Notify Telegram — success
-        if: success()
+        if: success() && secrets.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
         uses: appleboy/telegram-action@v1.0.0
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -61,7 +70,7 @@ jobs:
             https://github.com/${{ github.repository }}/commit/${{ github.sha }}
 
       - name: Notify Telegram — failure
-        if: failure()
+        if: failure() && secrets.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
         uses: appleboy/telegram-action@v1.0.0
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}

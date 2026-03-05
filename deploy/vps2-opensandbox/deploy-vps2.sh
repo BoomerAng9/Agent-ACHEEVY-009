@@ -46,8 +46,8 @@ command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1 || \
 header "1/5  Prep directories"
 mkdir -p /etc/aims/nginx/plugs
 mkdir -p /var/www/certbot
-mkdir -p /opt/aims/data/plug-engine
-mkdir -p /opt/aims/data/sandbox-tmp
+mkdir -p "${REPO_ROOT}/data/plug-engine"
+mkdir -p "${REPO_ROOT}/data/sandbox-tmp"
 info "Directories ready."
 
 # ─── 2. Pull latest code ─────────────────────────────────────────────────────
