@@ -5,6 +5,11 @@ pydantic
 pydantic-settings
 sqlalchemy[asyncio]
 aiosqlite
+asyncpg
 redis[hiredis]
 httpx
+aiodocker
 e2b-code-interpreter
+alembic
+python-dotenv
+python-magic

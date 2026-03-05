@@ -10,21 +10,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl ca-certificates docker.io libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
-ENV UV_SYSTEM_PYTHON=1 UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
-
 WORKDIR /app
 
-# Layer-cache dependencies
-COPY uv.lock pyproject.toml ./
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --prerelease=allow --no-install-project --no-dev \
-        --package ii_sandbox_server 2>/dev/null || \
-    uv pip install \
-        fastapi uvicorn[standard] pydantic pydantic-settings \
-        sqlalchemy[asyncio] aiosqlite redis[hiredis] httpx aiodocker \
-        e2b-code-interpreter python-dotenv python-magic
+# Layer-cache: install from requirements.txt first
+COPY src/ii_sandbox_server/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Application source
 COPY src/ii_sandbox_server ./src/ii_sandbox_server
