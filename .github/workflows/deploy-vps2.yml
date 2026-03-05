@@ -21,6 +21,8 @@ jobs:
     name: SSH deploy → VPS2
     runs-on: ubuntu-latest
     environment: production
+    env:
+      HAS_TELEGRAM: ${{ secrets.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != '' }}
 
     steps:
       - name: Checkout
@@ -57,7 +59,7 @@ jobs:
             deploy/vps2-opensandbox/deploy-vps2.sh
 
       - name: Notify Telegram — success
-        if: success() && secrets.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
+        if: success() && env.HAS_TELEGRAM == 'true'
         uses: appleboy/telegram-action@v1.0.0
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -70,7 +72,7 @@ jobs:
             https://github.com/${{ github.repository }}/commit/${{ github.sha }}
 
       - name: Notify Telegram — failure
-        if: failure() && secrets.TELEGRAM_CHAT_ID != '' && secrets.TELEGRAM_BOT_TOKEN != ''
+        if: failure() && env.HAS_TELEGRAM == 'true'
         uses: appleboy/telegram-action@v1.0.0
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
