@@ -130,6 +130,8 @@ services:
       - NODE_ENV=production
       - PORT=4400
       - VPS1_URL=http://10.0.0.1:3001
+      - SANDBOX_DATABASE_URL=sqlite+aiosqlite:////tmp/sandbox/ii_sandbox.db
+      - SANDBOX_MODE=docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - sandbox-tmp:/tmp/sandbox
