@@ -45,13 +45,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Resolve SSH port
+        id: ssh_port
+        env:
+          VPS2_PORT: ${{ secrets.VPS2_PORT }}
+        run: |
+          if [ -n "${VPS2_PORT:-}" ]; then
+            echo "value=${VPS2_PORT}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=22" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Deploy to VPS2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS2_HOST }}
           username: ${{ secrets.VPS2_USER }}
           key: ${{ secrets.VPS2_SSH_KEY }}
-          port: 22
+          port: ${{ steps.ssh_port.outputs.value }}
           timeout: 300s
           command_timeout: 60m
           script: |
