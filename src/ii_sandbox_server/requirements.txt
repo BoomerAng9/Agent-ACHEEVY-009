@@ -9,7 +9,7 @@ asyncpg
 redis[hiredis]
 httpx
 aiodocker
-e2b-code-interpreter
+e2b-code-interpreter==1.2.0b5
 alembic
 python-dotenv
 python-magic
